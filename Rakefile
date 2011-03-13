@@ -12,7 +12,7 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   gem.name = "api-auth"
-  gem.homepage = "http://github.com/geminisbs/api-auth"
+  gem.homepage = "http://github.com/mgomes/api_auth"
   gem.license = "MIT"
   gem.summary = %Q{Simple HMAC authentication for your APIs}
   gem.description = %Q{Full HMAC auth implementation for use in your gems and Rails apps.}
@@ -39,7 +39,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "api-auth #{version}"
+  rdoc.title = "api_auth #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
