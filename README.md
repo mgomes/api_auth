@@ -52,6 +52,9 @@ References
 Install
 -------
 
+The gem doesn't have any dependencies outside of having a working OpenSSL 
+configuration for your Ruby VM. To install:
+
     [sudo] gem install api_auth
     
 Clients
@@ -90,6 +93,12 @@ A typical RestClient PUT request may look like:
 To sign that request, simply call the `sign!` method as follows:
 
     @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+    
+The proper `Authorization` request header has now been added to that request 
+object and it's ready to be transmitted. It's recommended that you sign the 
+request as one of the last steps in building the request to ensure the headers 
+don't change after the signing process which would cause the authentication 
+check to fail on the server side.
     
 ### ActiveResource Clients ###
 
@@ -138,6 +147,21 @@ Rails app:
       return ApiAuth.authentic?(request, @current_account.secret_key) unless @current_account.nil?
       false
     end
+    
+Development
+-----------
+
+ApiAuth uses bundler for gem dependencies and RSpec for testing. Developing the
+gem requires that you have all supported HTTP clients installed. Bundler will 
+take care of all that for you.
+
+To run the tests:
+
+    rake spec
+    
+If you'd like to add support for additional HTTP clients, check out the already
+implemented drivers in `lib/api_auth/request_drivers` for reference. All of 
+the public methods for each driver are required to be implemented by your driver.
         
 Authors
 -------
