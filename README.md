@@ -55,7 +55,9 @@ Install
 The gem doesn't have any dependencies outside of having a working OpenSSL 
 configuration for your Ruby VM. To install:
 
-    [sudo] gem install api_auth
+    [sudo] gem install api-auth
+    
+Please note the dash in the name versus the underscore.
     
 Clients
 -------
