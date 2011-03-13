@@ -4,7 +4,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{api-auth}
+  s.name = %q{api_auth}
   s.version = "0.9.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -22,8 +22,8 @@ Gem::Specification.new do |s|
     "Gemfile",
     "LICENSE.txt",
     "Rakefile",
-    "lib/api-auth.rb",
-    "spec/api-auth_spec.rb",
+    "lib/api_auth.rb",
+    "spec/api_auth_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/geminisbs/api-auth}
@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.4.1}
   s.summary = %q{Simple HMAC authentication for your APIs}
   s.test_files = [
-    "spec/api-auth_spec.rb",
+    "spec/api_auth_spec.rb",
     "spec/headers_spec.rb",
     "spec/helpers_spec.rb",
     "spec/railtie_spec.rb",
