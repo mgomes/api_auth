@@ -49,16 +49,15 @@ References
 * [HMAC algorithm](http://en.wikipedia.org/wiki/HMAC)
 * [RFC 2104 (HMAC)](http://tools.ietf.org/html/rfc2104)
 
-Usage
------
-
-### Install ###
+Install
+-------
 
     [sudo] gem install api_auth
     
-### Supported Request Objects ###
+Clients
+-------
 
-ApiAuth supports most request objects. Support for other request objects can be 
+ApiAuth supports many popular HTTP clients. Support for other clients can be 
 added as a request driver.
 
 Here is the current list of supported request objects:
@@ -67,8 +66,32 @@ Here is the current list of supported request objects:
 * ActionController::Request
 * Curb (Curl::Easy)
 * RestClient
+
+### HTTP Client Objects ###
+
+Here's a sample implementation of signing a request created with RestClient. For
+more examples, please check out the ApiAuth Spec where every supported HTTP 
+client is tested.
+
+Assuming you have a client access id and secret as follows:
+
+    @access_id = "1044"
+    @secret_key = ApiAuth.generate_secret_key
     
-### ActiveResource ###
+A typical RestClient PUT request may look like:
+
+    headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+        'Content-Type' => "text/plain",
+        'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+    @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo", 
+        :headers => headers,
+        :method => :put)
+        
+To sign that request, simply call the `sign!` method as follows:
+
+    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+    
+### ActiveResource Clients ###
 
 ApiAuth can transparently protect your ActiveResource communications with a 
 single configuration line:
@@ -79,7 +102,8 @@ single configuration line:
     
 This will automatically sign all outgoing ActiveResource requests from your app.
 
-### Server ###
+Server
+------
 
 ApiAuth provides some built in methods to help you generate API keys for your 
 clients as well as verifying incoming API requests.
@@ -101,10 +125,11 @@ client's access_id. ApiAuth can pull that from the request headers for you:
     
 Once you've looked up the client's record via the access id, you can then verify
 whether or not the request is authentic. Typically, the access id for the client
-will be their records primary key in the DB that stores the record or some other
+will be their record's primary key in the DB that stores the record or some other
 public unique identifier for the client.
 
-Here's a sample method that can be used in a `before_filter` in a Rails app:
+Here's a sample method that can be used in a `before_filter` if your server is a 
+Rails app:
 
     before_filter :api_authenticate
 
