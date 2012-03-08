@@ -99,4 +99,39 @@ describe "ApiAuth::Headers" do
   
   end
   
+  describe "with ActionController" do
+
+    before(:each) do
+      @request = ActionController::Request.new(
+        'PATH_INFO' => '/resource.xml',
+        'QUERY_STRING' => 'foo=bar&bar=foo',
+        'REQUEST_METHOD' => 'PUT',
+        'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
+        'CONTENT_TYPE' => 'text/plain',
+        'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
+      @headers = ApiAuth::Headers.new(@request)
+    end
+
+    it "should generate the proper canonical string" do
+      @headers.canonical_string.should == CANONICAL_STRING
+    end
+
+    it "should set the authorization header" do
+      @headers.sign_header("alpha")
+      @headers.authorization_header.should == "alpha"
+    end
+
+    it "should set the DATE header if one is not already present" do
+      @request = ActionController::Request.new(
+        'PATH_INFO' => '/resource.xml',
+        'QUERY_STRING' => 'foo=bar&bar=foo',
+        'REQUEST_METHOD' => 'PUT',
+        'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
+        'CONTENT_TYPE' => 'text/plain')
+      ApiAuth.sign!(@request, "some access id", "some secret key")
+      @request.headers['DATE'].should_not be_nil
+    end
+
+  end
+
 end
