@@ -133,6 +133,41 @@ describe "ApiAuth" do
       
     end
     
+    describe "with ActionController" do
+
+      before(:each) do
+        @request = ActionController::Request.new(
+          'PATH_INFO' => '/resource.xml',
+          'QUERY_STRING' => 'foo=bar&bar=foo',
+          'REQUEST_METHOD' => 'PUT',
+          'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
+          'CONTENT_TYPE' => 'text/plain',
+          'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
+        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+      end
+
+      it "should return a ActionController::Request object after signing it" do
+        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("ActionController::Request")
+      end
+
+      it "should sign the request" do
+        @signed_request.env['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+      end
+
+      it "should authenticate a valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+      end
+
+      it "should NOT authenticate a non-valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+      end
+
+      it "should retrieve the access_id" do
+        ApiAuth.access_id(@signed_request).should == "1044"
+      end
+
+    end
+
   end
   
 end

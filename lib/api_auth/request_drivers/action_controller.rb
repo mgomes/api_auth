@@ -33,7 +33,7 @@ module ApiAuth
       end
 
       def request_uri
-        @request.path
+        @request.request_uri
       end
 
       def timestamp
