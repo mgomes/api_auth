@@ -2,7 +2,7 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name = %q{api_auth}
+  s.name = %q{api-auth}
   s.summary = %q{Simple HMAC authentication for your APIs}
   s.description = %q{Full HMAC auth implementation for use in your gems and Rails apps.}
   s.homepage = %q{http://github.com/geminisbs/api-auth}
