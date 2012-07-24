@@ -18,7 +18,11 @@ module ApiAuth
       when /ActionController::Request/
         @request = ActionControllerRequest.new(request)
       when /ActionController::TestRequest/
-        @request = ActionControllerRequest.new(request)
+        if defined?(ActionDispatch)
+          @request = ActionDispatchRequest.new(request)
+        else
+          @request = ActionControllerRequest.new(request)
+        end
       when /ActionDispatch::Request/
         @request = ActionDispatchRequest.new(request)
       else
