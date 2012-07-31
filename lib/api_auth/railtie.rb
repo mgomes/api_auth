@@ -25,7 +25,7 @@ module ApiAuth
           gem 'activesupport'
           require 'action_controller'
           require 'active_support'
-        rescue
+        rescue LoadError
           nil
         end
       end
@@ -110,7 +110,7 @@ module ApiAuth
           require 'rubygems'
           gem 'activeresource'
           require 'active_resource'
-        rescue
+        rescue LoadError
           nil
         end
       end
