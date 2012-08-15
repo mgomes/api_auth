@@ -11,12 +11,11 @@ Gem::Specification.new do |s|
   s.email = "mauricio@edge14.com"
 
   s.add_development_dependency "rspec", "~> 2.4.0"
-  s.add_development_dependency "amatch", "~> 0.2.10"
   s.add_development_dependency "actionpack", "~> 2.3.2"
   s.add_development_dependency "activesupport", "~> 2.3.2"
   s.add_development_dependency "activeresource", "~> 2.3.2"
   s.add_development_dependency "rest-client", "~> 1.6.0"
-  s.add_development_dependency "curb", "~> 0.7.7"
+  s.add_development_dependency "curb", "~> 0.8.1"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
