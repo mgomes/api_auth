@@ -33,13 +33,7 @@ module ApiAuth
     def authentic?(request, secret_key)
       return false if secret_key.nil?
 
-      headers = Headers.new(request)
-      if match_data = parse_auth_header(headers.authorization_header)
-        hmac = match_data[2]
-        return hmac == hmac_signature(request, secret_key)
-      end
-
-      false
+      return signatures_match?(request, secret_key)
     end
 
     # Returns the access id from the request's authorization header
@@ -62,6 +56,15 @@ module ApiAuth
     end
 
   private
+
+    def signatures_match?(request, secret_key)
+      headers = Headers.new(request)
+      if match_data = parse_auth_header(headers.authorization_header)
+        hmac = match_data[2]
+        return hmac == hmac_signature(request, secret_key)
+      end
+      false
+    end
 
     def hmac_signature(request, secret_key)
       headers = Headers.new(request)
