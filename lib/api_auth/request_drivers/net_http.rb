@@ -1,7 +1,7 @@
 module ApiAuth
-  
+
   module RequestDrivers # :nodoc:
-  
+
     class NetHttpRequest # :nodoc:
 
       def initialize(request)
@@ -9,13 +9,13 @@ module ApiAuth
         @headers = fetch_headers
         true
       end
-      
+
       def set_auth_header(header)
         @request["Authorization"] = header
         @headers = fetch_headers
         @request
       end
-      
+
       def fetch_headers
         @request
       end
@@ -39,7 +39,7 @@ module ApiAuth
         if value.nil?
           value = Time.now.utc.httpdate
           @request["DATE"] = value
-        end  
+        end
         value
       end
 
@@ -54,7 +54,7 @@ module ApiAuth
       end
 
     end
-    
+
   end
-  
+
 end

@@ -1,9 +1,9 @@
 module ApiAuth
-  
+
   module RequestDrivers # :nodoc:
-  
+
     class CurbRequest # :nodoc:
-      
+
       include ApiAuth::Helpers
 
       def initialize(request)
@@ -11,13 +11,13 @@ module ApiAuth
         @headers = fetch_headers
         true
       end
-      
+
       def set_auth_header(header)
         @request.headers.merge!({ "Authorization" => header })
         @headers = fetch_headers
         @request
       end
-      
+
       def fetch_headers
         capitalize_keys @request.headers
       end
@@ -56,7 +56,7 @@ module ApiAuth
       end
 
     end
-    
+
   end
-  
+
 end
