@@ -84,6 +84,16 @@ describe "ApiAuth" do
         ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
       end
 
+      it "should NOT authenticate a mismatched content-md5 when body has changed" do
+        request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+          'content-type' => 'text/plain',
+          'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+        request.body = "hello\nworld"
+        signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+        signed_request.body = "goodbye"
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -145,6 +155,18 @@ describe "ApiAuth" do
 
       it "should NOT authenticate a non-valid request" do
         ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+      end
+
+      it "should NOT authenticate a mismatched content-md5 when body has changed" do
+        headers = { 'Content-Type' => "text/plain",
+                    'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+        request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+          :headers => headers,
+          :method => :put,
+          :payload => "hello\nworld")
+        signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+        signed_request.instance_variable_set("@payload", RestClient::Payload.generate('goodbye'))
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
       it "should retrieve the access_id" do
@@ -262,6 +284,19 @@ describe "ApiAuth" do
 
       it "should NOT authenticate a non-valid request" do
         ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+      end
+
+      it "should NOT authenticate a mismatched content-md5 when body has changed" do
+        request = ActionController::Request.new(
+          'PATH_INFO' => '/resource.xml',
+          'QUERY_STRING' => 'foo=bar&bar=foo',
+          'REQUEST_METHOD' => 'PUT',
+          'CONTENT_TYPE' => 'text/plain',
+          'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT',
+          'rack.input' => StringIO.new("hello\nworld"))
+        signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+        signed_request.instance_variable_get("@env")["rack.input"] = StringIO.new("goodbye")
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
       it "should retrieve the access_id" do
