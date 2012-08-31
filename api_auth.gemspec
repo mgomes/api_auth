@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.name = %q{api-auth}
   s.summary = %q{Simple HMAC authentication for your APIs}
   s.description = %q{Full HMAC auth implementation for use in your gems and Rails apps.}
-  s.homepage = %q{http://github.com/geminisbs/api-auth}
+  s.homepage = %q{https://github.com/mgomes/api_auth}
   s.version = File.read(File.join(File.dirname(__FILE__), 'VERSION'))
   s.authors = ["Mauricio Gomes"]
   s.email = "mauricio@edge14.com"
