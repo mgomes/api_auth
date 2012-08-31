@@ -47,6 +47,31 @@ describe "ApiAuth" do
         ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Net::HTTP")
       end
 
+      describe "md5 header" do
+        context "not already provided" do
+          it "should calculate for empty string" do
+            request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+              'content-type' => 'text/plain',
+              'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request['Content-MD5'].should == Digest::MD5.base64digest('')
+          end
+
+          it "should calculate for real content" do
+            request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+              'content-type' => 'text/plain',
+              'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+            request.body = "hello\nworld"
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request['Content-MD5'].should == Digest::MD5.base64digest("hello\nworld")
+          end
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request['Content-MD5'].should == 'e59ff97941044f85df5297e1c302d260'
+        end
+      end
+
       it "should sign the request" do
         @signed_request['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
       end
@@ -79,6 +104,35 @@ describe "ApiAuth" do
 
       it "should return a RestClient object after signing it" do
         ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("RestClient")
+      end
+
+      describe "md5 header" do
+        context "not already provided" do
+          it "should calculate for empty string" do
+            headers = { 'Content-Type' => "text/plain",
+                        'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+            request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+              :headers => headers,
+              :method => :put)
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.headers['Content-MD5'].should == Digest::MD5.base64digest('')
+          end
+
+          it "should calculate for real content" do
+            headers = { 'Content-Type' => "text/plain",
+                        'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+            request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+              :headers => headers,
+              :method => :put,
+              :payload => "hellow\nworld")
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.headers['Content-MD5'].should == Digest::MD5.base64digest("hellow\nworld")
+          end
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request.headers['Content-MD5'].should == "e59ff97941044f85df5297e1c302d260"
+        end
       end
 
       it "should sign the request" do
@@ -115,6 +169,22 @@ describe "ApiAuth" do
         ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Curl::Easy")
       end
 
+      describe "md5 header" do
+        it "should not calculate and add the content-md5 header if not provided" do
+          headers = { 'Content-Type' => "text/plain",
+                      'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+          request = Curl::Easy.new("/resource.xml?foo=bar&bar=foo") do |curl|
+            curl.headers = headers
+          end
+          signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+          signed_request.headers['Content-MD5'].should == nil
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request.headers['Content-MD5'].should == "e59ff97941044f85df5297e1c302d260"
+        end
+      end
+
       it "should sign the request" do
         @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
       end
@@ -148,6 +218,38 @@ describe "ApiAuth" do
 
       it "should return a ActionController::Request object after signing it" do
         ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("ActionController::Request")
+      end
+
+      describe "md5 header" do
+        context "not already provided" do
+          it "should calculate for empty string" do
+            request = ActionController::Request.new(
+              'PATH_INFO' => '/resource.xml',
+              'QUERY_STRING' => 'foo=bar&bar=foo',
+              'REQUEST_METHOD' => 'PUT',
+              'CONTENT_TYPE' => 'text/plain',
+              'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest('')
+          end
+
+          it "should calculate for real content" do
+            request = ActionController::Request.new(
+              'PATH_INFO' => '/resource.xml',
+              'QUERY_STRING' => 'foo=bar&bar=foo',
+              'REQUEST_METHOD' => 'PUT',
+              'CONTENT_TYPE' => 'text/plain',
+              'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT',
+              'rack.input' => StringIO.new("hello\nworld"))
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest("hello\nworld")
+          end
+
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request.env['CONTENT_MD5'].should == 'e59ff97941044f85df5297e1c302d260'
+        end
       end
 
       it "should sign the request" do
