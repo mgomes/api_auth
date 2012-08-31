@@ -18,6 +18,17 @@ module ApiAuth
         @request
       end
 
+      def populate_content_md5
+        if [:post, :put].include?(@request.method)
+          if @request.payload
+            body = @request.payload.read
+          else
+            body = ''
+          end
+          @request.headers["Content-MD5"] = Digest::MD5.base64digest(body)
+        end
+      end
+
       def fetch_headers
         capitalize_keys @request.headers
       end

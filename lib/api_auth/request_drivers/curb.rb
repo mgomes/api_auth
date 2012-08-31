@@ -18,6 +18,10 @@ module ApiAuth
         @request
       end
 
+      def populate_content_md5
+        nil #doesn't appear to be possible
+      end
+
       def fetch_headers
         capitalize_keys @request.headers
       end

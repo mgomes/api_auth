@@ -16,6 +16,12 @@ module ApiAuth
         @request
       end
 
+      def populate_content_md5
+        if @request.class::REQUEST_HAS_BODY
+          @request["Content-MD5"] = Digest::MD5.base64digest(@request.body || '')
+        end
+      end
+
       def fetch_headers
         @request
       end

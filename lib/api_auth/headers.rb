@@ -45,6 +45,10 @@ module ApiAuth
       @request.authorization_header
     end
 
+    def calculate_md5
+      @request.populate_content_md5 if @request.content_md5.blank?
+    end
+
     # Sets the request's authorization header with the passed in value.
     # The header should be the ApiAuth HMAC signature.
     #

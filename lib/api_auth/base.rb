@@ -23,6 +23,7 @@ module ApiAuth
     # secret_key: assigned secret key that is known to both parties
     def sign!(request, access_id, secret_key)
       headers = Headers.new(request)
+      headers.calculate_md5
       headers.sign_header auth_header(request, access_id, secret_key)
     end
 
