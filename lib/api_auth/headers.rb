@@ -45,6 +45,10 @@ module ApiAuth
       @request.authorization_header
     end
 
+    def set_date
+      @request.set_date if @request.timestamp.blank?
+    end
+
     def calculate_md5
       @request.populate_content_md5 if @request.content_md5.blank?
     end

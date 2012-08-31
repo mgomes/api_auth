@@ -40,13 +40,13 @@ module ApiAuth
         @request.url
       end
 
+      def set_date
+        @request.headers.merge!({ "DATE" => Time.now.utc.httpdate })
+      end
+
       def timestamp
         value = find_header(%w(DATE HTTP_DATE))
-        if value.nil?
-          value = Time.now.utc.httpdate
-          @request.headers.merge!({ "DATE" => value })
-        end
-        value
+        value.nil? ? "" : value
       end
 
       def authorization_header

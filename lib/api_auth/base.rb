@@ -24,6 +24,7 @@ module ApiAuth
     def sign!(request, access_id, secret_key)
       headers = Headers.new(request)
       headers.calculate_md5
+      headers.set_date
       headers.sign_header auth_header(request, access_id, secret_key)
     end
 
