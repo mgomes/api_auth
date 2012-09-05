@@ -33,7 +33,7 @@ module ApiAuth
     def authentic?(request, secret_key)
       return false if secret_key.nil?
 
-      return valid_md5?(request) && signatures_match?(request, secret_key)
+      return !md5_mismatch?(request) && signatures_match?(request, secret_key)
     end
 
     # Returns the access id from the request's authorization header
@@ -57,9 +57,9 @@ module ApiAuth
 
   private
 
-    def valid_md5?(request)
+    def md5_mismatch?(request)
       headers = Headers.new(request)
-      headers.valid_md5?
+      headers.md5_mismatch?
     end
 
     def signatures_match?(request, secret_key)

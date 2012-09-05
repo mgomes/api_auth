@@ -22,8 +22,8 @@ module ApiAuth
         nil #doesn't appear to be possible
       end
 
-      def valid_md5?
-        true
+      def md5_mismatch?
+        false
       end
 
       def fetch_headers

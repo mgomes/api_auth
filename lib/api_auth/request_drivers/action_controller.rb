@@ -33,11 +33,11 @@ module ApiAuth
         end
       end
 
-      def valid_md5?
+      def md5_mismatch?
         if @request.put? || @request.post?
-          calculated_md5 == content_md5
+          calculated_md5 != content_md5
         else
-          true
+          false
         end
       end
 

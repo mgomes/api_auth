@@ -26,11 +26,11 @@ module ApiAuth
         end
       end
 
-      def valid_md5?
+      def md5_mismatch?
         if @request.class::REQUEST_HAS_BODY
-          calculated_md5 == content_md5
+          calculated_md5 != content_md5
         else
-          true
+          false
         end
       end
 

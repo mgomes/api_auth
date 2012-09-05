@@ -53,8 +53,8 @@ module ApiAuth
       @request.populate_content_md5 if @request.content_md5.blank?
     end
 
-    def valid_md5?
-      @request.valid_md5?
+    def md5_mismatch?
+      @request.md5_mismatch?
     end
 
     # Sets the request's authorization header with the passed in value.
