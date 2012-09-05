@@ -54,7 +54,11 @@ module ApiAuth
     end
 
     def md5_mismatch?
-      @request.md5_mismatch?
+      if @request.content_md5.blank?
+        false
+      else
+        @request.md5_mismatch?
+      end
     end
 
     # Sets the request's authorization header with the passed in value.

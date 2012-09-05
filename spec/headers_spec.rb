@@ -39,6 +39,15 @@ describe "ApiAuth::Headers" do
       headers.canonical_string
       request['DATE'].should be_nil
     end
+
+    context "md5_mismatch?" do
+      it "is false if no md5 header is present" do
+        request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+        'content-type' => 'text/plain')
+        headers = ApiAuth::Headers.new(request)
+        headers.md5_mismatch?.should be_false
+      end
+    end
   end
 
   describe "with RestClient" do
