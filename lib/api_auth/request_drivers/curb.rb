@@ -22,6 +22,10 @@ module ApiAuth
         nil #doesn't appear to be possible
       end
 
+      def valid_md5?
+        true
+      end
+
       def fetch_headers
         capitalize_keys @request.headers
       end

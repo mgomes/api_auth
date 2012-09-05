@@ -38,7 +38,7 @@ describe "ApiAuth" do
       before(:each) do
         @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
           'content-type' => 'text/plain',
-          'content-md5' => 'e59ff97941044f85df5297e1c302d260',
+          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
           'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
       end
@@ -68,7 +68,7 @@ describe "ApiAuth" do
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request['Content-MD5'].should == 'e59ff97941044f85df5297e1c302d260'
+          @signed_request['Content-MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
         end
       end
 
@@ -103,7 +103,7 @@ describe "ApiAuth" do
     describe "with RestClient" do
 
       before(:each) do
-        headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+        headers = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
                     'Content-Type' => "text/plain",
                     'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
         @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
@@ -141,7 +141,7 @@ describe "ApiAuth" do
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.headers['Content-MD5'].should == "e59ff97941044f85df5297e1c302d260"
+          @signed_request.headers['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
         end
       end
 
@@ -232,7 +232,7 @@ describe "ApiAuth" do
           'PATH_INFO' => '/resource.xml',
           'QUERY_STRING' => 'foo=bar&bar=foo',
           'REQUEST_METHOD' => 'PUT',
-          'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
+          'CONTENT_MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
           'CONTENT_TYPE' => 'text/plain',
           'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
@@ -270,7 +270,7 @@ describe "ApiAuth" do
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.env['CONTENT_MD5'].should == 'e59ff97941044f85df5297e1c302d260'
+          @signed_request.env['CONTENT_MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
         end
       end
 

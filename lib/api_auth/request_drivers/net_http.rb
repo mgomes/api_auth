@@ -16,9 +16,21 @@ module ApiAuth
         @request
       end
 
+      def calculated_md5
+        Digest::MD5.base64digest(@request.body || '')
+      end
+
       def populate_content_md5
         if @request.class::REQUEST_HAS_BODY
-          @request["Content-MD5"] = Digest::MD5.base64digest(@request.body || '')
+          @request["Content-MD5"] = calculated_md5
+        end
+      end
+
+      def valid_md5?
+        if @request.class::REQUEST_HAS_BODY
+          calculated_md5 == content_md5
+        else
+          true
         end
       end
 
