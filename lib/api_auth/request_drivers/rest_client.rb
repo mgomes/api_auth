@@ -1,9 +1,9 @@
 module ApiAuth
-  
+
   module RequestDrivers # :nodoc:
-  
+
     class RestClientRequest # :nodoc:
-      
+
       include ApiAuth::Helpers
 
       def initialize(request)
@@ -11,13 +11,36 @@ module ApiAuth
         @headers = fetch_headers
         true
       end
-      
+
       def set_auth_header(header)
         @request.headers.merge!({ "Authorization" => header })
         @headers = fetch_headers
         @request
       end
-      
+
+      def calculated_md5
+        if @request.payload
+          body = @request.payload.read
+        else
+          body = ''
+        end
+        Digest::MD5.base64digest(body)
+      end
+
+      def populate_content_md5
+        if [:post, :put].include?(@request.method)
+          @request.headers["Content-MD5"] = calculated_md5
+        end
+      end
+
+      def md5_mismatch?
+        if [:post, :put].include?(@request.method)
+          calculated_md5 != content_md5
+        else
+          false
+        end
+      end
+
       def fetch_headers
         capitalize_keys @request.headers
       end
@@ -36,13 +59,13 @@ module ApiAuth
         @request.url
       end
 
+      def set_date
+        @request.headers.merge!({ "DATE" => Time.now.utc.httpdate })
+      end
+
       def timestamp
         value = find_header(%w(DATE HTTP_DATE))
-        if value.nil?
-          value = Time.now.utc.httpdate
-          @request.headers.merge!({ "DATE" => value })
-        end  
-        value
+        value.nil? ? "" : value
       end
 
       def authorization_header
@@ -56,7 +79,7 @@ module ApiAuth
       end
 
     end
-    
+
   end
-  
+
 end

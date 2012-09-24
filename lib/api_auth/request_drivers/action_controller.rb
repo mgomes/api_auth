@@ -1,9 +1,9 @@
 module ApiAuth
-  
+
   module RequestDrivers # :nodoc:
-  
+
     class ActionControllerRequest # :nodoc:
-      
+
       include ApiAuth::Helpers
 
       def initialize(request)
@@ -11,13 +11,36 @@ module ApiAuth
         @headers = fetch_headers
         true
       end
-      
+
       def set_auth_header(header)
         @request.env["Authorization"] = header
         @headers = fetch_headers
         @request
       end
-      
+
+      def calculated_md5
+        if @request.body
+          body = @request.body.read
+        else
+          body = ''
+        end
+        Digest::MD5.base64digest(body)
+      end
+
+      def populate_content_md5
+        if @request.put? || @request.post?
+          @request.env["Content-MD5"] = calculated_md5
+        end
+      end
+
+      def md5_mismatch?
+        if @request.put? || @request.post?
+          calculated_md5 != content_md5
+        else
+          false
+        end
+      end
+
       def fetch_headers
         capitalize_keys @request.env
       end
@@ -36,13 +59,13 @@ module ApiAuth
         @request.request_uri
       end
 
+      def set_date
+        @request.env['DATE'] = Time.now.utc.httpdate
+      end
+
       def timestamp
         value = find_header(%w(DATE HTTP_DATE))
-        if value.nil?
-          value = Time.now.utc.httpdate
-          @request.env['DATE'] = value
-        end
-        value
+        value.nil? ? "" : value
       end
 
       def authorization_header
@@ -56,7 +79,7 @@ module ApiAuth
       end
 
     end
-    
+
   end
-  
+
 end

@@ -1,7 +1,7 @@
 module ApiAuth
-  
+
   module RequestDrivers # :nodoc:
-  
+
     class NetHttpRequest # :nodoc:
 
       def initialize(request)
@@ -9,13 +9,31 @@ module ApiAuth
         @headers = fetch_headers
         true
       end
-      
+
       def set_auth_header(header)
         @request["Authorization"] = header
         @headers = fetch_headers
         @request
       end
-      
+
+      def calculated_md5
+        Digest::MD5.base64digest(@request.body || '')
+      end
+
+      def populate_content_md5
+        if @request.class::REQUEST_HAS_BODY
+          @request["Content-MD5"] = calculated_md5
+        end
+      end
+
+      def md5_mismatch?
+        if @request.class::REQUEST_HAS_BODY
+          calculated_md5 != content_md5
+        else
+          false
+        end
+      end
+
       def fetch_headers
         @request
       end
@@ -34,13 +52,13 @@ module ApiAuth
         @request.path
       end
 
+      def set_date
+        @request["DATE"] = Time.now.utc.httpdate
+      end
+
       def timestamp
         value = find_header(%w(DATE HTTP_DATE))
-        if value.nil?
-          value = Time.now.utc.httpdate
-          @request["DATE"] = value
-        end  
-        value
+        value.nil? ? "" : value
       end
 
       def authorization_header
@@ -54,7 +72,7 @@ module ApiAuth
       end
 
     end
-    
+
   end
-  
+
 end

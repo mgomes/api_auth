@@ -1,13 +1,13 @@
 module ApiAuth
-  
+
   # Builds the canonical string given a request object.
   class Headers
-    
+
     include RequestDrivers
-    
+
     def initialize(request)
       @original_request = request
-      
+
       case request.class.to_s
       when /Net::HTTP/
         @request = NetHttpRequest.new(request)
@@ -30,7 +30,7 @@ module ApiAuth
       end
       true
     end
-    
+
     # Returns the canonical string computed from the request's headers
     def canonical_string
       [ @request.content_type,
@@ -39,12 +39,28 @@ module ApiAuth
         @request.timestamp
       ].join(",")
     end
-    
+
     # Returns the authorization header from the request's headers
     def authorization_header
       @request.authorization_header
     end
-    
+
+    def set_date
+      @request.set_date if @request.timestamp.blank?
+    end
+
+    def calculate_md5
+      @request.populate_content_md5 if @request.content_md5.blank?
+    end
+
+    def md5_mismatch?
+      if @request.content_md5.blank?
+        false
+      else
+        @request.md5_mismatch?
+      end
+    end
+
     # Sets the request's authorization header with the passed in value.
     # The header should be the ApiAuth HMAC signature.
     #
@@ -53,7 +69,7 @@ module ApiAuth
     def sign_header(header)
       @request.set_auth_header header
     end
-    
+
   end
-  
+
 end
