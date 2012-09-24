@@ -177,6 +177,7 @@ the public methods for each driver are required to be implemented by your driver
 ## Authors ##
 
 * [Mauricio Gomes](http://github.com/mgomes)
+* [Kevin Glowacz](http://github.com/kjg)
 
 ## Copyright ##
 
