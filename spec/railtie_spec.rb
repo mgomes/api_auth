@@ -41,11 +41,20 @@ describe "Rails integration" do
     
     it "should permit a request with properly signed headers" do
       request = ActionController::TestRequest.new
-      request.env['DATE'] = "Mon, 23 Jan 1984 03:29:56 GMT"
+      request.env['DATE'] = Time.now.utc.httpdate
       request.action = 'index'
       request.path = "/index"
       ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
       TestController.new.process(request, ActionController::TestResponse.new).code.should == "200"
+    end
+    
+    it "should forbid a request with properly signed headers but timestamp > 15 minutes" do
+      request = ActionController::TestRequest.new
+      request.env['DATE'] = "Mon, 23 Jan 1984 03:29:56 GMT"
+      request.action = 'index'
+      request.path = "/index"
+      ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
+      TestController.new.process(request, ActionController::TestResponse.new).code.should == "401"
     end
     
     it "should insert a DATE header in the request when one hasn't been specified" do
