@@ -30,6 +30,11 @@ module ApiAuth
       end
       true
     end
+    
+    # Returns the request timestamp
+    def timestamp
+       @request.timestamp 
+    end
 
     # Returns the canonical string computed from the request's headers
     def canonical_string

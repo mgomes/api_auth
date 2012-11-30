@@ -36,7 +36,8 @@ SHA1 HMAC, using the client's private secret key.
 request headers and the client's secret key, which is known to only
 the client and the server but can be looked up on the server using the client's
 access id that was attached in the header. The access id can be any integer or
-string that uniquely identifies the client.
+string that uniquely identifies the client. The signed request expires after 15
+minutes in order to avoid replay attacks.
 
 
 ## References ##
