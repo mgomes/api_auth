@@ -33,7 +33,7 @@ module ApiAuth
     def authentic?(request, secret_key)
       return false if secret_key.nil?
 
-      return !md5_mismatch?(request) && signatures_match?(request, secret_key)
+      return !md5_mismatch?(request) && signatures_match?(request, secret_key) && !request_too_old?(request)
     end
 
     # Returns the access id from the request's authorization header
@@ -56,6 +56,12 @@ module ApiAuth
     end
 
   private
+
+    def request_too_old?(request)
+      headers = Headers.new(request)
+      # 900 seconds is 15 minutes
+      Time.parse(headers.timestamp).utc < (Time.current.utc - 900)
+    end
 
     def md5_mismatch?(request)
       headers = Headers.new(request)

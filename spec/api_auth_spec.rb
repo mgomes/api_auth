@@ -36,10 +36,10 @@ describe "ApiAuth" do
     describe "with Net::HTTP" do
 
       before(:each) do
-        @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-          'content-type' => 'text/plain',
+        @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo", 
+          'content-type' => 'text/plain', 
           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-          'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+          'date' => Time.now.utc.httpdate)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
       end
 
@@ -94,6 +94,12 @@ describe "ApiAuth" do
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
+      it "should NOT authenticate an expired request" do
+        @request['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+      
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -105,8 +111,8 @@ describe "ApiAuth" do
       before(:each) do
         headers = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
                     'Content-Type' => "text/plain",
-                    'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
-        @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+                    'Date' => Time.now.utc.httpdate }
+        @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo", 
           :headers => headers,
           :method => :put)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
@@ -169,6 +175,12 @@ describe "ApiAuth" do
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
+      it "should NOT authenticate an expired request" do
+        @request.headers['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+      
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -180,7 +192,7 @@ describe "ApiAuth" do
       before(:each) do
         headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
                     'Content-Type' => "text/plain",
-                    'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+                    'Date' => Time.now.utc.httpdate }
         @request = Curl::Easy.new("/resource.xml?foo=bar&bar=foo") do |curl|
           curl.headers = headers
         end
@@ -219,6 +231,12 @@ describe "ApiAuth" do
         ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
       end
 
+      it "should NOT authenticate an expired request" do
+        @request.headers['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+      
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -234,7 +252,7 @@ describe "ApiAuth" do
           'REQUEST_METHOD' => 'PUT',
           'CONTENT_MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
           'CONTENT_TYPE' => 'text/plain',
-          'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
+          'HTTP_DATE' => Time.now.utc.httpdate)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
       end
 
@@ -296,6 +314,12 @@ describe "ApiAuth" do
           'rack.input' => StringIO.new("hello\nworld"))
         signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
         signed_request.instance_variable_get("@env")["rack.input"] = StringIO.new("goodbye")
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate an expired request" do
+        @request.env['HTTP_DATE'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
