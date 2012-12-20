@@ -3,6 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe "ApiAuth::Headers" do
 
   CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
+  RACK_CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,http://example.org/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
 
   describe "with Net::HTTP" do
 
@@ -179,6 +180,44 @@ describe "ApiAuth::Headers" do
       headers = ApiAuth::Headers.new(request)
       headers.canonical_string
       request.headers['DATE'].should be_nil
+    end
+  end
+
+  describe "with Rack::Request" do
+
+    before(:each) do
+      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+                  'Content-Type' => "text/plain",
+                  'Date' => "Mon, 23 Jan 1984 03:29:56 GMT"
+                  }
+      @request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
+      @headers = ApiAuth::Headers.new(@request)
+    end
+
+    it "should generate the proper canonical string" do
+      @headers.canonical_string.should == RACK_CANONICAL_STRING
+    end
+
+    it "should set the authorization header" do
+      @headers.sign_header("alpha")
+      @headers.authorization_header.should == "alpha"
+    end
+
+    it "should set the DATE header if one is not already present" do
+      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+                  'Content-Type' => "text/plain" }
+      @request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
+      ApiAuth.sign!(@request, "some access id", "some secret key")
+      @request.env['DATE'].should_not be_nil
+    end
+
+    it "should not set the DATE header just by asking for the canonical_string" do
+      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+                  'Content-Type' => "text/plain" }
+      request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
+      headers = ApiAuth::Headers.new(request)
+      headers.canonical_string
+      request.env['DATE'].should be_nil
     end
   end
 
