@@ -329,6 +329,79 @@ describe "ApiAuth" do
 
     end
 
+    describe "with Rack::Request" do
+
+      before(:each) do
+        headers = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
+                    'Content-Type' => "text/plain",
+                    'Date' => Time.now.utc.httpdate }
+        @request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
+        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+      end
+
+      it "should return a Rack::Request object after signing it" do
+        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Rack::Request")
+      end
+
+      describe "md5 header" do
+        context "not already provided" do
+          it "should calculate for empty string" do
+            headers = { 'Content-Type' => "text/plain",
+                        'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+            request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest('')
+          end
+
+          it "should calculate for real content" do
+            headers = { 'Content-Type' => "text/plain",
+                        'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+            request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put, :input => "hellow\nworld").merge!(headers))
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest("hellow\nworld")
+          end
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request.env['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+        end
+      end
+
+      it "should sign the request" do
+        @signed_request.env['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+      end
+
+      it "should authenticate a valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+      end
+
+      it "should NOT authenticate a non-valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+      end
+
+      it "should NOT authenticate a mismatched content-md5 when body has changed" do
+        headers = { 'Content-Type' => "text/plain",
+                    'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+        request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put, :input => "hellow\nworld").merge!(headers))
+        signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+        changed_request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put, :input => "goodbye").merge!(headers))
+        signed_request.env['rack.input'] = changed_request.env['rack.input']
+        signed_request.env['CONTENT_LENGTH'] = changed_request.env['CONTENT_LENGTH']
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate an expired request" do
+        @request.env['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+      
+      it "should retrieve the access_id" do
+        ApiAuth.access_id(@signed_request).should == "1044"
+      end
+
+    end
+
   end
 
 end
