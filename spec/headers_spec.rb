@@ -3,7 +3,6 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe "ApiAuth::Headers" do
 
   CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
-  RACK_CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,http://example.org/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
 
   describe "with Net::HTTP" do
 
@@ -195,7 +194,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should generate the proper canonical string" do
-      @headers.canonical_string.should == RACK_CANONICAL_STRING
+      @headers.canonical_string.should == "text/plain,e59ff97941044f85df5297e1c302d260,http://example.org/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
     end
 
     it "should set the authorization header" do
