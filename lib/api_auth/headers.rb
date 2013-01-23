@@ -25,15 +25,17 @@ module ApiAuth
         end
       when /ActionDispatch::Request/
         @request = ActionDispatchRequest.new(request)
+      when /HTTPI::Request/
+        @request = HttpiRequest.new(request)
       else
         raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
       end
       true
     end
-    
+
     # Returns the request timestamp
     def timestamp
-       @request.timestamp 
+       @request.timestamp
     end
 
     # Returns the canonical string computed from the request's headers
