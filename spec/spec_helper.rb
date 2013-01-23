@@ -5,6 +5,7 @@ require 'api_auth'
 require 'amatch'
 require 'rest_client'
 require 'curb'
+require 'httpi'
 
 require 'active_support'
 require 'active_support/test_case'
@@ -18,5 +19,5 @@ require 'active_resource/http_mock'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
-  
+
 end
