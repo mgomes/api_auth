@@ -1,3 +1,6 @@
+# give access to RestClient @processed_headers
+module RestClient;class Request;attr_accessor :processed_headers;end;end
+
 module ApiAuth
 
   module RequestDrivers # :nodoc:
@@ -15,6 +18,7 @@ module ApiAuth
       def set_auth_header(header)
         @request.headers.merge!({ "Authorization" => header })
         @headers = fetch_headers
+        save_headers # enforce update of processed_headers based on last updated headers
         @request
       end
 
@@ -77,7 +81,11 @@ module ApiAuth
       def find_header(keys)
         keys.map {|key| @headers[key] }.compact.first
       end
-
+      
+      def save_headers
+        @request.processed_headers = @request.make_headers(@headers)
+      end
+      
     end
 
   end
