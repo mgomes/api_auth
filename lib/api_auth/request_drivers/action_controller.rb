@@ -20,7 +20,7 @@ module ApiAuth
 
       def calculated_md5
         if @request.body
-          body = @request.body.read
+          body = @request.raw_post
         else
           body = ''
         end
