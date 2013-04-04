@@ -194,7 +194,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should generate the proper canonical string" do
-      @headers.canonical_string.should == "text/plain,e59ff97941044f85df5297e1c302d260,http://example.org/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
+      @headers.canonical_string.should == CANONICAL_STRING
     end
 
     it "should set the authorization header" do
