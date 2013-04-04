@@ -4,7 +4,7 @@ PATH
     api-auth (1.0.2)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     actionpack (2.3.14)
       activesupport (= 2.3.14)
