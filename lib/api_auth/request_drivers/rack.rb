@@ -20,11 +20,12 @@ module ApiAuth
 
       def calculated_md5
         if @request.body
-          body = @request.body.read
+          _body = @request.body.read
         else
-          body = ''
+          _body = ''
         end
-        Digest::MD5.base64digest(body)
+        p _body
+        Digest::MD5.base64digest(_body)
       end
 
       def populate_content_md5
@@ -51,7 +52,7 @@ module ApiAuth
       end
 
       def content_md5
-        value = find_header(%w(CONTENT-MD5 CONTENT_MD5))
+        value = find_header(%w(CONTENT-MD5 CONTENT_MD5 HTTP_CONTENT_MD5))
         value.nil? ? "" : value
       end
 
@@ -72,14 +73,58 @@ module ApiAuth
         find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
       end
 
-    private
+      private
 
       def find_header(keys)
         keys.map {|key| @headers[key] }.compact.first
       end
-
     end
-
   end
+end
 
+module Rack
+  class Request
+    # attr_accessor :phantoms
+    # 
+    # alias :old_initialize :initialize 
+    # def initialize env, phantom=false
+    #   @is_phantom = phantom
+    #   @phantoms = []
+    #   10.times { |i| @phantoms << self.class.new(env, true) unless phantom }
+    #   @phantoms_read = 0
+    #   old_initialize env
+    # end
+
+    # alias :old_body :body
+    # def body
+    #   @body_struct ||= old_body.read
+    #   @bodystrg ||= (@body_struct ? /(?<=read=\").*(?=\")/.match(@body_struct)[0] : nil)
+    #   @bodystrg ? OpenStruct.new(:read => @bodystrg) : nil
+    # end
+    
+    alias :old_env :env
+    def env
+      @_rackInput ||= old_env['rack.input'].read
+      @bodystrg ||= /(?<=read=\").*(?=\")/.match(@_rackInput).try(:[],0) || @_rackInput
+      @_env ||= old_env.merge!({'rack.input' => (@bodystrg ? OpenStruct.new(:read => @bodystrg) : nil)})
+      @_env
+    end
+    
+    # def safe_body
+    #   puts @is_phantom ? 'is phantom' : 'is not phantom'
+    #   puts @phantoms_read
+    #   puts "<="
+    #   puts @phantoms.count - 1
+    #   puts @phantoms_read <= @phantoms.count - 1
+    #   if !@is_phantom && @phantoms_read <= @phantoms.count - 1
+    #     r = @phantoms[@phantoms_read].safe_body
+    #     @phantoms_read = @phantoms_read + 1
+    #     r
+    #   else
+    #     r = body
+    #     puts r
+    #     r
+    #   end
+    # end
+  end
 end
