@@ -92,7 +92,7 @@ module ApiAuth
 end
 
 
-module RestClient
+module ::RestClient
   class Request
     # attr_accessor :phantoms
     # 
