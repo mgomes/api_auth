@@ -91,7 +91,7 @@ module ApiAuth
 
 end
 
-
+require 'rest-client'
 module ::RestClient
   class Request
     # attr_accessor :phantoms
