@@ -8,8 +8,8 @@ describe "ApiAuth" do
       ApiAuth.generate_secret_key
     end
 
-    it "should generate secret keys that are 89 characters" do
-      ApiAuth.generate_secret_key.size.should be(89)
+    it "should generate secret keys that are 88 characters" do
+      ApiAuth.generate_secret_key.size.should be(88)
     end
 
     it "should generate keys that have a Hamming Distance of at least 65" do
