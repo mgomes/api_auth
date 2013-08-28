@@ -72,7 +72,7 @@ module ApiAuth
         find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
       end
 
-    private
+      private
 
       def find_header(keys)
         keys.map {|key| @headers[key] }.compact.first
@@ -82,4 +82,19 @@ module ApiAuth
 
   end
 
+end
+
+# Patch Rack Request to be able to read body several times
+# otherwise body is dumped on first read
+
+module Rack
+  class Request
+    alias :old_env :env
+    def env
+      @_rackInput ||= old_env['rack.input'].read
+      @bodystrg ||= /(?<=read=\").*(?=\")/.match(@_rackInput).try(:[],0) || @_rackInput
+      @_env ||= old_env.merge!({'rack.input' => (@bodystrg ? OpenStruct.new(:read => @bodystrg) : nil)})
+      @_env
+    end
+  end
 end
