@@ -1,6 +1,3 @@
-# give access to RestClient @processed_headers
-module RestClient;class Request;attr_accessor :processed_headers;end;end
-
 module ApiAuth
 
   module RequestDrivers # :nodoc:
@@ -11,13 +8,13 @@ module ApiAuth
 
       def initialize(request)
         @request = request
-        @headers = fetch_headers
+        # @headers = fetch_headers
         true
       end
 
       def set_auth_header(header)
         @request.headers.merge!({ "Authorization" => header })
-        @headers = fetch_headers
+        # @headers = fetch_headers
         save_headers # enforce update of processed_headers based on last updated headers
         @request
       end
@@ -33,7 +30,8 @@ module ApiAuth
 
       def populate_content_md5
         if [:post, :put].include?(@request.method)
-          @request.headers["Content-MD5"] = calculated_md5
+          @request.headers["CONTENT-MD5"] = calculated_md5
+          save_headers
         end
       end
 
@@ -51,9 +49,13 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "" : value
+        value.nil? ? default_content_type_if_payload : value
       end
 
+      def default_content_type_if_payload
+        @request.payload ? 'application/x-www-form-urlencoded' : nil
+      end
+      
       def content_md5
         value = find_header(%w(CONTENT-MD5 CONTENT_MD5))
         value.nil? ? "" : value
@@ -65,6 +67,7 @@ module ApiAuth
 
       def set_date
         @request.headers.merge!({ "DATE" => Time.now.utc.httpdate })
+        save_headers
       end
 
       def timestamp
@@ -76,18 +79,52 @@ module ApiAuth
         find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
       end
 
-    private
+      private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map { |key| fetch_headers[key] }.compact.first
       end
       
       def save_headers
-        @request.processed_headers = @request.make_headers(@headers)
+        @request.processed_headers = @request.make_headers(fetch_headers)
       end
       
     end
 
   end
 
+end
+
+require 'rest-client'
+module ::RestClient
+  class Request
+    
+    # 1. give access to RestClient @processed_headers
+    #
+    attr_accessor :processed_headers
+  end
+  
+  # 2. PATCH RestClient Request to ensure payload 
+  # can be read multiple times
+  #
+  #
+  class PatchedRequest  
+
+    def initialize original_request
+      original_request = original_request
+    end
+    
+    def method_missing m, *args, &block
+      original_request.send m, *args, &block
+    end
+    
+    def old_payload
+      original_request.payload
+    end
+    
+    def payload
+      @payload_content ||= old_payload.try(:read)
+      @payload_content ? OpenStruct.new(:read => @payload_content) : nil
+    end
+  end
 end

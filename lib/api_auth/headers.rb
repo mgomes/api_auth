@@ -12,7 +12,7 @@ module ApiAuth
       when /Net::HTTP/
         @request = NetHttpRequest.new(request)
       when /RestClient/
-        @request = RestClientRequest.new(request)
+        @request = RestClientRequest.new(::RestClient::PatchedRequest.new(request))
       when /Curl::Easy/
         @request = CurbRequest.new(request)
       when /ActionController::Request/
@@ -26,7 +26,9 @@ module ApiAuth
       when /ActionDispatch::Request/
         @request = ActionDispatchRequest.new(request)
       when /Rack::Request/
-        @request = RackRequest.new(request)
+        @request = RackRequest.new(::Rack::PatchedRequest.new(request))
+      when /Grape::Request/
+        @request = RackRequest.new(::Rack::PatchedRequest.new(request))
       else
         raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
       end
@@ -42,7 +44,7 @@ module ApiAuth
     def canonical_string
       [ @request.content_type,
         @request.content_md5,
-        @request.request_uri.gsub(/http:\/\/[^(,|\?|\/)]*/,''), # remove host
+        @request.request_uri.gsub(/http(s|):\/\/[^(,|\?|\/)]*/,''), # remove host (incl.https)
         @request.timestamp
       ].join(",")
     end
