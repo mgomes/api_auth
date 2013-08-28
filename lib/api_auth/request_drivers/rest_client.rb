@@ -1,6 +1,3 @@
-# give access to RestClient @processed_headers
-module RestClient;class Request;attr_accessor :processed_headers;end;end
-
 module ApiAuth
 
   module RequestDrivers # :nodoc:
@@ -98,11 +95,18 @@ module ApiAuth
 
 end
 
-# PATCH RestClient Request to ensure payload 
+# 1. give access to RestClient @processed_headers
+#
+# 2. PATCH RestClient Request to ensure payload 
 # can be read multiple times
-
+#
+#
 module RestClient
   class Request
+    
+    attr_accessor :processed_headers # 1.
+    
+    # 2.
     alias :old_payload :payload
     def payload
       @payload_content ||= old_payload.try(:read)
