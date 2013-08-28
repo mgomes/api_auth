@@ -93,7 +93,7 @@ module Rack
     def env
       @_rackInput ||= old_env['rack.input'].read
       @bodystrg ||= /(?<=read=\").*(?=\")/.match(@_rackInput).try(:[],0) || @_rackInput
-      @_env ||= old_env.merge!({'rack.input' => (@bodystrg ? OpenStruct.new(:read => @bodystrg) : nil)})
+      @_env ||= old_env.merge({'rack.input' => (@bodystrg ? OpenStruct.new(:read => @bodystrg) : nil)})
       @_env
     end
   end
