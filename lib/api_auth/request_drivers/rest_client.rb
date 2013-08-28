@@ -101,7 +101,8 @@ end
 # can be read multiple times
 #
 #
-module RestClient
+require 'rest-client'
+module ::RestClient
   class Request
     
     attr_accessor :processed_headers # 1.
