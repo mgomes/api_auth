@@ -88,8 +88,20 @@ end
 # otherwise body is dumped on first read
 
 module Rack
-  class Request
-    alias :old_env :env
+  class PatchedRequest
+    
+    def initialize original_request
+      original_request = original_request
+    end
+    
+    def method_missing m, *args, &block
+      original_request.send m, *args, &block
+    end
+    
+    def old_env
+      original_request.env
+    end
+    
     def env
       @_rackInput ||= old_env['rack.input'].read
       @bodystrg ||= /(?<=read=\").*(?=\")/.match(@_rackInput).try(:[],0) || @_rackInput

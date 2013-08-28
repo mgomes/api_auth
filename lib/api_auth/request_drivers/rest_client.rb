@@ -95,20 +95,33 @@ module ApiAuth
 
 end
 
-# 1. give access to RestClient @processed_headers
-#
-# 2. PATCH RestClient Request to ensure payload 
-# can be read multiple times
-#
-#
 require 'rest-client'
 module ::RestClient
   class Request
     
-    attr_accessor :processed_headers # 1.
+    # 1. give access to RestClient @processed_headers
+    #
+    attr_accessor :processed_headers
+  end
+  
+  # 2. PATCH RestClient Request to ensure payload 
+  # can be read multiple times
+  #
+  #
+  class PatchedRequest  
+
+    def initialize original_request
+      original_request = original_request
+    end
     
-    # 2.
-    alias :old_payload :payload
+    def method_missing m, *args, &block
+      original_request.send m, *args, &block
+    end
+    
+    def old_payload
+      original_request.payload
+    end
+    
     def payload
       @payload_content ||= old_payload.try(:read)
       @payload_content ? OpenStruct.new(:read => @payload_content) : nil
