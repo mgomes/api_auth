@@ -97,3 +97,16 @@ module ApiAuth
   end
 
 end
+
+# PATCH RestClient Request to ensure payload 
+# can be read multiple times
+
+module RestClient
+  class Request
+    alias :old_payload :payload
+    def payload
+      @payload_content ||= old_payload.try(:read)
+      @payload_content ? OpenStruct.new(:read => @payload_content) : nil
+    end
+  end
+end
