@@ -52,9 +52,13 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "" : value
+        value.nil? ? default_content_type_if_payload : value
       end
 
+      def default_content_type_if_payload
+        @request.payload ? 'application/x-www-form-urlencoded' : nil
+      end
+      
       def content_md5
         value = find_header(%w(CONTENT-MD5 CONTENT_MD5))
         value.nil? ? "" : value
