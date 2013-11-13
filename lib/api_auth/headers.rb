@@ -25,7 +25,7 @@ module ApiAuth
         end
       when /ActionDispatch::Request/
         @request = ActionDispatchRequest.new(request)
-      when /Rack::Request/
+      when /Rack::Request/ || /Sinatra::Request/
         @request = RackRequest.new(request)
       else
         raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
