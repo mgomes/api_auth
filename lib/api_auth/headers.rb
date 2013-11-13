@@ -27,6 +27,8 @@ module ApiAuth
         @request = ActionDispatchRequest.new(request)
       when /Rack::Request/
         @request = RackRequest.new(request)
+      when /Sinatra::Request/
+          @request = RackRequest.new(request)
       else
         raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
       end
