@@ -51,7 +51,7 @@ module ApiAuth
       end
 
       def content_md5
-        value = find_header(%w(CONTENT-MD5 CONTENT_MD5))
+        value = find_header(%w(CONTENT-MD5 CONTENT_MD5 HTTP-CONTENT-MD5 HTTP_CONTENT_MD5))
         value.nil? ? "" : value
       end
 
