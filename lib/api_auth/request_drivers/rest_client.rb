@@ -24,7 +24,7 @@ module ApiAuth
 
       def calculated_md5
         if @request.payload
-          body = @request.payload.read
+          body = @request.payload.to_s
         else
           body = ''
         end
@@ -51,7 +51,7 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "" : value
+        value.nil? ? "text/plain" : value
       end
 
       def content_md5
@@ -81,11 +81,11 @@ module ApiAuth
       def find_header(keys)
         keys.map {|key| @headers[key] }.compact.first
       end
-      
+
       def save_headers
         @request.processed_headers = @request.make_headers(@headers)
       end
-      
+
     end
 
   end
