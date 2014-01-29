@@ -24,7 +24,7 @@ module ApiAuth
 
       def calculated_md5
         if @request.payload
-          body = @request.payload.to_s
+          body = @request.payload.inspect
         else
           body = ''
         end
