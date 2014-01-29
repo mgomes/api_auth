@@ -24,7 +24,8 @@ module ApiAuth
 
       def calculated_md5
         if @request.payload
-          body = @request.payload.inspect
+          body = @request.payload.read
+          @request.payload.instance_variable_get(:@stream).seek(0)
         else
           body = ''
         end
@@ -51,7 +52,7 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "text/plain" : value
+        value.nil? ? "": value
       end
 
       def content_md5

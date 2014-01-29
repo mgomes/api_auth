@@ -21,6 +21,7 @@ module ApiAuth
       def calculated_md5
         if @request.body
           body = @request.body.read
+          @request.body.rewind
         else
           body = ''
         end
