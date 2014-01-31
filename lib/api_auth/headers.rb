@@ -42,7 +42,7 @@ module ApiAuth
     def canonical_string
       [ @request.content_type,
         @request.content_md5,
-        @request.request_uri.gsub(/http:\/\/[^(,|\?|\/)]*/,''), # remove host
+        @request.request_uri.gsub(/https?:\/\/[^(,|\?|\/)]*/,''), # remove host
         @request.timestamp
       ].join(",")
     end
