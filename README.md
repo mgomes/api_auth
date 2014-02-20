@@ -1,4 +1,4 @@
-# ApiAuth #
+# ApiAuth
 
 Logins and passwords are for humans. Communication between applications need to
 be protected through different means.
@@ -15,7 +15,7 @@ secret keys necessary for your clients to sign their requests.
 Since it operates entirely using HTTP headers, the server component does not
 have to be written in the same language as the clients.
 
-## How it works ##
+## How it works
 
 1. A canonical string is first created using your HTTP headers containing the
 content-type, content-MD5, request URI and the timestamp. If content-type or
@@ -40,14 +40,14 @@ string that uniquely identifies the client. The signed request expires after 15
 minutes in order to avoid replay attacks.
 
 
-## References ##
+## References
 
 * [Hash functions](http://en.wikipedia.org/wiki/Cryptographic_hash_function)
 * [SHA-1 Hash function](http://en.wikipedia.org/wiki/SHA-1)
 * [HMAC algorithm](http://en.wikipedia.org/wiki/HMAC)
 * [RFC 2104 (HMAC)](http://tools.ietf.org/html/rfc2104)
 
-## Install ##
+## Install
 
 The gem doesn't have any dependencies outside of having a working OpenSSL
 configuration for your Ruby VM. To install:
@@ -56,7 +56,7 @@ configuration for your Ruby VM. To install:
 
 Please note the dash in the name versus the underscore.
 
-## Clients ##
+## Clients
 
 ApiAuth supports many popular HTTP clients. Support for other clients can be
 added as a request driver.
@@ -68,7 +68,7 @@ Here is the current list of supported request objects:
 * Curb (Curl::Easy)
 * RestClient
 
-### HTTP Client Objects ###
+### HTTP Client Objects
 
 Here's a sample implementation of signing a request created with RestClient. For
 more examples, please check out the ApiAuth Spec where every supported HTTP
@@ -104,7 +104,7 @@ request as one of the last steps in building the request to ensure the headers
 don't change after the signing process which would cause the authentication
 check to fail on the server side.
 
-### ActiveResource Clients ###
+### ActiveResource Clients
 
 ApiAuth can transparently protect your ActiveResource communications with a
 single configuration line:
@@ -117,7 +117,7 @@ single configuration line:
 
 This will automatically sign all outgoing ActiveResource requests from your app.
 
-## Server ##
+## Server
 
 ApiAuth provides some built in methods to help you generate API keys for your
 clients as well as verifying incoming API requests.
@@ -161,7 +161,7 @@ Rails app:
     end
 ```
 
-## Development ##
+## Development
 
 ApiAuth uses bundler for gem dependencies and RSpec for testing. Developing the
 gem requires that you have all supported HTTP clients installed. Bundler will
@@ -175,11 +175,11 @@ If you'd like to add support for additional HTTP clients, check out the already
 implemented drivers in `lib/api_auth/request_drivers` for reference. All of
 the public methods for each driver are required to be implemented by your driver.
 
-## Authors ##
+## Authors
 
 * [Mauricio Gomes](http://github.com/mgomes)
 * [Kevin Glowacz](http://github.com/kjg)
 
-## Copyright ##
+## Copyright
 
-Copyright (c) 2012 Gemini SBS LLC. See LICENSE.txt for further details.
+Copyright (c) 2014 Mauricio Gomes. See LICENSE.txt for further details.
