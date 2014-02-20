@@ -21,6 +21,7 @@ module ApiAuth
       def calculated_md5
         if @request.body
           body = @request.body.read
+          @request.body.rewind
         else
           body = ''
         end
@@ -51,7 +52,7 @@ module ApiAuth
       end
 
       def content_md5
-        value = find_header(%w(CONTENT-MD5 CONTENT_MD5))
+        value = find_header(%w(CONTENT-MD5 CONTENT_MD5 HTTP-CONTENT-MD5 HTTP_CONTENT_MD5))
         value.nil? ? "" : value
       end
 
