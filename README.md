@@ -1,5 +1,7 @@
 # ApiAuth
 
+[![Build Status](https://travis-ci.org/mgomes/api_auth.png?branch=master)](https://travis-ci.org/mgomes/api_auth)
+
 Logins and passwords are for humans. Communication between applications need to
 be protected through different means.
 
