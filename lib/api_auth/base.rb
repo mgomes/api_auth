@@ -80,7 +80,7 @@ module ApiAuth
     def hmac_signature(request, secret_key)
       headers = Headers.new(request)
       canonical_string = headers.canonical_string
-      digest = OpenSSL::Digest::Digest.new('sha1')
+      digest = OpenSSL::Digest.new('sha1')
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 

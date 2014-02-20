@@ -24,7 +24,7 @@ describe "ApiAuth" do
 
     def hmac(secret_key, request)
       canonical_string = ApiAuth::Headers.new(request).canonical_string
-      digest = OpenSSL::Digest::Digest.new('sha1')
+      digest = OpenSSL::Digest.new('sha1')
       ApiAuth.b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
