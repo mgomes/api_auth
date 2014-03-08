@@ -47,7 +47,7 @@ module ApiAuth
       end
 
       def fetch_headers
-        capitalize_keys @request.headers
+        capitalize_keys @request.headers.merge(@request.processed_headers)
       end
 
       def content_type
