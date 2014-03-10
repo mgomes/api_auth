@@ -47,7 +47,7 @@ module ApiAuth
       end
 
       def fetch_headers
-        capitalize_keys @request.headers.merge(@request.processed_headers)
+        capitalize_keys @request.headers
       end
 
       def content_type
@@ -56,7 +56,9 @@ module ApiAuth
       end
 
       def default_content_type_if_no_payload
-        [:post, :put, :patch].include?(@request.method) ?  'application/x-www-form-urlencoded' : ""
+        if @request.payload.nil?
+          [:post, :put, :patch].include?(@request.method) ?  'application/x-www-form-urlencoded' : ""
+        end
       end
 
       def content_md5
@@ -83,8 +85,13 @@ module ApiAuth
 
     private
 
+      def find_processed_header(keys)
+        capitalized_headers = capitalize_keys(@request.processed_headers)
+        keys.map {|key| capitalized_headers[key] }.compact.first
+      end
+
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map {|key| @headers[key] }.compact.first or find_processed_header(keys)
       end
 
       def save_headers
