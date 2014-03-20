@@ -5,7 +5,9 @@ describe "Rails integration" do
   API_KEY_STORE = { "1044" => "l16imAXie1sRMcJODpOG7UwC1VyoqvO13jejkfpKWX4Z09W8DC9IrU23DvCwMry7pgSFW6c5S1GIfV0OY6F/vUA==" }
   
   describe "Rails controller integration" do
-    
+
+    before { pending }
+
     class ApplicationController < ActionController::Base
       
     private
@@ -37,8 +39,7 @@ describe "Rails integration" do
 
       def rescue_action(e); raise(e); end
     end
-    ActionController::Routing::Routes.draw {|map| map.resources :test }
-    
+
     it "should permit a request with properly signed headers" do
       request = ActionController::TestRequest.new
       request.env['DATE'] = Time.now.utc.httpdate

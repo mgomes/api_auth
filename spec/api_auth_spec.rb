@@ -36,8 +36,8 @@ describe "ApiAuth" do
     describe "with Net::HTTP" do
 
       before(:each) do
-        @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo", 
-          'content-type' => 'text/plain', 
+        @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+          'content-type' => 'text/plain',
           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
           'date' => Time.now.utc.httpdate)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
@@ -99,7 +99,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -112,7 +112,7 @@ describe "ApiAuth" do
         headers = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
                     'Content-Type' => "text/plain",
                     'Date' => Time.now.utc.httpdate }
-        @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo", 
+        @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
           :headers => headers,
           :method => :put)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
@@ -180,7 +180,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -236,7 +236,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -246,7 +246,7 @@ describe "ApiAuth" do
     describe "with ActionController" do
 
       before(:each) do
-        @request = ActionController::Request.new(
+        @request = ActionDispatch::Request.new(
           'PATH_INFO' => '/resource.xml',
           'QUERY_STRING' => 'foo=bar&bar=foo',
           'REQUEST_METHOD' => 'PUT',
@@ -256,14 +256,14 @@ describe "ApiAuth" do
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
       end
 
-      it "should return a ActionController::Request object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("ActionController::Request")
+      it "should return a ActionDispatch::Request object after signing it" do
+        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("ActionDispatch::Request")
       end
 
       describe "md5 header" do
         context "not already provided" do
           it "should calculate for empty string" do
-            request = ActionController::Request.new(
+            request = ActionDispatch::Request.new(
               'PATH_INFO' => '/resource.xml',
               'QUERY_STRING' => 'foo=bar&bar=foo',
               'REQUEST_METHOD' => 'PUT',
@@ -274,7 +274,7 @@ describe "ApiAuth" do
           end
 
           it "should calculate for real content" do
-            request = ActionController::Request.new(
+            request = ActionDispatch::Request.new(
               'PATH_INFO' => '/resource.xml',
               'QUERY_STRING' => 'foo=bar&bar=foo',
               'REQUEST_METHOD' => 'PUT',
@@ -305,7 +305,7 @@ describe "ApiAuth" do
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
-        request = ActionController::Request.new(
+        request = ActionDispatch::Request.new(
           'PATH_INFO' => '/resource.xml',
           'QUERY_STRING' => 'foo=bar&bar=foo',
           'REQUEST_METHOD' => 'PUT',
@@ -395,7 +395,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
