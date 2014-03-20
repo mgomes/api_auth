@@ -3,10 +3,8 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe "Rails integration" do
   
   API_KEY_STORE = { "1044" => "l16imAXie1sRMcJODpOG7UwC1VyoqvO13jejkfpKWX4Z09W8DC9IrU23DvCwMry7pgSFW6c5S1GIfV0OY6F/vUA==" }
-  
-  describe "Rails controller integration" do
 
-    before { pending }
+  describe "Rails controller integration" do
 
     class ApplicationController < ActionController::Base
       
@@ -43,19 +41,17 @@ describe "Rails integration" do
     it "should permit a request with properly signed headers" do
       request = ActionController::TestRequest.new
       request.env['DATE'] = Time.now.utc.httpdate
-      request.action = 'index'
-      request.path = "/index"
       ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
-      TestController.new.process(request, ActionController::TestResponse.new).code.should == "200"
+      response = TestController.action(:index).call(request.env).last
+      response.code.should == "200"
     end
     
     it "should forbid a request with properly signed headers but timestamp > 15 minutes" do
       request = ActionController::TestRequest.new
       request.env['DATE'] = "Mon, 23 Jan 1984 03:29:56 GMT"
-      request.action = 'index'
-      request.path = "/index"
       ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
-      TestController.new.process(request, ActionController::TestResponse.new).code.should == "401"
+      response = TestController.action(:index).call(request.env).last
+      response.code.should == "401"
     end
     
     it "should insert a DATE header in the request when one hasn't been specified" do
@@ -68,22 +64,21 @@ describe "Rails integration" do
 
     it "should forbid an unsigned request to a protected controller action" do
       request = ActionController::TestRequest.new
-      request.action = 'index'
-      TestController.new.process(request, ActionController::TestResponse.new).code.should == "401"
+      response = TestController.action(:index).call(request.env).last
+      response.code.should == "401"
     end
 
     it "should forbid a request with a bogus signature" do
       request = ActionController::TestRequest.new
-      request.action = 'index'
       request.env['Authorization'] = "APIAuth bogus:bogus"
-      TestController.new.process(request, ActionController::TestResponse.new).code.should == "401"
+      response = TestController.action(:index).call(request.env).last
+      response.code.should == "401"
     end
     
     it "should allow non-protected controller actions to function as before" do
       request = ActionController::TestRequest.new
-      request.action = 'public'
-      request.path('/public')
-      TestController.new.process(request, ActionController::TestResponse.new).code.should == "200"
+      response = TestController.action(:public).call(request.env).last
+      response.code.should == "200"
     end
     
   end
