@@ -93,6 +93,7 @@ describe "Rails integration" do
     class TestResource < ActiveResource::Base
       with_api_auth "1044", API_KEY_STORE["1044"]
       self.site = "http://localhost/"
+      self.format = :xml
     end
     
     it "should send signed requests automagically" do
