@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.authors = ["Mauricio Gomes"]
   s.email = "mauricio@edge14.com"
 
+  s.add_development_dependency "appraisal"
   s.add_development_dependency "rake"
   s.add_development_dependency "amatch"
   s.add_development_dependency "rspec", "~> 2.4.0"

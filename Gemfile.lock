@@ -14,6 +14,9 @@ GEM
     activesupport (2.3.14)
     amatch (0.2.10)
       tins (~> 0.3)
+    appraisal (0.5.2)
+      bundler
+      rake
     curb (0.8.1)
     diff-lcs (1.1.3)
     mime-types (1.17.2)
@@ -40,6 +43,7 @@ DEPENDENCIES
   activesupport (~> 2.3.2)
   amatch
   api-auth!
+  appraisal
   curb (~> 0.8.1)
   rake
   rest-client (~> 1.6.0)
