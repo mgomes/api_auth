@@ -2,7 +2,6 @@
 
 source "https://rubygems.org"
 
-gem "rspec", "~> 2.4.0"
 gem "actionpack", "~> 3.1.0"
 gem "activeresource", "~> 3.1.0"
 gem "activesupport", "~> 3.1.0"
