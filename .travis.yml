@@ -4,7 +4,7 @@ rvm:
   - 2.0.0
   - 2.1.0
 gemfile:
-  - Gemfile
+  - gemfiles/rails_31.gemfile
   - gemfiles/rails_32.gemfile
   - gemfiles/rails_4.gemfile
 matrix:
