@@ -15,7 +15,7 @@ module ApiAuth
     # Signs an HTTP request using the client's access id and secret key.
     # Returns the HTTP request object with the modified headers.
     #
-    # request: The request can be a Net::HTTP, ActionController::Request,
+    # request: The request can be a Net::HTTP, ActionDispatch::Request,
     # Curb (Curl::Easy) or a RestClient object.
     #
     # access_id: The public unique identifier for the client

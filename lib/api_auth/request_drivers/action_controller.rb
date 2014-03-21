@@ -56,11 +56,11 @@ module ApiAuth
       end
 
       def request_uri
-        @request.request_uri
+        @request.fullpath
       end
 
       def set_date
-        @request.env['DATE'] = Time.now.utc.httpdate
+        @request.env['HTTP_DATE'] = Time.now.utc.httpdate
       end
 
       def timestamp

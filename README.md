@@ -66,7 +66,7 @@ added as a request driver.
 Here is the current list of supported request objects:
 
 * Net::HTTP
-* ActionController::Request
+* ActionDispatch::Request
 * Curb (Curl::Easy)
 * RestClient
 

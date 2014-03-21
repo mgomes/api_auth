@@ -1,0 +1,80 @@
+PATH
+  remote: ../
+  specs:
+    api-auth (1.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    actionpack (3.1.12)
+      activemodel (= 3.1.12)
+      activesupport (= 3.1.12)
+      builder (~> 3.0.0)
+      erubis (~> 2.7.0)
+      i18n (~> 0.6)
+      rack (~> 1.3.6)
+      rack-cache (~> 1.2)
+      rack-mount (~> 0.8.2)
+      rack-test (~> 0.6.1)
+      sprockets (~> 2.0.4)
+    activemodel (3.1.12)
+      activesupport (= 3.1.12)
+      builder (~> 3.0.0)
+      i18n (~> 0.6)
+    activeresource (3.1.12)
+      activemodel (= 3.1.12)
+      activesupport (= 3.1.12)
+    activesupport (3.1.12)
+      multi_json (~> 1.0)
+    amatch (0.2.11)
+      tins (~> 0.3)
+    appraisal (0.5.2)
+      bundler
+      rake
+    builder (3.0.4)
+    curb (0.8.5)
+    diff-lcs (1.1.3)
+    erubis (2.7.0)
+    hike (1.2.3)
+    i18n (0.6.9)
+    mime-types (2.2)
+    multi_json (1.9.2)
+    rack (1.3.10)
+    rack-cache (1.2)
+      rack (>= 0.4)
+    rack-mount (0.8.3)
+      rack (>= 1.0.0)
+    rack-test (0.6.2)
+      rack (>= 1.0)
+    rake (10.1.1)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    rspec (2.4.0)
+      rspec-core (~> 2.4.0)
+      rspec-expectations (~> 2.4.0)
+      rspec-mocks (~> 2.4.0)
+    rspec-core (2.4.0)
+    rspec-expectations (2.4.0)
+      diff-lcs (~> 1.1.2)
+    rspec-mocks (2.4.0)
+    sprockets (2.0.4)
+      hike (~> 1.2)
+      rack (~> 1.0)
+      tilt (~> 1.1, != 1.3.0)
+    tilt (1.4.1)
+    tins (0.13.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  actionpack (~> 3.1.0)
+  activeresource (~> 3.1.0)
+  activesupport (~> 3.1.0)
+  amatch
+  api-auth!
+  appraisal
+  curb (~> 0.8.1)
+  rake
+  rest-client (~> 1.6.0)
+  rspec (~> 2.4.0)

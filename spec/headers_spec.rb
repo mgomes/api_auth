@@ -139,7 +139,7 @@ describe "ApiAuth::Headers" do
   describe "with ActionController" do
 
     before(:each) do
-      @request = ActionController::Request.new(
+      @request = ActionDispatch::Request.new(
         'PATH_INFO' => '/resource.xml',
         'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
@@ -159,7 +159,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should set the DATE header if one is not already present" do
-      @request = ActionController::Request.new(
+      @request = ActionDispatch::Request.new(
         'PATH_INFO' => '/resource.xml',
         'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
@@ -170,7 +170,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should not set the DATE header just by asking for the canonical_string" do
-      request = ActionController::Request.new(
+      request = ActionDispatch::Request.new(
         'PATH_INFO' => '/resource.xml',
         'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
