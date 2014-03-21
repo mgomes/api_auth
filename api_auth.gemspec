@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "appraisal"
   s.add_development_dependency "rake"
   s.add_development_dependency "amatch"
-  s.add_development_dependency "rspec", "~> 2.4.0"
   s.add_development_dependency "actionpack", "~> 3.0.0"
   s.add_development_dependency "activesupport", "~> 3.0.0"
   s.add_development_dependency "activeresource", "~> 3.0.0"
