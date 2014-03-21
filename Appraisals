@@ -12,9 +12,9 @@ appraise "rails-32" do
   gem "activesupport", "~> 3.2.17"
 end
 
-appraise "rails-3" do
+appraise "rails-31" do
   gem "rspec", "~> 2.4.0"
-  gem "actionpack", "~> 3.0.0"
-  gem "activeresource", "~> 3.0.0"
-  gem "activesupport", "~> 3.0.0"
+  gem "actionpack", "~> 3.1.0"
+  gem "activeresource", "~> 3.1.0"
+  gem "activesupport", "~> 3.1.0"
 end
