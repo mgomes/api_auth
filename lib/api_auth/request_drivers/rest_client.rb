@@ -50,7 +50,7 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "": value
+        value.nil? ? default_content_type : value
       end
 
       def content_md5
@@ -87,7 +87,10 @@ module ApiAuth
         # enforce update of processed_headers based on last updated headers
         @request.processed_headers = @request.make_headers(@headers)   
       end
-
+      
+      def default_content_type
+        @request.payload ? 'application/x-www-form-urlencoded' : nil
+      end
     end
 
   end
