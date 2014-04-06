@@ -16,12 +16,10 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request.headers.merge!({ "Authorization" => header })
-        @headers = fetch_headers
-        save_headers # enforce update of processed_headers based on last updated headers
+        update_headers!({ "Authorization" => header })
         @request
       end
-
+      
       def calculated_md5
         if @request.payload
           body = @request.payload.read
@@ -34,7 +32,7 @@ module ApiAuth
 
       def populate_content_md5
         if [:post, :put].include?(@request.method)
-          @request.headers["Content-MD5"] = calculated_md5
+          update_headers!({ "Content-MD5" => calculated_md5 })
         end
       end
 
@@ -52,7 +50,7 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "": value
+        value.nil? ? default_content_type : value
       end
 
       def content_md5
@@ -65,7 +63,7 @@ module ApiAuth
       end
 
       def set_date
-        @request.headers.merge!({ "DATE" => Time.now.utc.httpdate })
+        update_headers!({ "DATE" => Time.now.utc.httpdate })
       end
 
       def timestamp
@@ -80,13 +78,19 @@ module ApiAuth
     private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map {|key| fetch_headers[key] }.compact.first
       end
 
-      def save_headers
-        @request.processed_headers = @request.make_headers(@headers)
+      def update_headers! new_headers_hash
+        @request.headers.merge!(new_headers_hash)
+        @headers = fetch_headers
+        # enforce update of processed_headers based on last updated headers
+        @request.processed_headers = @request.make_headers(@headers)   
       end
-
+      
+      def default_content_type
+        @request.payload ? 'application/x-www-form-urlencoded' : nil
+      end
     end
 
   end
