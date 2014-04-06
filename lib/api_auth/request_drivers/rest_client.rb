@@ -35,6 +35,7 @@ module ApiAuth
       def populate_content_md5
         if [:post, :put].include?(@request.method)
           @request.headers["Content-MD5"] = calculated_md5
+          save_headers # enforce update of processed_headers based on last updated headers
         end
       end
 
@@ -66,6 +67,7 @@ module ApiAuth
 
       def set_date
         @request.headers.merge!({ "DATE" => Time.now.utc.httpdate })
+        save_headers # enforce update of processed_headers based on last updated headers
       end
 
       def timestamp
@@ -80,11 +82,11 @@ module ApiAuth
     private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map {|key| fetch_headers[key] }.compact.first
       end
 
       def save_headers
-        @request.processed_headers = @request.make_headers(@headers)
+        @request.processed_headers = @request.make_headers(fetch_headers)
       end
 
     end
