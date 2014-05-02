@@ -27,6 +27,8 @@ module ApiAuth
         @request = ActionDispatchRequest.new(request)
       when /Rack::Request/
         @request = RackRequest.new(request)
+      when /Grape::Request/
+        @request = RackRequest.new(request)
       when /ActionController::CgiRequest/
         @request = ActionControllerRequest.new(request)
       else
