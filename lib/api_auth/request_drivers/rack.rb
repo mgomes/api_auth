@@ -25,7 +25,7 @@ module ApiAuth
         else
           body = ''
         end
-        Digest::MD5.base64digest(body)
+        md5_base64digest(body)
       end
 
       def populate_content_md5

@@ -36,8 +36,8 @@ describe "ApiAuth" do
     describe "with Net::HTTP" do
 
       before(:each) do
-        @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo", 
-          'content-type' => 'text/plain', 
+        @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+          'content-type' => 'text/plain',
           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
           'date' => Time.now.utc.httpdate)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
@@ -54,7 +54,7 @@ describe "ApiAuth" do
               'content-type' => 'text/plain',
               'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == Digest::MD5.base64digest('')
+            signed_request['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
           end
 
           it "should calculate for real content" do
@@ -63,7 +63,7 @@ describe "ApiAuth" do
               'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             request.body = "hello\nworld"
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == Digest::MD5.base64digest("hello\nworld")
+            signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
           end
         end
 
@@ -99,7 +99,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -112,7 +112,7 @@ describe "ApiAuth" do
         headers = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
                     'Content-Type' => "text/plain",
                     'Date' => Time.now.utc.httpdate }
-        @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo", 
+        @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
           :headers => headers,
           :method => :put)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
@@ -131,7 +131,7 @@ describe "ApiAuth" do
               :headers => headers,
               :method => :put)
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.headers['Content-MD5'].should == Digest::MD5.base64digest('')
+            signed_request.headers['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
           end
 
           it "should calculate for real content" do
@@ -142,7 +142,7 @@ describe "ApiAuth" do
               :method => :put,
               :payload => "hellow\nworld")
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.headers['Content-MD5'].should == Digest::MD5.base64digest("hellow\nworld")
+            signed_request.headers['Content-MD5'].should == "G0grublI06013h58g9j8Vw=="
           end
         end
 
@@ -180,7 +180,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -236,7 +236,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -270,7 +270,7 @@ describe "ApiAuth" do
               'CONTENT_TYPE' => 'text/plain',
               'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest('')
+            signed_request.env['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
           end
 
           it "should calculate for real content" do
@@ -282,7 +282,7 @@ describe "ApiAuth" do
               'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT',
               'RAW_POST_DATA' => "hello\nworld")
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest("hello\nworld")
+            signed_request.env['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
           end
 
         end
@@ -350,7 +350,7 @@ describe "ApiAuth" do
                         'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
             request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest('')
+            signed_request.env['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
           end
 
           it "should calculate for real content" do
@@ -358,7 +358,7 @@ describe "ApiAuth" do
                         'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
             request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put, :input => "hellow\nworld").merge!(headers))
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == Digest::MD5.base64digest("hellow\nworld")
+            signed_request.env['Content-MD5'].should == "G0grublI06013h58g9j8Vw=="
           end
         end
 
@@ -395,7 +395,7 @@ describe "ApiAuth" do
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
-      
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
