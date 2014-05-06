@@ -425,7 +425,7 @@ describe "ApiAuth" do
                                          'content-type' => 'text/plain',
                                          'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == Digest::MD5.base64digest('')
+            signed_request['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
           end
 
           it "should calculate for real content" do
@@ -434,7 +434,7 @@ describe "ApiAuth" do
                                          'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             request.body = "hello\nworld"
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == Digest::MD5.base64digest("hello\nworld")
+            signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
           end
         end
 
