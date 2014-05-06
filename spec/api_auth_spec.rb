@@ -402,6 +402,79 @@ describe "ApiAuth" do
 
     end
 
+    describe "with HTTPI" do
+      before(:each) do
+        @request = HTTPI::Request.new("http://localhost/resource.xml?foo=bar&bar=foo")
+        @request.headers.merge!({
+                                    'content-type' => 'text/plain',
+                                    'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                    'date' => Time.now.utc.httpdate
+                                })
+        @headers = ApiAuth::Headers.new(@request)
+        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+      end
+
+      it "should return a HTTPI object after signing it" do
+        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("HTTPI::Request")
+      end
+
+      describe "md5 header" do
+        context "not already provided" do
+          it "should calculate for empty string" do
+            request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+                                         'content-type' => 'text/plain',
+                                         'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+          end
+
+          it "should calculate for real content" do
+            request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+                                         'content-type' => 'text/plain',
+                                         'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+            request.body = "hello\nworld"
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
+          end
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request.headers['Content-MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
+        end
+      end
+
+      it "should sign the request" do
+        @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+      end
+
+      it "should authenticate a valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+      end
+
+      it "should NOT authenticate a non-valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+      end
+
+      it "should NOT authenticate a mismatched content-md5 when body has changed" do
+        request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+                                     'content-type' => 'text/plain',
+                                     'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+        request.body = "hello\nworld"
+        signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+        signed_request.body = "goodbye"
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate an expired request" do
+        @request.headers['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should retrieve the access_id" do
+        ApiAuth.access_id(@signed_request).should == "1044"
+      end
+    end
   end
 
 end
