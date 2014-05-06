@@ -31,6 +31,8 @@ module ApiAuth
         @request = ActionControllerRequest.new(request)
       when /HTTPI::Request/
         @request = HttpiRequest.new(request)
+      when /Sinatra::Request/
+          @request = RackRequest.new(request)
       else
         raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
       end
