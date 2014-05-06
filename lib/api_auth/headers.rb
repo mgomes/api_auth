@@ -29,6 +29,8 @@ module ApiAuth
         @request = RackRequest.new(request)
       when /ActionController::CgiRequest/
         @request = ActionControllerRequest.new(request)
+      when /HTTPI::Request/
+        @request = HttpiRequest.new(request)
       else
         raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
       end
