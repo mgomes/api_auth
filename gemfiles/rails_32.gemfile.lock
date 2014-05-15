@@ -35,6 +35,9 @@ GEM
     diff-lcs (1.1.3)
     erubis (2.7.0)
     hike (1.2.3)
+    httpi (2.1.0)
+      rack
+      rubyntlm (~> 0.3.2)
     i18n (0.6.9)
     journey (1.0.4)
     mime-types (2.2)
@@ -55,6 +58,7 @@ GEM
     rspec-expectations (2.4.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.4.0)
+    rubyntlm (0.3.4)
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -74,6 +78,7 @@ DEPENDENCIES
   api-auth!
   appraisal
   curb (~> 0.8.1)
+  httpi
   rake
   rest-client (~> 1.6.0)
   rspec (~> 2.4.0)

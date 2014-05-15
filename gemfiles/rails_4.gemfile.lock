@@ -35,6 +35,9 @@ GEM
     curb (0.8.5)
     diff-lcs (1.1.3)
     erubis (2.7.0)
+    httpi (2.1.0)
+      rack
+      rubyntlm (~> 0.3.2)
     i18n (0.6.9)
     mime-types (2.2)
     minitest (4.7.5)
@@ -55,6 +58,7 @@ GEM
     rspec-expectations (2.4.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.4.0)
+    rubyntlm (0.3.4)
     thread_safe (0.2.0)
       atomic (>= 1.1.7, < 2)
     tins (0.13.2)
@@ -71,6 +75,7 @@ DEPENDENCIES
   api-auth!
   appraisal
   curb (~> 0.8.1)
+  httpi
   rake
   rest-client (~> 1.6.0)
   rspec (~> 2.4.0)
