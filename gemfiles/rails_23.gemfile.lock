@@ -23,7 +23,7 @@ GEM
     httpi (2.1.0)
       rack
       rubyntlm (~> 0.3.2)
-    mime-types (2.2)
+    mime-types (1.25.1)
     rack (1.1.6)
     rake (10.3.1)
     rest-client (1.6.7)
