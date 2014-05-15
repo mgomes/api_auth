@@ -17,7 +17,6 @@ module ApiAuth
 
       def set_auth_header(header)
         @request.headers.merge!({ "Authorization" => header })
-        @headers = fetch_headers
         save_headers # enforce update of processed_headers based on last updated headers
         @request
       end
@@ -29,7 +28,7 @@ module ApiAuth
         else
           body = ''
         end
-        Digest::MD5.base64digest(body)
+        md5_base64digest(body)
       end
 
       def populate_content_md5
@@ -47,7 +46,7 @@ module ApiAuth
       end
 
       def fetch_headers
-        capitalize_keys @request.headers
+        capitalize_keys @request.processed_headers
       end
 
       def content_type
@@ -84,7 +83,8 @@ module ApiAuth
       end
 
       def save_headers
-        @request.processed_headers = @request.make_headers(@headers)
+        @request.processed_headers = @request.make_headers(@request.headers)
+        @headers = fetch_headers
       end
 
     end

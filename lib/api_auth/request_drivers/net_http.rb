@@ -4,6 +4,8 @@ module ApiAuth
 
     class NetHttpRequest # :nodoc:
 
+      include ApiAuth::Helpers
+
       def initialize(request)
         @request = request
         @headers = fetch_headers
@@ -17,7 +19,7 @@ module ApiAuth
       end
 
       def calculated_md5
-        Digest::MD5.base64digest(@request.body || '')
+        md5_base64digest(@request.body || '')
       end
 
       def populate_content_md5

@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "activeresource", "~> 3.0.0"
   s.add_development_dependency "rest-client", "~> 1.6.0"
   s.add_development_dependency "curb", "~> 0.8.1"
+  s.add_development_dependency "httpi"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

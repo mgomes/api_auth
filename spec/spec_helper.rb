@@ -5,6 +5,7 @@ require 'api_auth'
 require 'amatch'
 require 'rest_client'
 require 'curb'
+require 'httpi'
 
 require 'active_support'
 require 'active_support/test_case'
