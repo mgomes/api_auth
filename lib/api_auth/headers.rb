@@ -15,7 +15,7 @@ module ApiAuth
         @request = RestClientRequest.new(request)
       when /Curl::Easy/
         @request = CurbRequest.new(request)
-      when /ActionDispatch::Request/
+      when /ActionController::Request/
         @request = ActionControllerRequest.new(request)
       when /ActionController::TestRequest/
         if defined?(ActionDispatch)
