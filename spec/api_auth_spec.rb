@@ -243,10 +243,12 @@ describe "ApiAuth" do
 
     end
 
-    describe "with ActionController" do
+    describe "with ActionController/ActionDispatch" do
+
+      let(:request_klass){ ActionDispatch::Request rescue ActionController::Request }
 
       before(:each) do
-        @request = ActionController::Request.new(
+        @request = request_klass.new(
           'PATH_INFO' => '/resource.xml',
           'QUERY_STRING' => 'foo=bar&bar=foo',
           'REQUEST_METHOD' => 'PUT',
@@ -256,14 +258,14 @@ describe "ApiAuth" do
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
       end
 
-      it "should return a ActionController::Request object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("ActionController::Request")
+      it "should return a ActionDispatch::Request object after signing it" do
+        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match(request_klass.to_s)
       end
 
       describe "md5 header" do
         context "not already provided" do
           it "should calculate for empty string" do
-            request = ActionController::Request.new(
+            request = request_klass.new(
               'PATH_INFO' => '/resource.xml',
               'QUERY_STRING' => 'foo=bar&bar=foo',
               'REQUEST_METHOD' => 'PUT',
@@ -274,7 +276,7 @@ describe "ApiAuth" do
           end
 
           it "should calculate for real content" do
-            request = ActionController::Request.new(
+            request = request_klass.new(
               'PATH_INFO' => '/resource.xml',
               'QUERY_STRING' => 'foo=bar&bar=foo',
               'REQUEST_METHOD' => 'PUT',
@@ -305,7 +307,7 @@ describe "ApiAuth" do
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
-        request = ActionController::Request.new(
+        request = request_klass.new(
           'PATH_INFO' => '/resource.xml',
           'QUERY_STRING' => 'foo=bar&bar=foo',
           'REQUEST_METHOD' => 'PUT',

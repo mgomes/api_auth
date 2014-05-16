@@ -10,7 +10,7 @@ require 'httpi'
 require 'active_support'
 require 'active_support/test_case'
 require 'action_controller'
-require 'action_controller/test_process'
+require 'action_controller/test_case'
 require 'active_resource'
 require 'active_resource/http_mock'
 

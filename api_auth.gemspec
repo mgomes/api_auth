@@ -10,12 +10,13 @@ Gem::Specification.new do |s|
   s.authors = ["Mauricio Gomes"]
   s.email = "mauricio@edge14.com"
 
+  s.add_development_dependency "appraisal"
   s.add_development_dependency "rake"
   s.add_development_dependency "amatch"
   s.add_development_dependency "rspec", "~> 2.4.0"
-  s.add_development_dependency "actionpack", "~> 2.3.2"
-  s.add_development_dependency "activesupport", "~> 2.3.2"
-  s.add_development_dependency "activeresource", "~> 2.3.2"
+  s.add_development_dependency "actionpack", "~> 3.0.0"
+  s.add_development_dependency "activesupport", "~> 3.0.0"
+  s.add_development_dependency "activeresource", "~> 3.0.0"
   s.add_development_dependency "rest-client", "~> 1.6.0"
   s.add_development_dependency "curb", "~> 0.8.1"
   s.add_development_dependency "httpi"
