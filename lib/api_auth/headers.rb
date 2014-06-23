@@ -7,37 +7,42 @@ module ApiAuth
 
     def initialize(request)
       @original_request = request
-
-      case request.class.to_s
-      when /Net::HTTP/
-        @request = NetHttpRequest.new(request)
-      when /RestClient/
-        @request = RestClientRequest.new(request)
-      when /Curl::Easy/
-        @request = CurbRequest.new(request)
-      when /ActionController::Request/
-        @request = ActionControllerRequest.new(request)
-      when /ActionController::TestRequest/
-        if defined?(ActionDispatch)
-          @request = ActionDispatchRequest.new(request)
-        else
-          @request = ActionControllerRequest.new(request)
-        end
-      when /ActionDispatch::Request/
-        @request = ActionDispatchRequest.new(request)
-      when /Rack::Request/
-        @request = RackRequest.new(request)
-      when /ActionController::CgiRequest/
-        @request = ActionControllerRequest.new(request)
-      when /HTTPI::Request/
-        @request = HttpiRequest.new(request)
-      when /Sinatra::Request/
-          @request = RackRequest.new(request)
-      else
-        raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
-      end
+      @request = initialize_request_driver(request)
       true
     end
+
+    def initialize_request_driver(request)
+      new_request =
+        case request.class.to_s
+        when /Net::HTTP/
+          NetHttpRequest.new(request)
+        when /RestClient/
+          RestClientRequest.new(request)
+        when /Curl::Easy/
+          CurbRequest.new(request)
+        when /ActionController::Request/
+          ActionControllerRequest.new(request)
+        when /ActionController::TestRequest/
+          if defined?(ActionDispatch)
+            ActionDispatchRequest.new(request)
+          else
+            ActionControllerRequest.new(request)
+          end
+        when /ActionDispatch::Request/
+          ActionDispatchRequest.new(request)
+        when /ActionController::CgiRequest/
+          ActionControllerRequest.new(request)
+        when /HTTPI::Request/
+          HttpiRequest.new(request)
+        else
+          nil
+        end
+
+      return new_request if new_request
+      return RackRequest.new(request) if request.kind_of?(Rack::Request)
+      raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
+    end
+    private :initialize_request_driver
 
     # Returns the request timestamp
     def timestamp
