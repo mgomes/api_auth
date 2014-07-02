@@ -11,7 +11,6 @@ module ApiAuth
 
       def initialize(request)
         @request = request
-        @headers = fetch_headers
         true
       end
 
@@ -45,10 +44,6 @@ module ApiAuth
         end
       end
 
-      def fetch_headers
-        capitalize_keys @request.processed_headers
-      end
-
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
         value.nil? ? "": value
@@ -79,12 +74,15 @@ module ApiAuth
     private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map do |key|
+          @request.headers.each_pair do |k,v|
+            return v if k.casecmp(key) == 0
+          end
+        end.compact.first
       end
 
       def save_headers
         @request.processed_headers = @request.make_headers(@request.headers)
-        @headers = fetch_headers
       end
 
     end
