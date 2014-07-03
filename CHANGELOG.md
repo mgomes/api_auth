@@ -1,4 +1,4 @@
-# 1.2.1 (unreleased)
+# 1.2.1 (2014-07-03)
 
 - Fix Rest Client driver to account for the generated md5 when signing (#45 cjeeky)
 - Support for testing against Rails 4.1 (#42  awendt)
