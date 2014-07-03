@@ -171,7 +171,7 @@ describe "ApiAuth" do
         ApiAuth.sign!(request1, @access_id, @secret_key)
         ApiAuth.sign!(request2, @access_id, @secret_key)
 
-        request1.headers['Authorization'].should == request2.headers['Authorization']
+        request2.headers['Authorization'].should == request1.headers['Authorization']
       end
 
       it "should authenticate a valid request" do
