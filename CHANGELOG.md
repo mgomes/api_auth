@@ -1,6 +1,8 @@
 # 1.2.1 (unreleased)
 
-- Fix Rest Client driver to account for the generated md5 when signing (@cjeeky)
+- Fix Rest Client driver to account for the generated md5 when signing (#45 cjeeky)
+- Support for testing against Rails 4.1 (#42  awendt)
+- Support all requests inheriting from Rack::Request (#43 mcls)
 
 # 1.2.0 (2014-05-16)
 
