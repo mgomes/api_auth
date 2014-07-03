@@ -78,7 +78,8 @@ module ApiAuth
           @request.headers.each_pair do |k,v|
             return v if k.casecmp(key) == 0
           end
-        end.compact.first
+        end
+        nil
       end
 
       def save_headers
