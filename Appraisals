@@ -1,3 +1,9 @@
+appraise "rails-41" do
+  gem "actionpack", "~> 4.1.0"
+  gem "activeresource", "~> 4.0.0"
+  gem "activesupport", "~> 4.1.0"
+end
+
 appraise "rails-4" do
   gem "actionpack", "~> 4.0.4"
   gem "activeresource", "~> 4.0.0"
