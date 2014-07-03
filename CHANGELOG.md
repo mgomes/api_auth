@@ -1,3 +1,7 @@
+# 1.2.1 (unreleased)
+
+- Fix Rest Client driver to account for the generated md5 when signing (@cjeeky)
+
 # 1.2.0 (2014-05-16)
 
 - Fix ruby 1.8.7 support
