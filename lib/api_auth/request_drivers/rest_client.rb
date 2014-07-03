@@ -76,7 +76,7 @@ module ApiAuth
       def find_header(keys)
         keys.map do |key|
           @request.headers.each_pair do |k,v|
-            return v if k.casecmp(key) == 0
+            return v if k.to_s.casecmp(key) == 0
           end
         end
         nil
