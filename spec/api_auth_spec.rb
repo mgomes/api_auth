@@ -155,6 +155,26 @@ describe "ApiAuth" do
         @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
       end
 
+      it "should sign the request using the generated md5 header" do
+        date = Time.now.utc.httpdate
+        headers1 = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
+                     'Content-Type' => "text/plain",
+                     'Date' => date }
+        request1 = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+                                           :headers => headers1,
+                                           :method => :put)
+        headers2 = { 'Content-Type' => "text/plain",
+                     'Date' => date }
+        request2 = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+                                           :headers => headers2,
+                                           :method => :put)
+
+        ApiAuth.sign!(request1, @access_id, @secret_key)
+        ApiAuth.sign!(request2, @access_id, @secret_key)
+
+        request2.headers['Authorization'].should == request1.headers['Authorization']
+      end
+
       it "should authenticate a valid request" do
         ApiAuth.authentic?(@signed_request, @secret_key).should be_true
       end
