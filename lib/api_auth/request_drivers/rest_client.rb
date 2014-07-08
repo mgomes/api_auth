@@ -66,6 +66,7 @@ module ApiAuth
 
       def set_date
         @request.headers.merge!({ "DATE" => Time.now.utc.httpdate })
+        save_headers
       end
 
       def timestamp

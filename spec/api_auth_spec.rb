@@ -175,6 +175,25 @@ describe "ApiAuth" do
         request2.headers['Authorization'].should == request1.headers['Authorization']
       end
 
+      it "should sign the request using the generated Date header" do
+        headers1 = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
+                     'Content-Type' => "text/plain"}
+        request1 = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+                                           :headers => headers1,
+                                           :method => :put)
+        ApiAuth.sign!(request1, @access_id, @secret_key)
+        headers2 = { 'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
+                     'Content-Type' => "text/plain",
+                     'Date' => request1.headers['DATE'] }
+        request2 = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+                                           :headers => headers2,
+                                           :method => :put)
+
+        ApiAuth.sign!(request2, @access_id, @secret_key)
+
+        request2.headers['Authorization'].should == request1.headers['Authorization']
+      end
+
       it "should authenticate a valid request" do
         ApiAuth.authentic?(@signed_request, @secret_key).should be_true
       end
