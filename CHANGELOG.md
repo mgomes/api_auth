@@ -1,3 +1,6 @@
+# 1.2.2 (2014-07-08)
+- Fix Rest Client driver to account for the generated date when signing (cjeeky)
+
 # 1.2.1 (2014-07-03)
 
 - Fix Rest Client driver to account for the generated md5 when signing (#45 cjeeky)
