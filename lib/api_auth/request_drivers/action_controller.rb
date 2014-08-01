@@ -19,7 +19,7 @@ module ApiAuth
       end
 
       def calculated_md5
-        if @request.body
+        if @request.env.has_key?('RAW_POST_DATA')
           body = @request.raw_post
         else
           body = ''
