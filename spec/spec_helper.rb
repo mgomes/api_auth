@@ -13,6 +13,7 @@ require 'action_controller'
 require 'action_controller/test_case'
 require 'active_resource'
 require 'active_resource/http_mock'
+require 'net/http/post/multipart'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.

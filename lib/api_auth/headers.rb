@@ -14,6 +14,8 @@ module ApiAuth
     def initialize_request_driver(request)
       new_request =
         case request.class.to_s
+        when /Net::HTTP::(Put|Post)::Multipart/
+          MultipartPostRequest.new(request)
         when /Net::HTTP/
           NetHttpRequest.new(request)
         when /RestClient/
