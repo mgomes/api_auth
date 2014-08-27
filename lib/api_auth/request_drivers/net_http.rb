@@ -19,7 +19,14 @@ module ApiAuth
       end
 
       def calculated_md5
-        md5_base64digest(@request.body || '')
+        if @request.respond_to?(:body_stream) && @request.body_stream
+          body = @request.body_stream.read
+          @request.body_stream.rewind
+        else
+          body = @request.body
+        end
+
+        md5_base64digest(body || '')
       end
 
       def populate_content_md5

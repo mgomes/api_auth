@@ -42,6 +42,7 @@ GEM
     journey (1.0.4)
     mime-types (1.25.1)
     multi_json (1.9.2)
+    multipart-post (2.0.0)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -79,6 +80,7 @@ DEPENDENCIES
   appraisal
   curb (~> 0.8.1)
   httpi
+  multipart-post (~> 2.0)
   rake
   rest-client (~> 1.6.0)
   rspec (~> 2.4.0)

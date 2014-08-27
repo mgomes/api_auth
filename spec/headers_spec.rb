@@ -4,6 +4,25 @@ describe "ApiAuth::Headers" do
 
   CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
 
+  describe "with Net::HTTP::Put::Multipart" do
+
+    before(:each) do
+      request = Net::HTTP::Put::Multipart.new("/resource.xml?foo=bar&bar=foo",
+        'file' => UploadIO.new(File.new('spec/fixtures/upload.png'), 'image/png', 'upload.png'))
+      ApiAuth.sign!(request, "some access id", "some secret key")
+      @headers = ApiAuth::Headers.new(request)
+    end
+
+    it "should set the content-type" do
+      @headers.canonical_string.split(',')[0].should match 'multipart/form-data; boundary='
+    end
+
+    it "should generate the proper content-md5" do
+      @headers.canonical_string.split(',')[1].should match 'zap0d6zuh6wRBSrsvO2bcw=='
+    end
+
+  end
+
   describe "with Net::HTTP" do
 
     before(:each) do
