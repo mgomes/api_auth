@@ -1,9 +1,19 @@
+# 1.2.4 (2014-08-27)
+- Fix a bug in the Net::HTTP request driver where the md5 isn't calculated
+  correctly when the content of the request is set with the `.body_stream`
+  method. (#49 adamcrown)
+
+# 1.2.3 (2014-08-01)
+- Update action controller request driver to fix a bug with OLD versions of
+  Rails using CGI
+
 # 1.2.2 (2014-07-08)
 - Fix Rest Client driver to account for the generated date when signing (cjeeky)
 
 # 1.2.1 (2014-07-03)
 
-- Fix Rest Client driver to account for the generated md5 when signing (#45 cjeeky)
+- Fix Rest Client driver to account for the generated md5 when signing
+  (#45 cjeeky)
 - Support for testing against Rails 4.1 (#42  awendt)
 - Support all requests inheriting from Rack::Request (#43 mcls)
 
