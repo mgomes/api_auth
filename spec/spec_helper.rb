@@ -6,6 +6,7 @@ require 'amatch'
 require 'rest_client'
 require 'curb'
 require 'httpi'
+require 'net/http/post/multipart'
 
 require 'active_support'
 require 'active_support/test_case'

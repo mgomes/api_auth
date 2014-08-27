@@ -65,6 +65,15 @@ describe "ApiAuth" do
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
             signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
           end
+
+          it "should calculate for real multipart content" do
+            request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+              'content-type' => 'text/plain',
+              'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+            request.body_stream = File.new('spec/fixtures/upload.png')
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request['Content-MD5'].should == "k4U8MTA3RHDcewBzymVNEQ=="
+          end
         end
 
         it "should leave the content-md5 alone if provided" do
