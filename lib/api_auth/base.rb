@@ -60,7 +60,11 @@ module ApiAuth
     def request_too_old?(request)
       headers = Headers.new(request)
       # 900 seconds is 15 minutes
-      Time.parse(headers.timestamp).utc < (Time.now.utc - 900)
+      begin 
+        Time.parse(headers.timestamp).utc < (Time.now.utc - 900)
+      rescue ArgumentError
+        true
+      end
     end
 
     def md5_mismatch?(request)

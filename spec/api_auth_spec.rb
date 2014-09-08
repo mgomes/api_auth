@@ -109,6 +109,12 @@ describe "ApiAuth" do
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
+      it "should NOT authenticate a request with an invalid date" do
+        @request['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -229,6 +235,12 @@ describe "ApiAuth" do
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
+      it "should NOT authenticate a request with an invalid date" do
+        @request.headers['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -281,6 +293,12 @@ describe "ApiAuth" do
 
       it "should NOT authenticate an expired request" do
         @request.headers['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate a request with an invalid date" do
+        @request.headers['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
@@ -373,6 +391,12 @@ describe "ApiAuth" do
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
 
+      it "should NOT authenticate a request with an invalid date" do
+        @request.env['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
@@ -442,6 +466,12 @@ describe "ApiAuth" do
 
       it "should NOT authenticate an expired request" do
         @request.env['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate a request with an invalid date" do
+        @request.env['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
@@ -517,6 +547,12 @@ describe "ApiAuth" do
 
       it "should NOT authenticate an expired request" do
         @request.headers['Date'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate a request with an invalid date" do
+        @request.headers['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
         ApiAuth.authentic?(signed_request, @secret_key).should be_false
       end
