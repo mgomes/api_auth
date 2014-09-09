@@ -1,8 +1,5 @@
-# api-auth is Ruby gem designed to be used both in your client and server
-# HTTP-based applications. It implements the same authentication methods (HMAC)
-# used by Amazon Web Services.
-
-# The gem will sign your requests on the client side and authenticate that
+# encoding: UTF-8
+# api-auth is Ruby gem designed to be used both in your client and serve
 # signature on the server side. If your server resources are implemented as a
 # Rails ActiveResource, it will integrate with that. It will even generate the
 # secret keys necessary for your clients to sign their requests.
@@ -60,7 +57,11 @@ module ApiAuth
     def request_too_old?(request)
       headers = Headers.new(request)
       # 900 seconds is 15 minutes
-      Time.parse(headers.timestamp).utc < (Time.now.utc - 900)
+      begin 
+        Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
+      rescue ArgumentError
+        true
+      end
     end
 
     def md5_mismatch?(request)
