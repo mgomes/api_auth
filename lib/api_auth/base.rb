@@ -1,5 +1,9 @@
 # encoding: UTF-8
-# api-auth is Ruby gem designed to be used both in your client and serve
+# api-auth is a Ruby gem designed to be used both in your client and server
+# HTTP-based applications. It implements the same authentication methods (HMAC)
+# used by Amazon Web Services.
+
+# The gem will sign your requests on the client side and authenticate that
 # signature on the server side. If your server resources are implemented as a
 # Rails ActiveResource, it will integrate with that. It will even generate the
 # secret keys necessary for your clients to sign their requests.
