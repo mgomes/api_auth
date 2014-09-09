@@ -1,3 +1,8 @@
+# 1.2.5 (2014-09-09)
+- Fix a bug where ApiAuth.authentic? would cause an ArgumentError when given a
+  request with an invalid date in the date header. It will now return false
+  instead. (#51 Nakort)
+
 # 1.2.4 (2014-08-27)
 - Fix a bug in the Net::HTTP request driver where the md5 isn't calculated
   correctly when the content of the request is set with the `.body_stream`
