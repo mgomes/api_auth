@@ -321,7 +321,8 @@ describe "ApiAuth" do
           'REQUEST_METHOD' => 'PUT',
           'CONTENT_MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
           'CONTENT_TYPE' => 'text/plain',
-          'HTTP_DATE' => Time.now.utc.httpdate)
+          'HTTP_DATE' => Time.now.utc.httpdate,
+          'rack.input' => StringIO.new)
         @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
       end
 
@@ -337,7 +338,8 @@ describe "ApiAuth" do
               'QUERY_STRING' => 'foo=bar&bar=foo',
               'REQUEST_METHOD' => 'PUT',
               'CONTENT_TYPE' => 'text/plain',
-              'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
+              'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT',
+              'rack.input' => StringIO.new)
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
             signed_request.env['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
           end
@@ -349,7 +351,8 @@ describe "ApiAuth" do
               'REQUEST_METHOD' => 'PUT',
               'CONTENT_TYPE' => 'text/plain',
               'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT',
-              'RAW_POST_DATA' => "hello\nworld")
+              'rack.input' => StringIO.new("hello\nworld"),
+              'CONTENT_LENGTH' => '11',)
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
             signed_request.env['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
           end
