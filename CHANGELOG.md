@@ -1,3 +1,7 @@
+# 1.2.6 (2014-10-01)
+- Fix a bug in the ActionController request driver where calculated_md5 was
+  incorrect in certain scenarios. (#53 karl-petter)
+
 # 1.2.5 (2014-09-09)
 - Fix a bug where ApiAuth.authentic? would cause an ArgumentError when given a
   request with an invalid date in the date header. It will now return false
