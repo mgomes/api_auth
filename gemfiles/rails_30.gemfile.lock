@@ -1,7 +1,7 @@
 PATH
   remote: ../
   specs:
-    api-auth (1.2.5)
+    api-auth (1.2.6)
 
 GEM
   remote: https://rubygems.org/
