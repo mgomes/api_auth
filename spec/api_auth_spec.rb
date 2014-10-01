@@ -352,7 +352,7 @@ describe "ApiAuth" do
               'CONTENT_TYPE' => 'text/plain',
               'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT',
               'rack.input' => StringIO.new("hello\nworld"),
-              'CONTENT_LENGTH' => '11',)
+              'CONTENT_LENGTH' => '11')
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
             signed_request.env['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
           end
