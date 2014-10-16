@@ -66,6 +66,14 @@ describe "Rails integration" do
       response.code.should == "200"
     end
 
+    it "should allow unix timestamp" do
+      request = ActionController::TestRequest.new
+      request.env['DATE'] = Time.now.to_i.to_s
+      ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
+      response = generated_response(request, :index)
+      response.code.should == "200"
+    end
+
     it "should forbid a request with properly signed headers but timestamp > 15 minutes" do
       request = ActionController::TestRequest.new
       request.env['DATE'] = "Mon, 23 Jan 1984 03:29:56 GMT"
