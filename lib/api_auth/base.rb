@@ -76,8 +76,9 @@ module ApiAuth
     def signatures_match?(request, secret_key)
       headers = Headers.new(request)
       if match_data = parse_auth_header(headers.authorization_header)
-        hmac = match_data[2]
-        return hmac == hmac_signature(request, secret_key)
+        hmac_from_user = match_data[2]
+        hmac_of_request = hmac_signature(request, secret_key)
+        return secure_equals?(hmac_from_user, hmac_of_request, secret_key)
       end
       false
     end
@@ -85,8 +86,16 @@ module ApiAuth
     def hmac_signature(request, secret_key)
       headers = Headers.new(request)
       canonical_string = headers.canonical_string
+      b64_encode(sha1_hmac(secret_key, canonical_string))
+    end
+
+    def secure_equals?(m1, m2, key)
+      sha1_hmac(key, m1) == sha1_hmac(key, m2)
+    end
+
+    def sha1_hmac(key, message)
       digest = OpenSSL::Digest.new('sha1')
-      b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
+      OpenSSL::HMAC.digest(digest, key, message)
     end
 
     def auth_header(request, access_id, secret_key)
