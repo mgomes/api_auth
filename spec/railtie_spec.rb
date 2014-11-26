@@ -18,7 +18,7 @@ describe "Rails integration" do
         respond_to do |format|
           format.xml { render :xml => "You are unauthorized to perform this action.", :status => 401 }
           format.json { render :json => "You are unauthorized to perform this action.", :status => 401 }
-    			format.html { render :text => "You are unauthorized to perform this action", :status => 401 }
+          format.html { render :text => "You are unauthorized to perform this action", :status => 401 }
         end
       end
 
