@@ -23,7 +23,7 @@ have to be written in the same language as the clients.
 content-type, content-MD5, request URI and the timestamp. If content-type or
 content-MD5 are not present, then a blank string is used in their place. If the
 timestamp isn't present, a valid HTTP date is automatically added to the
-request. The canonical string string is computed as follows:
+request. The canonical string is computed as follows:
 
     canonical_string = 'content-type,content-MD5,request URI,timestamp'
 
