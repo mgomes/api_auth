@@ -99,7 +99,7 @@ module ApiAuth
 
     attr_writer :auth_header_prefix
 
-    def auth_header_prefix=(prefix)
+    def auth_header_prefix
       @auth_header_prefix || "APIAuth"
     end
 
