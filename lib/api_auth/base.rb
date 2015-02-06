@@ -90,11 +90,17 @@ module ApiAuth
     end
 
     def auth_header(request, access_id, secret_key)
-      "APIAuth #{access_id}:#{hmac_signature(request, secret_key)}"
+      "#{auth_header_prefix} #{access_id}:#{hmac_signature(request, secret_key)}"
     end
 
     def parse_auth_header(auth_header)
-      Regexp.new("APIAuth ([^:]+):(.+)$").match(auth_header)
+      Regexp.new("#{auth_header_prefix} ([^:]+):(.+)$").match(auth_header)
+    end
+
+    attr_writer :auth_header_prefix
+
+    def auth_header_prefix=(prefix)
+      @auth_header_prefix || "APIAuth"
     end
 
   end # class methods
