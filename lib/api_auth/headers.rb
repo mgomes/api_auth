@@ -46,7 +46,7 @@ module ApiAuth
 
     # Returns the request timestamp
     def timestamp
-       @request.timestamp
+      @request.timestamp
     end
 
     # Returns the canonical string computed from the request's headers

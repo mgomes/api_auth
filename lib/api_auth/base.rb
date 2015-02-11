@@ -61,7 +61,7 @@ module ApiAuth
     def request_too_old?(request)
       headers = Headers.new(request)
       # 900 seconds is 15 minutes
-      begin 
+      begin
         Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
       rescue ArgumentError
         true
