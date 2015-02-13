@@ -59,12 +59,12 @@ describe "ApiAuth::Headers" do
       request['DATE'].should be_nil
     end
 
-    context "md5_mismatch?" do
-      it "is false if no md5 header is present" do
+    context "md5_match?" do
+      it "is true if no md5 header is present" do
         request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
         'content-type' => 'text/plain')
         headers = ApiAuth::Headers.new(request)
-        headers.md5_mismatch?.should be_false
+        headers.md5_match?.should be_true
       end
     end
   end
@@ -290,12 +290,12 @@ describe "ApiAuth::Headers" do
        request['DATE'].should be_nil
      end
 
-     context "md5_mismatch?" do
-       it "is false if no md5 header is present" do
+     context "md5_atch?" do
+       it "is true if no md5 header is present" do
          request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
          'content-type' => 'text/plain')
          headers = ApiAuth::Headers.new(request)
-         headers.md5_mismatch?.should be_false
+         headers.md5_match?.should be_true
        end
      end
    end

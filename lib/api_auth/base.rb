@@ -24,7 +24,7 @@ module ApiAuth
     # secret_key: assigned secret key that is known to both parties
     def sign!(request, access_id, secret_key)
       headers = Headers.new(request)
-      headers.calculate_md5
+      headers.populate_content_md5
       headers.set_date
       headers.sign_header auth_header(request, access_id, secret_key)
     end
@@ -34,7 +34,7 @@ module ApiAuth
     def authentic?(request, secret_key)
       return false if secret_key.nil?
 
-      return !md5_mismatch?(request) && signatures_match?(request, secret_key) && !request_too_old?(request)
+      return md5_match?(request) && signatures_match?(request, secret_key) && !request_too_old?(request)
     end
 
     # Returns the access id from the request's authorization header
@@ -68,9 +68,9 @@ module ApiAuth
       end
     end
 
-    def md5_mismatch?(request)
+    def md5_match?(request)
       headers = Headers.new(request)
-      headers.md5_mismatch?
+      headers.md5_match?
     end
 
     def signatures_match?(request, secret_key)
