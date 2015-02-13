@@ -49,7 +49,7 @@ module ApiAuth
         @request
       end
 
-      def populate_content_md5
+      def set_content_md5
         return if content_md5.present?
         set_header('Content-MD5', calculated_md5) if populatable_content_md5?
       end

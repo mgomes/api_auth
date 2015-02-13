@@ -6,10 +6,8 @@ module ApiAuth
     extend Forwardable
     include RequestDrivers
 
-    def_delegators :@request, :timestamp, :authorization_header, :populate_content_md5,
-                              :set_date, :md5_match?
-
-    def_delegator :@request, :set_auth_header, :sign_header
+    def_delegators :@request, :timestamp, :authorization_header, :set_content_md5,
+                              :set_date, :md5_match?, :set_auth_header
 
     def initialize(request)
       @original_request = request

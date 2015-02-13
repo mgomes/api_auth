@@ -93,11 +93,31 @@ describe "Rails integration" do
       response.code.should == "401"
     end
 
+    it "should prefer X_HMAC_AUTHORIZATION over Authorization and forbid a request with a bogus signature" do
+      request = ActionController::TestRequest.new
+      request.env['X_HMAC_AUTHORIZATION'] = "APIAuth bogus:bogus"
+      ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
+      response = generated_response(request, :index)
+      response.code.should == "401"
+    end
+
+    it "should prefer X_HMAC_AUTHORIZATION over Authorization and should permit a request properly signed" do
+      request = ActionController::TestRequest.new
+      ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
+      request.env['X_HMAC_AUTHORIZATION'] = request.env['Authorization']
+      request.env['Authorization'] = "APIAuth bogus:bogus"
+      response = generated_response(request, :index)
+      response.code.should == "200"
+    end
+
     it "should allow non-protected controller actions to function as before" do
       request = ActionController::TestRequest.new
       response = generated_response(request, :public)
       response.code.should == "200"
     end
+
+
+
 
   end
 
