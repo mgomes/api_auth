@@ -38,7 +38,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should set the authorization header" do
-      @headers.sign_header("alpha")
+      @headers.set_auth_header("alpha")
       @headers.authorization_header.should == "alpha"
     end
 
@@ -59,14 +59,27 @@ describe "ApiAuth::Headers" do
       request['DATE'].should be_nil
     end
 
-    context "md5_mismatch?" do
-      it "is false if no md5 header is present" do
+    context "md5_match?" do
+      it "is true if no md5 header is present" do
         request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
         'content-type' => 'text/plain')
         headers = ApiAuth::Headers.new(request)
-        headers.md5_mismatch?.should be_false
+        headers.md5_match?.should be_true
       end
     end
+
+    it 'should prefere X_HMAC_DATE, X_HMAC_CONTENT_TYPE & X_HMAC_CONTENT_MD5 headers over standard' do
+      request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+                                    'content-type' => 'application/json',
+                                    'x_hmac_content_type'=> 'text/plain',
+                                    'content-md5' => '12323112312asdasdqweqweqwe',
+                                    'x_hmac_content_md5' => 'e59ff97941044f85df5297e1c302d260',
+                                    'date' => "Wed, 20 Jan 1900 10:40:56 GMT",
+                                    'x_hmac_date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+      headers = ApiAuth::Headers.new(request)
+      headers.canonical_string == CANONICAL_STRING
+    end
+
   end
 
   describe "with RestClient" do
@@ -86,7 +99,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should set the authorization header" do
-      @headers.sign_header("alpha")
+      @headers.set_auth_header("alpha")
       @headers.authorization_header.should == "alpha"
     end
 
@@ -122,6 +135,19 @@ describe "ApiAuth::Headers" do
       ApiAuth.sign!(@request, "some access id", "some secret key")
       @request.processed_headers.should have_key('Content-Type')
     end
+
+    it 'should prefere X_HMAC_DATE, X_HMAC_CONTENT_TYPE & X_HMAC_CONTENT_MD5 headers over standard' do
+      headers = { 'content-type' => 'application/json',
+                  'x_hmac_content_type'=> 'text/plain',
+                  'content-md5' => '12323112312asdasdqweqweqwe',
+                  'x_hmac_content_md5' => 'e59ff97941044f85df5297e1c302d260',
+                  'date' => "Wed, 20 Jan 1900 10:40:56 GMT",
+                  'x_hmac_date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+      request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo", :headers => headers, :method => :put)
+      headers = ApiAuth::Headers.new(request)
+      headers.canonical_string == CANONICAL_STRING
+    end
+
   end
 
   describe "with Curb" do
@@ -141,7 +167,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should set the authorization header" do
-      @headers.sign_header("alpha")
+      @headers.set_auth_header("alpha")
       @headers.authorization_header.should == "alpha"
     end
 
@@ -165,6 +191,20 @@ describe "ApiAuth::Headers" do
       headers.canonical_string
       request.headers['DATE'].should be_nil
     end
+
+    it 'should prefere X_HMAC_DATE, X_HMAC_CONTENT_TYPE & X_HMAC_CONTENT_MD5 headers over standard' do
+      headers = { 'content-type' => 'application/json',
+                  'x_hmac_content_type'=> 'text/plain',
+                  'content-md5' => '12323112312asdasdqweqweqwe',
+                  'x_hmac_content_md5' => 'e59ff97941044f85df5297e1c302d260',
+                  'date' => "Wed, 20 Jan 1900 10:40:56 GMT",
+                  'x_hmac_date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+      request = Curl::Easy.new("/resource.xml?foo=bar&bar=foo") do |curl|
+        curl.headers = headers
+      end
+      headers = ApiAuth::Headers.new(request)
+      headers.canonical_string == CANONICAL_STRING
+    end
   end
 
   describe "with ActionController" do
@@ -187,7 +227,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should set the authorization header" do
-      @headers.sign_header("alpha")
+      @headers.set_auth_header("alpha")
       @headers.authorization_header.should == "alpha"
     end
 
@@ -213,6 +253,20 @@ describe "ApiAuth::Headers" do
       headers.canonical_string
       request.headers['DATE'].should be_nil
     end
+
+    it 'should prefere X_HMAC_DATE, X_HMAC_CONTENT_TYPE & X_HMAC_CONTENT_MD5 headers over standard' do
+      request = request_klass.new('PATH_INFO' => '/resource.xml',
+                        'QUERY_STRING' => 'foo=bar&bar=foo',
+                        'REQUEST_METHOD' => 'PUT',
+                        'content-type' => 'application/json',
+                        'x_hmac_content_type'=> 'text/plain',
+                        'content-md5' => '12323112312asdasdqweqweqwe',
+                        'x_hmac_content_md5' => 'e59ff97941044f85df5297e1c302d260',
+                        'date' => "Wed, 20 Jan 1900 10:40:56 GMT",
+                        'x_hmac_date' => "Mon, 23 Jan 1984 03:29:56 GMT")
+      headers = ApiAuth::Headers.new(request)
+      headers.canonical_string == CANONICAL_STRING
+    end
   end
 
   describe "with Rack::Request" do
@@ -231,7 +285,7 @@ describe "ApiAuth::Headers" do
     end
 
     it "should set the authorization header" do
-      @headers.sign_header("alpha")
+      @headers.set_auth_header("alpha")
       @headers.authorization_header.should == "alpha"
     end
 
@@ -251,6 +305,18 @@ describe "ApiAuth::Headers" do
       headers.canonical_string
       request.env['DATE'].should be_nil
     end
+
+    it 'should prefere X_HMAC_DATE, X_HMAC_CONTENT_TYPE & X_HMAC_CONTENT_MD5 headers over standard' do
+      headers = { 'content-type' => 'application/json',
+                  'x_hmac_content_type'=> 'text/plain',
+                  'content-md5' => '12323112312asdasdqweqweqwe',
+                  'x_hmac_content_md5' => 'e59ff97941044f85df5297e1c302d260',
+                  'date' => "Wed, 20 Jan 1900 10:40:56 GMT",
+                  'x_hmac_date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+      request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
+      headers = ApiAuth::Headers.new(request)
+      headers.canonical_string == CANONICAL_STRING
+    end
   end
 
   describe "with HTTPI" do
@@ -269,35 +335,54 @@ describe "ApiAuth::Headers" do
      end
 
      it "should set the authorization header" do
-       @headers.sign_header("alpha")
+       @headers.set_auth_header("alpha")
        @headers.authorization_header.should == "alpha"
      end
 
      it "should set the DATE header if one is not already present" do
-       @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+       @request = HTTPI::Request.new("http://localhost/resource.xml?foo=bar&bar=foo")
+       @request.headers.merge!({
          'content-type' => 'text/plain',
-         'content-md5' => 'e59ff97941044f85df5297e1c302d260')
+         'content-md5' => 'e59ff97941044f85df5297e1c302d260'
+       })
        ApiAuth.sign!(@request, "some access id", "some secret key")
-       @request['DATE'].should_not be_nil
+       @request.headers['DATE'].should_not be_nil
      end
 
      it "should not set the DATE header just by asking for the canonical_string" do
-       request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+       request = HTTPI::Request.new("http://localhost/resource.xml?foo=bar&bar=foo")
+       request.headers.merge!({
          'content-type' => 'text/plain',
-         'content-md5' => 'e59ff97941044f85df5297e1c302d260')
+         'content-md5' => 'e59ff97941044f85df5297e1c302d260'
+       })
        headers = ApiAuth::Headers.new(request)
        headers.canonical_string
-       request['DATE'].should be_nil
+       request.headers['DATE'].should be_nil
      end
 
-     context "md5_mismatch?" do
-       it "is false if no md5 header is present" do
-         request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-         'content-type' => 'text/plain')
+     context "md5_match?" do
+       it "is true if no md5 header is present" do
+         request = HTTPI::Request.new("http://localhost/resource.xml?foo=bar&bar=foo")
+         request.headers.merge!({ 'content-type' => 'text/plain' })
          headers = ApiAuth::Headers.new(request)
-         headers.md5_mismatch?.should be_false
+         headers.md5_match?.should be_true
        end
      end
+
+     it 'should prefere X_HMAC_DATE, X_HMAC_CONTENT_TYPE & X_HMAC_CONTENT_MD5 headers over standard' do
+         request = HTTPI::Request.new("http://localhost/resource.xml?foo=bar&bar=foo")
+         request.headers.merge!({
+           'content-type' => 'application/json',
+           'x_hmac_content_type'=> 'text/plain',
+           'content-md5' => '12323112312asdasdqweqweqwe',
+           'x_hmac_content_md5' => 'e59ff97941044f85df5297e1c302d260',
+           'date' => "Wed, 20 Jan 1900 10:40:56 GMT",
+           'x_hmac_date' => "Mon, 23 Jan 1984 03:29:56 GMT"
+          })
+         headers = ApiAuth::Headers.new(request)
+         headers.canonical_string == CANONICAL_STRING
+     end
+
    end
 
 end

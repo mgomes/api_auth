@@ -58,6 +58,19 @@ configuration for your Ruby VM. To install:
 
 Please note the dash in the name versus the underscore.
 
+## Headers
+
+  For more flexibility there are a couple posible header fields that can be used to send the required data.
+  This was added after experiencing some troubles when trying to modify the ```DATE``` header in ajax requests.
+  The posible headers fields for each value are:
+
+  - **DATE** = X_HMAC_DATE, HTTP_X_HMAC_DATE, DATE, HTTP_DATE
+  - **CONTENT_MD5** = X_HMAC_CONTENT_MD5, HTTP_X_HMAC_CONTENT_MD5, CONTENT_MD5, HTTP_CONTENT_MD5, HTTP-CONTENT-MD5, CONTENT-MD5
+  - **CONTENT_TYPE** = X_HMAC_CONTENT_TYPE, HTTP_X_HMAC_CONTENT_TYPE, CONTENT_TYPE, HTTP_CONTENT_TYPE, CONTENT-TYPE, HTTP-CONTENT-TYPE
+  - **Authorization** = X_HMAC_AUTHORIZATION, HTTP_X_HMAC_AUTHORIZATION, AUTHORIZATION, HTTP_AUTHORIZATION
+
+  *It's important to note that headers will be match in that order of precedence.*
+
 ## Clients
 
 ApiAuth supports many popular HTTP clients. Support for other clients can be
@@ -176,6 +189,12 @@ To run the tests:
 If you'd like to add support for additional HTTP clients, check out the already
 implemented drivers in `lib/api_auth/request_drivers` for reference. All of
 the public methods for each driver are required to be implemented by your driver.
+
+## Integration with Angular
+
+  An Angular bower component it's available to integrate your Angular front-end with your Server's API.
+
+  For more information: [angular-hmac-auth](https://github.com/andres99x/angular-hmac-auth)
 
 ## Authors
 
