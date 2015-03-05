@@ -29,6 +29,8 @@ matrix:
       gemfile: gemfiles/rails_30.gemfile
     - rvm: 2.2.1
       gemfile: gemfiles/rails_31.gemfile
+    - rvm: 2.2.1
+      gemfile: gemfiles/rails_32.gemfile
 
 notifications:
   email: false
