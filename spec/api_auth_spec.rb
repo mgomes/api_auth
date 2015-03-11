@@ -565,6 +565,88 @@ describe "ApiAuth" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
     end
+
+    describe "with Typhoeus::Request" do
+
+      before(:each) do
+        @request = Typhoeus::Request.new("/resource.xml?foo=bar&bar=foo",
+                                         :method => :put,
+                                         :headers => {'content-type' => 'text/plain',
+                                                      'DATE' => Time.now.utc.httpdate})
+        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+      end
+
+      it "should return a Typhoeus::Request object after signing it" do
+        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Typhoeus::Request")
+      end
+
+      describe "md5 header" do
+        context "not already provided" do
+          it "should calculate for empty string" do
+            request = Typhoeus::Request.new("/resource.xml?foo=bar&bar=foo",
+                                            :method => :put,
+                                            :headers => {'content-type' => 'text/plain',
+                                                         'DATE' => "Mon, 23 Jan 1984 03:29:56 GMT"})
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.options[:headers]['CONTENT-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+          end
+
+          it "should calculate for real content" do
+            request = Typhoeus::Request.new("/resource.xml?foo=bar&bar=foo",
+                                            :method => :put,
+                                            :body => "hello\nworld",
+                                            :headers => {'content-type' => 'text/plain',
+                                                         'DATE' => "Mon, 23 Jan 1984 03:29:56 GMT"})
+            signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+            signed_request.options[:headers]['CONTENT-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
+          end
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request.options[:headers]['CONTENT-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+        end
+      end
+
+      it "should sign the request" do
+        @signed_request.options[:headers]['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+      end
+
+      it "should authenticate a valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+      end
+
+      it "should NOT authenticate a non-valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+      end
+
+      it "should NOT authenticate a mismatched content-md5 when body has changed" do
+        request = Typhoeus::Request.new("/resource.xml?foo=bar&bar=foo",
+                                        :method => :put,
+                                        :body => "hello\nworld",
+                                        :headers => {'content-type' => 'text/plain',
+                                                     'DATE' => "Mon, 23 Jan 1984 03:29:56 GMT"})
+        signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+        signed_request.options[:body] = "goodbye"
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate an expired request" do
+        @request.options[:headers]['DATE'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate a request with an invalid date" do
+        @request.options[:headers]['DATE'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should retrieve the access_id" do
+        ApiAuth.access_id(@signed_request).should == "1044"
+      end
+
+    end
   end
 
 end

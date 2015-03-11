@@ -69,6 +69,7 @@ Here is the current list of supported request objects:
 * ActionDispatch::Request
 * Curb (Curl::Easy)
 * RestClient
+* Typhoeus
 
 ### HTTP Client Objects
 

@@ -35,6 +35,9 @@ GEM
     curb (0.8.6)
     diff-lcs (1.1.3)
     erubis (2.7.0)
+    ethon (0.7.3)
+      ffi (>= 1.3.0)
+    ffi (1.9.6)
     httpi (2.1.0)
       rack
       rubyntlm (~> 0.3.2)
@@ -63,6 +66,8 @@ GEM
     thread_safe (0.2.0)
       atomic (>= 1.1.7, < 2)
     tins (0.13.2)
+    typhoeus (0.7.1)
+      ethon (>= 0.7.1)
     tzinfo (0.3.39)
 
 PLATFORMS
@@ -81,3 +86,4 @@ DEPENDENCIES
   rake
   rest-client (~> 1.6.0)
   rspec (~> 2.4.0)
+  typhoeus
