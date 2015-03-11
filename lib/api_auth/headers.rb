@@ -34,6 +34,8 @@ module ApiAuth
           ActionControllerRequest.new(request)
         when /HTTPI::Request/
           HttpiRequest.new(request)
+        when /Faraday::Request/
+          FaradayRequest.new(request)
         else
           nil
         end

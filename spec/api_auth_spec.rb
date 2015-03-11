@@ -565,6 +565,102 @@ describe "ApiAuth" do
         ApiAuth.access_id(@signed_request).should == "1044"
       end
     end
+
+    describe "with Faraday::Request" do
+      before(:each) do
+        stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+          stub.put('/resource.xml?foo=bar&bar=foo') { [200, {}, ''] }
+        end
+
+        @faraday_conn = Faraday.new do |builder|
+          builder.adapter :test, stubs do |stub|
+          end
+        end
+
+        @faraday_conn.put '/resource.xml?foo=bar&bar=foo' do |request|
+          @request = request
+          @request.headers.merge!({'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
+                                   'content-type' => 'text/plain',
+                                   'DATE' => Time.now.utc.httpdate})
+        end
+
+        @headers = ApiAuth::Headers.new(@request)
+        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+      end
+
+      it "should return a Faraday::Request object after signing it" do
+        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Faraday::Request")
+      end
+
+      describe "md5 header" do
+        context "not already provided" do
+          it "should calculate for empty string" do
+            @faraday_conn.put '/resource.xml?foo=bar&bar=foo' do |request|
+              request.headers.merge!({'content-type' => 'text/plain',
+                                       'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'})
+
+              signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+              signed_request['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+            end
+          end
+
+          it "should calculate for real content" do
+            @faraday_conn.put '/resource.xml?foo=bar&bar=foo' do |request|
+              request.headers.merge!({'content-type' => 'text/plain',
+                                       'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'})
+              request.body = "hello\nworld"
+
+              signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+              signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
+            end
+          end
+        end
+
+        it "should leave the content-md5 alone if provided" do
+          @signed_request.headers['Content-MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
+        end
+      end
+
+      it "should sign the request" do
+        @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+      end
+
+      it "should authenticate a valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+      end
+
+      it "should NOT authenticate a non-valid request" do
+        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+      end
+
+      it "should NOT authenticate a mismatched content-md5 when body has changed" do
+        @faraday_conn.put '/resource.xml?foo=bar&bar=foo' do |request|
+          request.headers.merge!({'content-type' => 'text/plain',
+                                   'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'})
+          request.body = "hello\nworld"
+
+          signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+          signed_request.body = 'goodbye'
+          ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        end
+      end
+
+      it "should NOT authenticate an expired request" do
+        @request.headers['DATE'] = 16.minutes.ago.utc.httpdate
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should NOT authenticate a request with an invalid date" do
+        @request.headers['DATE'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+        signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+      end
+
+      it "should retrieve the access_id" do
+        ApiAuth.access_id(@signed_request).should == "1044"
+      end
+    end
   end
 
 end
