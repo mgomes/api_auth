@@ -570,6 +570,7 @@ describe "ApiAuth" do
       before(:each) do
         stubs = Faraday::Adapter::Test::Stubs.new do |stub|
           stub.put('/resource.xml?foo=bar&bar=foo') { [200, {}, ''] }
+          stub.put('/resource.xml') { [200, {}, ''] }
         end
 
         @faraday_conn = Faraday.new do |builder|
@@ -625,7 +626,7 @@ describe "ApiAuth" do
         @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
       end
 
-      it "should authenticate a valid request" do
+      it "should authenticate a valid request with parameters" do
         ApiAuth.authentic?(@signed_request, @secret_key).should be_true
       end
 
@@ -659,6 +660,26 @@ describe "ApiAuth" do
 
       it "should retrieve the access_id" do
         ApiAuth.access_id(@signed_request).should == "1044"
+      end
+
+      describe 'request_uri' do
+        context 'with parameters' do
+          it "should return urls with a query string" do
+            req = ::ApiAuth::RequestDrivers::FaradayRequest.new(@request)
+            req.request_uri.should == '/resource.xml?bar=foo&foo=bar'
+          end
+        end
+
+        context 'without parameters' do
+          it "should return urls with no query string" do
+            @faraday_conn.put '/resource.xml' do |request|
+              request.headers.merge!({'content-type' => 'text/plain',
+                                       'DATE' => Time.now.utc.httpdate})
+              req = ::ApiAuth::RequestDrivers::FaradayRequest.new(request)
+              req.request_uri.should == '/resource.xml'
+            end
+          end
+        end
       end
     end
   end
