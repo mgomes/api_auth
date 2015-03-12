@@ -1,3 +1,6 @@
+# 1.3.0 (2015-03-12)
+- Add a Faraday Request Driver (#64 nathanhoel)
+
 # 1.2.6 (2014-10-01)
 - Fix a bug in the ActionController request driver where calculated_md5 was
   incorrect in certain scenarios. (#53 karl-petter)
