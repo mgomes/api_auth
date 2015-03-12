@@ -17,7 +17,7 @@ module ApiAuth
     # Returns the HTTP request object with the modified headers.
     #
     # request: The request can be a Net::HTTP, ActionDispatch::Request,
-    # Curb (Curl::Easy) or a RestClient object.
+    # Curb (Curl::Easy), RestClient object or Faraday::Request.
     #
     # access_id: The public unique identifier for the client
     #
@@ -61,7 +61,7 @@ module ApiAuth
     def request_too_old?(request)
       headers = Headers.new(request)
       # 900 seconds is 15 minutes
-      begin 
+      begin
         Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
       rescue ArgumentError
         true
