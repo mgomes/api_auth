@@ -1,3 +1,7 @@
+# 1.3.1 (2015-03-13)
+- Fixed a bug where Faraday requests with no parameters were not signed
+  correctly (#65 nathanhoel)
+
 # 1.3.0 (2015-03-12)
 - Add a Faraday Request Driver (#64 nathanhoel)
 
