@@ -56,7 +56,9 @@ module ApiAuth
       end
 
       def request_uri
-        uri = URI::HTTP.new(nil, nil, nil, nil, nil, @request.path, nil, @request.params.to_query, nil)
+        query_string = @request.params.to_query
+        query_string = nil if query_string.empty?
+        uri = URI::HTTP.new(nil, nil, nil, nil, nil, @request.path, nil, query_string, nil)
         uri.to_s
       end
 
