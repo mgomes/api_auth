@@ -28,6 +28,8 @@ module ApiAuth
           else
             ActionControllerRequest.new(request)
           end
+        when /Grape::Request/
+          GrapeRequest.new(request)
         when /ActionDispatch::Request/
           ActionDispatchRequest.new(request)
         when /ActionController::CgiRequest/
