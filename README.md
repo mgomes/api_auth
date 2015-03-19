@@ -120,6 +120,15 @@ single configuration line:
 
 This will automatically sign all outgoing ActiveResource requests from your app.
 
+### Active Rest Client
+
+ApiAuth also works with [ActiveRestClient](https://github.com/whichdigital/active-rest-client) in a very similar way.
+Simply add this configuration to your ActiveRestClient initializer in your app and it will automatically sign all outgoing requests.
+
+``` ruby
+ActiveRestClient::Base.api_auth_credentials(@access_id, @secret_key)
+```
+
 ## Server
 
 ApiAuth provides some built in methods to help you generate API keys for your
