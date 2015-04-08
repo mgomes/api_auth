@@ -1,3 +1,5 @@
+require 'active_support/test_case'
+
 module ActionController
   class TestCase < ActiveSupport::TestCase
     module Behavior
