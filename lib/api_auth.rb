@@ -17,4 +17,5 @@ require 'api_auth/headers'
 require 'api_auth/base'
 require 'api_auth/railtie'
 
-require 'api_auth/extensions/action_controller/test_case'
+# The signed method for tests is modeled after the xhr method which was introduced in Rails 3 and will not work in earlier versions of Rails
+require 'api_auth/extensions/action_controller/test_case' if Rails::VERSION::STRING >= '3'
