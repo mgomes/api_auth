@@ -23,15 +23,33 @@ describe "ApiAuth" do
 
   describe "signing requests" do
 
-    def hmac(secret_key, request)
+    def hmac(secret_key, request, options = {})
       canonical_string = ApiAuth::Headers.new(request).canonical_string
-      digest = OpenSSL::Digest.new('sha1')
+      digest = OpenSSL::Digest.new(options[:digest] || 'sha1')
       ApiAuth.b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
     before(:all) do
       @access_id = "1044"
       @secret_key = ApiAuth.generate_secret_key
+    end
+
+    describe "with different digest algorithm" do
+      before(:each) do
+        @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+          'content-type' => 'text/plain',
+          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+          'date' => Time.now.utc.httpdate)
+        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, digest: 'sha512')
+      end
+
+      it "should sign request with sha512 digest algorithm" do
+        @signed_request['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request, digest: 'sha512')}"
+      end
+
+      it "should authenticate a valid request signed with sha512 digest algorithm" do
+        ApiAuth.authentic?(@signed_request, @secret_key, digest: 'sha512').should be_true
+      end
     end
 
     describe "with Net::HTTP" do
