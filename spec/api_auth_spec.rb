@@ -40,7 +40,7 @@ describe "ApiAuth" do
           'content-type' => 'text/plain',
           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
           'date' => Time.now.utc.httpdate)
-        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, digest: 'sha512')
+        @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :digest => 'sha512')
       end
 
       it "should sign request with sha512 digest algorithm" do
@@ -48,7 +48,7 @@ describe "ApiAuth" do
       end
 
       it "should authenticate a valid request signed with sha512 digest algorithm" do
-        ApiAuth.authentic?(@signed_request, @secret_key, digest: 'sha512').should be_true
+        ApiAuth.authentic?(@signed_request, @secret_key, :digest => 'sha512').should be_true
       end
     end
 
