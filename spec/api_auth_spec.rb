@@ -44,7 +44,7 @@ describe "ApiAuth" do
       end
 
       it "should sign request with sha512 digest algorithm" do
-        @signed_request['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request, digest: 'sha512')}"
+        @signed_request['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request, :digest => 'sha512')}"
       end
 
       it "should authenticate a valid request signed with sha512 digest algorithm" do
