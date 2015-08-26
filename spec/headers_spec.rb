@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "ApiAuth::Headers" do
+describe ApiAuth::Headers do
 
   CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
 
@@ -300,4 +300,15 @@ describe "ApiAuth::Headers" do
      end
    end
 
+   describe '#canonical_string' do
+     subject { described_class.new(RestClient::Request.new(:url => uri, :method => :get)) }
+   
+     context 'empty request uri' do
+       let(:uri) { '' }
+
+       it 'adds / to canonical string' do
+         subject.canonical_string.should eq(",,/,")
+       end
+     end
+   end
 end

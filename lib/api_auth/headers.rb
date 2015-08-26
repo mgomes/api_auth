@@ -55,7 +55,7 @@ module ApiAuth
     def canonical_string
       [ @request.content_type,
         @request.content_md5,
-        @request.request_uri.gsub(/https?:\/\/[^(,|\?|\/)]*/,''), # remove host
+        parse_uri(@request.request_uri), 
         @request.timestamp
       ].join(",")
     end
@@ -90,6 +90,12 @@ module ApiAuth
       @request.set_auth_header header
     end
 
-  end
+    private
 
+    def parse_uri(uri)
+      uri.gsub!(/https?:\/\/[^(,|\?|\/)]*/, '') # remove host
+      return '/' if uri.empty?
+      uri
+    end
+  end
 end
