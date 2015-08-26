@@ -4,6 +4,7 @@ rvm:
   - 1.9.3
   - 2.1.5
   - 2.2.1
+  - 2.2.2
 gemfile:
   - gemfiles/rails_23.gemfile
   - gemfiles/rails_30.gemfile
@@ -30,6 +31,14 @@ matrix:
     - rvm: 2.2.1
       gemfile: gemfiles/rails_31.gemfile
     - rvm: 2.2.1
+      gemfile: gemfiles/rails_32.gemfile
+    - rvm: 2.2.2
+      gemfile: gemfiles/rails_23.gemfile
+    - rvm: 2.2.2
+      gemfile: gemfiles/rails_30.gemfile
+    - rvm: 2.2.2
+      gemfile: gemfiles/rails_31.gemfile
+    - rvm: 2.2.2
       gemfile: gemfiles/rails_32.gemfile
 
 notifications:
