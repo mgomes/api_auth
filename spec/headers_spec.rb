@@ -300,15 +300,40 @@ describe ApiAuth::Headers do
      end
    end
 
-   describe '#canonical_string' do
-     subject { described_class.new(RestClient::Request.new(:url => uri, :method => :get)) }
-   
-     context 'empty request uri' do
-       let(:uri) { '' }
+  describe '#canonical_string' do
+    let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
+    subject { described_class.new(request) }
 
-       it 'adds / to canonical string' do
-         subject.canonical_string.should eq(",,/,")
-       end
-     end
-   end
+    context 'empty uri' do
+      let(:uri) { '' }
+
+      it 'adds / to canonical string' do
+        subject.canonical_string.should eq(',,/,')
+      end
+    end
+
+    context 'uri with just host without /' do
+      let(:uri) { 'http://google.com' }
+
+      it 'return / as canonical string path' do
+        subject.canonical_string.should eq(',,/,')
+      end
+
+      it 'does not change request url (by removing host)' do
+        request.url.should eq(uri)
+      end
+    end
+
+    context 'uri with host and /' do
+      let(:uri) { 'http://google.com/' }
+
+      it 'return / as canonical string path' do
+        subject.canonical_string.should eq(',,/,')
+      end
+
+      it 'does not change request url (by removing host)' do
+        request.url.should eq(uri)
+      end
+    end
+  end
 end

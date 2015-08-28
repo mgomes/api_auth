@@ -93,9 +93,9 @@ module ApiAuth
     private
 
     def parse_uri(uri)
-      uri.gsub!(/https?:\/\/[^(,|\?|\/)]*/, '') # remove host
-      return '/' if uri.empty?
-      uri
+      uri_without_host = uri.gsub(/https?:\/\/[^(,|\?|\/)]*/, '')
+      return '/' if uri_without_host.empty?
+      uri_without_host
     end
   end
 end
