@@ -305,7 +305,7 @@ describe ApiAuth::Headers do
     subject { described_class.new(request) }
 
     context 'empty uri' do
-      let(:uri) { '' }
+      let(:uri) { ''.freeze }
 
       it 'adds / to canonical string' do
         subject.canonical_string.should eq(',,/,')
@@ -313,7 +313,7 @@ describe ApiAuth::Headers do
     end
 
     context 'uri with just host without /' do
-      let(:uri) { 'http://google.com' }
+      let(:uri) { 'http://google.com'.freeze }
 
       it 'return / as canonical string path' do
         subject.canonical_string.should eq(',,/,')
@@ -325,7 +325,7 @@ describe ApiAuth::Headers do
     end
 
     context 'uri with host and /' do
-      let(:uri) { 'http://google.com/' }
+      let(:uri) { 'http://google.com/'.freeze }
 
       it 'return / as canonical string path' do
         subject.canonical_string.should eq(',,/,')
