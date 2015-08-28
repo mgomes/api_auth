@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "ApiAuth::Headers" do
+describe ApiAuth::Headers do
 
   CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
 
@@ -300,4 +300,40 @@ describe "ApiAuth::Headers" do
      end
    end
 
+  describe '#canonical_string' do
+    let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
+    subject { described_class.new(request) }
+
+    context 'empty uri' do
+      let(:uri) { ''.freeze }
+
+      it 'adds / to canonical string' do
+        subject.canonical_string.should eq(',,/,')
+      end
+    end
+
+    context 'uri with just host without /' do
+      let(:uri) { 'http://google.com'.freeze }
+
+      it 'return / as canonical string path' do
+        subject.canonical_string.should eq(',,/,')
+      end
+
+      it 'does not change request url (by removing host)' do
+        request.url.should eq(uri)
+      end
+    end
+
+    context 'uri with host and /' do
+      let(:uri) { 'http://google.com/'.freeze }
+
+      it 'return / as canonical string path' do
+        subject.canonical_string.should eq(',,/,')
+      end
+
+      it 'does not change request url (by removing host)' do
+        request.url.should eq(uri)
+      end
+    end
+  end
 end
