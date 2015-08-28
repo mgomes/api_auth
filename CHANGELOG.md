@@ -1,3 +1,7 @@
+# 1.3.2 (2015-08-28)
+- Fixed a bug where some client adapters didn't treat an empty path as
+  "/" in the canonical string (#75 managr)
+
 # 1.3.1 (2015-03-13)
 - Fixed a bug where Faraday requests with no parameters were not signed
   correctly (#65 nathanhoel)
