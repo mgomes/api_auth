@@ -160,16 +160,15 @@ whether or not the request is authentic. Typically, the access id for the client
 will be their record's primary key in the DB that stores the record or some other
 public unique identifier for the client.
 
-Here's a sample method that can be used in a `before_filter` if your server is a
+Here's a sample method that can be used in a `before_action` if your server is a
 Rails app:
 
 ``` ruby
-    before_filter :api_authenticate
+    before_action :api_authenticate
 
     def api_authenticate
       @current_account = Account.find_by_access_id(ApiAuth.access_id(request))
-      return ApiAuth.authentic?(request, @current_account.secret_key) unless @current_account.nil?
-      false
+      head(:unauthorized) unless @current_account && ApiAuth.authentic?(request, @current_account.secret_key)
     end
 ```
 
