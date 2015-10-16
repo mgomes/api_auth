@@ -168,7 +168,7 @@ Rails app:
 
     def api_authenticate
       @current_account = Account.find_by_access_id(ApiAuth.access_id(request))
-      head(401) unless @current_account && ApiAuth.authentic?(request, @current_account.secret_key)
+      head(:unauthorized) unless @current_account && ApiAuth.authentic?(request, @current_account.secret_key)
     end
 ```
 
