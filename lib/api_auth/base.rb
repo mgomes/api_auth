@@ -22,19 +22,23 @@ module ApiAuth
     # access_id: The public unique identifier for the client
     #
     # secret_key: assigned secret key that is known to both parties
-    def sign!(request, access_id, secret_key)
+    #
+    # options: Hash of options. <tt>:digest</tt> allows you
+    # to change the used digest algorithm. See `OpenSSL::Digest` for
+    # list of supported digest algorithms.
+    def sign!(request, access_id, secret_key, options = {})
       headers = Headers.new(request)
       headers.calculate_md5
       headers.set_date
-      headers.sign_header auth_header(request, access_id, secret_key)
+      headers.sign_header auth_header(request, access_id, secret_key, options)
     end
 
     # Determines if the request is authentic given the request and the client's
     # secret key. Returns true if the request is authentic and false otherwise.
-    def authentic?(request, secret_key)
+    def authentic?(request, secret_key, options = {})
       return false if secret_key.nil?
 
-      return !md5_mismatch?(request) && signatures_match?(request, secret_key) && !request_too_old?(request)
+      return !md5_mismatch?(request) && signatures_match?(request, secret_key, options) && !request_too_old?(request)
     end
 
     # Returns the access id from the request's authorization header
@@ -73,24 +77,24 @@ module ApiAuth
       headers.md5_mismatch?
     end
 
-    def signatures_match?(request, secret_key)
+    def signatures_match?(request, secret_key, options)
       headers = Headers.new(request)
       if match_data = parse_auth_header(headers.authorization_header)
         hmac = match_data[2]
-        return hmac == hmac_signature(request, secret_key)
+        return hmac == hmac_signature(request, secret_key, options)
       end
       false
     end
 
-    def hmac_signature(request, secret_key)
+    def hmac_signature(request, secret_key, options)
       headers = Headers.new(request)
       canonical_string = headers.canonical_string
-      digest = OpenSSL::Digest.new('sha1')
+      digest = OpenSSL::Digest.new(options.fetch(:digest, nil) || 'sha1')
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
-    def auth_header(request, access_id, secret_key)
-      "APIAuth #{access_id}:#{hmac_signature(request, secret_key)}"
+    def auth_header(request, access_id, secret_key, options)
+      "APIAuth #{access_id}:#{hmac_signature(request, secret_key, options)}"
     end
 
     def parse_auth_header(auth_header)
