@@ -26,7 +26,7 @@ module ApiAuth
       headers = Headers.new(request)
       headers.calculate_md5
       headers.set_date
-      headers.sign_header auth_header(request, access_id, secret_key)
+      headers.sign_header auth_header(headers, access_id, secret_key)
     end
 
     # Determines if the request is authentic given the request and the client's
@@ -34,7 +34,16 @@ module ApiAuth
     def authentic?(request, secret_key)
       return false if secret_key.nil?
 
-      return !md5_mismatch?(request) && signatures_match?(request, secret_key) && !request_too_old?(request)
+      headers = Headers.new(request)
+      if headers.md5_mismatch?
+        false
+      elsif !signatures_match?(headers, secret_key)
+        false
+      elsif request_too_old?(headers)
+        false
+      else
+        true
+      end
     end
 
     # Returns the access id from the request's authorization header
@@ -58,8 +67,7 @@ module ApiAuth
 
   private
 
-    def request_too_old?(request)
-      headers = Headers.new(request)
+    def request_too_old?(headers)
       # 900 seconds is 15 minutes
       begin
         Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
@@ -68,29 +76,23 @@ module ApiAuth
       end
     end
 
-    def md5_mismatch?(request)
-      headers = Headers.new(request)
-      headers.md5_mismatch?
-    end
-
-    def signatures_match?(request, secret_key)
-      headers = Headers.new(request)
+    def signatures_match?(headers, secret_key)
       if match_data = parse_auth_header(headers.authorization_header)
         hmac = match_data[2]
-        return hmac == hmac_signature(request, secret_key)
+        hmac == hmac_signature(headers, secret_key)
+      else
+        false
       end
-      false
     end
 
-    def hmac_signature(request, secret_key)
-      headers = Headers.new(request)
+    def hmac_signature(headers, secret_key)
       canonical_string = headers.canonical_string
       digest = OpenSSL::Digest.new('sha1')
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
-    def auth_header(request, access_id, secret_key)
-      "APIAuth #{access_id}:#{hmac_signature(request, secret_key)}"
+    def auth_header(headers, access_id, secret_key)
+      "APIAuth #{access_id}:#{hmac_signature(headers, secret_key)}"
     end
 
     def parse_auth_header(auth_header)
