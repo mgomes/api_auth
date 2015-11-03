@@ -67,6 +67,8 @@ module ApiAuth
 
   private
 
+    AUTH_HEADER_PATTERN = /^APIAuth ([^:]+):(.+)$/
+
     def request_too_old?(headers)
       # 900 seconds is 15 minutes
       begin
@@ -96,7 +98,7 @@ module ApiAuth
     end
 
     def parse_auth_header(auth_header)
-      Regexp.new("APIAuth ([^:]+):(.+)$").match(auth_header)
+      AUTH_HEADER_PATTERN.match(auth_header)
     end
 
   end # class methods
