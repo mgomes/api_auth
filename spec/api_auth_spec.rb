@@ -90,6 +90,11 @@ describe "ApiAuth" do
         ApiAuth.authentic?(@signed_request, @secret_key).should be_true
       end
 
+      it "should authenticate a request with a prefix before APIAuth in the authorization header" do
+        @signed_request['Authorization'] = 'Corporate' + @signed_request['Authorization']
+        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+      end
+
       it "should NOT authenticate a non-valid request" do
         ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
       end

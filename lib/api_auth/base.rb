@@ -67,7 +67,7 @@ module ApiAuth
 
   private
 
-    AUTH_HEADER_PATTERN = /^APIAuth ([^:]+):(.+)$/
+    AUTH_HEADER_PATTERN = /APIAuth ([^:]+):(.+)$/
 
     def request_too_old?(headers)
       # 900 seconds is 15 minutes
