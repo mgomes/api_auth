@@ -50,7 +50,12 @@ describe "Rails integration" do
 
     def generated_response(request, action = :index)
       if defined?(ActionDispatch)
-        TestController.action(action).call(request.env).last
+        response = ActionDispatch::TestResponse.new
+        controller = TestController.new
+        controller.request = request
+        controller.response = response
+        controller.process(action)
+        response
       else
         request.action = action.to_s
         request.path = "/#{action.to_s}"

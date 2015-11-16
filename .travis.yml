@@ -11,12 +11,15 @@ gemfile:
   - gemfiles/rails_32.gemfile
   - gemfiles/rails_4.gemfile
   - gemfiles/rails_41.gemfile
+  - gemfiles/rails_42.gemfile
 matrix:
   exclude:
     - rvm: 1.8.7-p374
       gemfile: gemfiles/rails_4.gemfile
     - rvm: 1.8.7-p374
       gemfile: gemfiles/rails_41.gemfile
+    - rvm: 1.8.7-p374
+      gemfile: gemfiles/rails_42.gemfile
     - rvm: 2.1.5
       gemfile: gemfiles/rails_23.gemfile
     - rvm: 2.1.5
