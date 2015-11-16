@@ -64,7 +64,7 @@ describe ApiAuth::Headers do
         request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
         'content-type' => 'text/plain')
         headers = ApiAuth::Headers.new(request)
-        expect(headers.md5_mismatch?).to be_falsey
+        expect(headers.md5_mismatch?).to be false
       end
     end
   end
@@ -295,7 +295,7 @@ describe ApiAuth::Headers do
          request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
          'content-type' => 'text/plain')
          headers = ApiAuth::Headers.new(request)
-         expect(headers.md5_mismatch?).to be_falsey
+         expect(headers.md5_mismatch?).to be false
        end
      end
    end
