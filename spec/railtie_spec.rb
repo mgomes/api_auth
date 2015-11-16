@@ -68,7 +68,7 @@ describe "Rails integration" do
       request.env['DATE'] = Time.now.utc.httpdate
       ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
       response = generated_response(request, :index)
-      response.code.should == "200"
+      expect(response.code).to eq("200")
     end
 
     it "should forbid a request with properly signed headers but timestamp > 15 minutes" do
@@ -76,32 +76,32 @@ describe "Rails integration" do
       request.env['DATE'] = "Mon, 23 Jan 1984 03:29:56 GMT"
       ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
       response = generated_response(request, :index)
-      response.code.should == "401"
+      expect(response.code).to eq("401")
     end
 
     it "should insert a DATE header in the request when one hasn't been specified" do
       request = ActionController::TestRequest.new
       ApiAuth.sign!(request, "1044", API_KEY_STORE["1044"])
-      request.headers['DATE'].should_not be_nil
+      expect(request.headers['DATE']).not_to be_nil
     end
 
     it "should forbid an unsigned request to a protected controller action" do
       request = ActionController::TestRequest.new
       response = generated_response(request, :index)
-      response.code.should == "401"
+      expect(response.code).to eq("401")
     end
 
     it "should forbid a request with a bogus signature" do
       request = ActionController::TestRequest.new
       request.env['Authorization'] = "APIAuth bogus:bogus"
       response = generated_response(request, :index)
-      response.code.should == "401"
+      expect(response.code).to eq("401")
     end
 
     it "should allow non-protected controller actions to function as before" do
       request = ActionController::TestRequest.new
       response = generated_response(request, :public)
-      response.code.should == "200"
+      expect(response.code).to eq("200")
     end
 
   end
@@ -116,7 +116,7 @@ describe "Rails integration" do
 
     it "should send signed requests automagically" do
       timestamp = Time.parse("Mon, 23 Jan 1984 03:29:56 GMT")
-      Time.should_receive(:now).at_least(1).times.and_return(timestamp)
+      expect(Time).to receive(:now).at_least(1).times.and_return(timestamp)
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get "/test_resources/1.xml",
           {

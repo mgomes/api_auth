@@ -10,13 +10,13 @@ describe "ApiAuth" do
     end
 
     it "should generate secret keys that are 88 characters" do
-      ApiAuth.generate_secret_key.size.should be(88)
+      expect(ApiAuth.generate_secret_key.size).to be(88)
     end
 
     it "should generate keys that have a Hamming Distance of at least 65" do
       key1 = ApiAuth.generate_secret_key
       key2 = ApiAuth.generate_secret_key
-      Amatch::Hamming.new(key1).match(key2).should be > 65
+      expect(Amatch::Hamming.new(key1).match(key2)).to be > 65
     end
 
   end
@@ -45,7 +45,7 @@ describe "ApiAuth" do
       end
 
       it "should return a Net::HTTP object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Net::HTTP")
+        expect(ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s).to match("Net::HTTP")
       end
 
       describe "md5 header" do
@@ -55,7 +55,7 @@ describe "ApiAuth" do
               'content-type' => 'text/plain',
               'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+            expect(signed_request['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
           end
 
           it "should calculate for real content" do
@@ -64,7 +64,7 @@ describe "ApiAuth" do
               'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             request.body = "hello\nworld"
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
+            expect(signed_request['Content-MD5']).to eq("kZXQvrKoieG+Be1rsZVINw==")
           end
 
           it "should calculate for real multipart content" do
@@ -73,30 +73,30 @@ describe "ApiAuth" do
               'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             request.body_stream = File.new('spec/fixtures/upload.png')
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == "k4U8MTA3RHDcewBzymVNEQ=="
+            expect(signed_request['Content-MD5']).to eq("k4U8MTA3RHDcewBzymVNEQ==")
           end
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request['Content-MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
+          expect(@signed_request['Content-MD5']).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
         end
       end
 
       it "should sign the request" do
-        @signed_request['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+        expect(@signed_request['Authorization']).to eq("APIAuth 1044:#{hmac(@secret_key, @request)}")
       end
 
       it "should authenticate a valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should authenticate a request with a prefix before APIAuth in the authorization header" do
         @signed_request['Authorization'] = 'Corporate' + @signed_request['Authorization']
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should NOT authenticate a non-valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+        expect(ApiAuth.authentic?(@signed_request, @secret_key+'j')).to be_falsey
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
@@ -106,23 +106,23 @@ describe "ApiAuth" do
         request.body = "hello\nworld"
         signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
         signed_request.body = "goodbye"
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate an expired request" do
         @request['Date'] = 16.minutes.ago.utc.httpdate
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate a request with an invalid date" do
         @request['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should retrieve the access_id" do
-        ApiAuth.access_id(@signed_request).should == "1044"
+        expect(ApiAuth.access_id(@signed_request)).to eq("1044")
       end
 
     end
@@ -140,7 +140,7 @@ describe "ApiAuth" do
       end
 
       it "should return a RestClient object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("RestClient")
+        expect(ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s).to match("RestClient")
       end
 
       describe "md5 header" do
@@ -152,7 +152,7 @@ describe "ApiAuth" do
               :headers => headers,
               :method => :put)
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.headers['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+            expect(signed_request.headers['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
           end
 
           it "should calculate for real content" do
@@ -163,17 +163,17 @@ describe "ApiAuth" do
               :method => :put,
               :payload => "hellow\nworld")
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.headers['Content-MD5'].should == "G0grublI06013h58g9j8Vw=="
+            expect(signed_request.headers['Content-MD5']).to eq("G0grublI06013h58g9j8Vw==")
           end
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.headers['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+          expect(@signed_request.headers['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
         end
       end
 
       it "should sign the request" do
-        @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+        expect(@signed_request.headers['Authorization']).to eq("APIAuth 1044:#{hmac(@secret_key, @request)}")
       end
 
       it "should sign the request using the generated md5 header" do
@@ -193,7 +193,7 @@ describe "ApiAuth" do
         ApiAuth.sign!(request1, @access_id, @secret_key)
         ApiAuth.sign!(request2, @access_id, @secret_key)
 
-        request2.headers['Authorization'].should == request1.headers['Authorization']
+        expect(request2.headers['Authorization']).to eq(request1.headers['Authorization'])
       end
 
       it "should sign the request using the generated Date header" do
@@ -212,15 +212,15 @@ describe "ApiAuth" do
 
         ApiAuth.sign!(request2, @access_id, @secret_key)
 
-        request2.headers['Authorization'].should == request1.headers['Authorization']
+        expect(request2.headers['Authorization']).to eq(request1.headers['Authorization'])
       end
 
       it "should authenticate a valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should NOT authenticate a non-valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+        expect(ApiAuth.authentic?(@signed_request, @secret_key+'j')).to be_falsey
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
@@ -232,23 +232,23 @@ describe "ApiAuth" do
           :payload => "hello\nworld")
         signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
         signed_request.instance_variable_set("@payload", RestClient::Payload.generate('goodbye'))
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate an expired request" do
         @request.headers['Date'] = 16.minutes.ago.utc.httpdate
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate a request with an invalid date" do
         @request.headers['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should retrieve the access_id" do
-        ApiAuth.access_id(@signed_request).should == "1044"
+        expect(ApiAuth.access_id(@signed_request)).to eq("1044")
       end
 
     end
@@ -266,7 +266,7 @@ describe "ApiAuth" do
       end
 
       it "should return a Curl::Easy object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Curl::Easy")
+        expect(ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s).to match("Curl::Easy")
       end
 
       describe "md5 header" do
@@ -277,40 +277,40 @@ describe "ApiAuth" do
             curl.headers = headers
           end
           signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-          signed_request.headers['Content-MD5'].should == nil
+          expect(signed_request.headers['Content-MD5']).to eq(nil)
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.headers['Content-MD5'].should == "e59ff97941044f85df5297e1c302d260"
+          expect(@signed_request.headers['Content-MD5']).to eq("e59ff97941044f85df5297e1c302d260")
         end
       end
 
       it "should sign the request" do
-        @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+        expect(@signed_request.headers['Authorization']).to eq("APIAuth 1044:#{hmac(@secret_key, @request)}")
       end
 
       it "should authenticate a valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should NOT authenticate a non-valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+        expect(ApiAuth.authentic?(@signed_request, @secret_key+'j')).to be_falsey
       end
 
       it "should NOT authenticate an expired request" do
         @request.headers['Date'] = 16.minutes.ago.utc.httpdate
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate a request with an invalid date" do
         @request.headers['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should retrieve the access_id" do
-        ApiAuth.access_id(@signed_request).should == "1044"
+        expect(ApiAuth.access_id(@signed_request)).to eq("1044")
       end
 
     end
@@ -332,7 +332,7 @@ describe "ApiAuth" do
       end
 
       it "should return a ActionDispatch::Request object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match(request_klass.to_s)
+        expect(ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s).to match(request_klass.to_s)
       end
 
       describe "md5 header" do
@@ -346,7 +346,7 @@ describe "ApiAuth" do
               'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT',
               'rack.input' => StringIO.new)
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+            expect(signed_request.env['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
           end
 
           it "should calculate for real content" do
@@ -359,26 +359,26 @@ describe "ApiAuth" do
               'rack.input' => StringIO.new("hello\nworld"),
               'CONTENT_LENGTH' => '11')
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
+            expect(signed_request.env['Content-MD5']).to eq("kZXQvrKoieG+Be1rsZVINw==")
           end
 
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.env['CONTENT_MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
+          expect(@signed_request.env['CONTENT_MD5']).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
         end
       end
 
       it "should sign the request" do
-        @signed_request.env['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+        expect(@signed_request.env['Authorization']).to eq("APIAuth 1044:#{hmac(@secret_key, @request)}")
       end
 
       it "should authenticate a valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should NOT authenticate a non-valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+        expect(ApiAuth.authentic?(@signed_request, @secret_key+'j')).to be_falsey
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
@@ -391,23 +391,23 @@ describe "ApiAuth" do
           'rack.input' => StringIO.new("hello\nworld"))
         signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
         signed_request.instance_variable_get("@env")["rack.input"] = StringIO.new("goodbye")
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate an expired request" do
         @request.env['HTTP_DATE'] = 16.minutes.ago.utc.httpdate
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate a request with an invalid date" do
         @request.env['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should retrieve the access_id" do
-        ApiAuth.access_id(@signed_request).should == "1044"
+        expect(ApiAuth.access_id(@signed_request)).to eq("1044")
       end
 
     end
@@ -423,7 +423,7 @@ describe "ApiAuth" do
       end
 
       it "should return a Rack::Request object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Rack::Request")
+        expect(ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s).to match("Rack::Request")
       end
 
       describe "md5 header" do
@@ -433,7 +433,7 @@ describe "ApiAuth" do
                         'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
             request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+            expect(signed_request.env['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
           end
 
           it "should calculate for real content" do
@@ -441,25 +441,25 @@ describe "ApiAuth" do
                         'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
             request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put, :input => "hellow\nworld").merge!(headers))
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request.env['Content-MD5'].should == "G0grublI06013h58g9j8Vw=="
+            expect(signed_request.env['Content-MD5']).to eq("G0grublI06013h58g9j8Vw==")
           end
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.env['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+          expect(@signed_request.env['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
         end
       end
 
       it "should sign the request" do
-        @signed_request.env['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+        expect(@signed_request.env['Authorization']).to eq("APIAuth 1044:#{hmac(@secret_key, @request)}")
       end
 
       it "should authenticate a valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should NOT authenticate a non-valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+        expect(ApiAuth.authentic?(@signed_request, @secret_key+'j')).to be_falsey
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
@@ -470,23 +470,23 @@ describe "ApiAuth" do
         changed_request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put, :input => "goodbye").merge!(headers))
         signed_request.env['rack.input'] = changed_request.env['rack.input']
         signed_request.env['CONTENT_LENGTH'] = changed_request.env['CONTENT_LENGTH']
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate an expired request" do
         @request.env['Date'] = 16.minutes.ago.utc.httpdate
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate a request with an invalid date" do
         @request.env['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should retrieve the access_id" do
-        ApiAuth.access_id(@signed_request).should == "1044"
+        expect(ApiAuth.access_id(@signed_request)).to eq("1044")
       end
 
     end
@@ -504,7 +504,7 @@ describe "ApiAuth" do
       end
 
       it "should return a HTTPI object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("HTTPI::Request")
+        expect(ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s).to match("HTTPI::Request")
       end
 
       describe "md5 header" do
@@ -514,7 +514,7 @@ describe "ApiAuth" do
                                          'content-type' => 'text/plain',
                                          'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+            expect(signed_request['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
           end
 
           it "should calculate for real content" do
@@ -523,25 +523,25 @@ describe "ApiAuth" do
                                          'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
             request.body = "hello\nworld"
             signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-            signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
+            expect(signed_request['Content-MD5']).to eq("kZXQvrKoieG+Be1rsZVINw==")
           end
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.headers['Content-MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
+          expect(@signed_request.headers['Content-MD5']).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
         end
       end
 
       it "should sign the request" do
-        @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+        expect(@signed_request.headers['Authorization']).to eq("APIAuth 1044:#{hmac(@secret_key, @request)}")
       end
 
       it "should authenticate a valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should NOT authenticate a non-valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+        expect(ApiAuth.authentic?(@signed_request, @secret_key+'j')).to be_falsey
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
@@ -551,23 +551,23 @@ describe "ApiAuth" do
         request.body = "hello\nworld"
         signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
         signed_request.body = "goodbye"
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate an expired request" do
         @request.headers['Date'] = 16.minutes.ago.utc.httpdate
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate a request with an invalid date" do
         @request.headers['Date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should retrieve the access_id" do
-        ApiAuth.access_id(@signed_request).should == "1044"
+        expect(ApiAuth.access_id(@signed_request)).to eq("1044")
       end
     end
 
@@ -595,7 +595,7 @@ describe "ApiAuth" do
       end
 
       it "should return a Faraday::Request object after signing it" do
-        ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s.should match("Faraday::Request")
+        expect(ApiAuth.sign!(@request, @access_id, @secret_key).class.to_s).to match("Faraday::Request")
       end
 
       describe "md5 header" do
@@ -606,7 +606,7 @@ describe "ApiAuth" do
                                        'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'})
 
               signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-              signed_request['Content-MD5'].should == "1B2M2Y8AsgTpgAmY7PhCfg=="
+              expect(signed_request['Content-MD5']).to eq("1B2M2Y8AsgTpgAmY7PhCfg==")
             end
           end
 
@@ -617,26 +617,26 @@ describe "ApiAuth" do
               request.body = "hello\nworld"
 
               signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
-              signed_request['Content-MD5'].should == "kZXQvrKoieG+Be1rsZVINw=="
+              expect(signed_request['Content-MD5']).to eq("kZXQvrKoieG+Be1rsZVINw==")
             end
           end
         end
 
         it "should leave the content-md5 alone if provided" do
-          @signed_request.headers['Content-MD5'].should == '1B2M2Y8AsgTpgAmY7PhCfg=='
+          expect(@signed_request.headers['Content-MD5']).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
         end
       end
 
       it "should sign the request" do
-        @signed_request.headers['Authorization'].should == "APIAuth 1044:#{hmac(@secret_key, @request)}"
+        expect(@signed_request.headers['Authorization']).to eq("APIAuth 1044:#{hmac(@secret_key, @request)}")
       end
 
       it "should authenticate a valid request with parameters" do
-        ApiAuth.authentic?(@signed_request, @secret_key).should be_true
+        expect(ApiAuth.authentic?(@signed_request, @secret_key)).to be_truthy
       end
 
       it "should NOT authenticate a non-valid request" do
-        ApiAuth.authentic?(@signed_request, @secret_key+'j').should be_false
+        expect(ApiAuth.authentic?(@signed_request, @secret_key+'j')).to be_falsey
       end
 
       it "should NOT authenticate a mismatched content-md5 when body has changed" do
@@ -647,31 +647,31 @@ describe "ApiAuth" do
 
           signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
           signed_request.body = 'goodbye'
-          ApiAuth.authentic?(signed_request, @secret_key).should be_false
+          expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
         end
       end
 
       it "should NOT authenticate an expired request" do
         @request.headers['DATE'] = 16.minutes.ago.utc.httpdate
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should NOT authenticate a request with an invalid date" do
         @request.headers['DATE'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
         signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
-        ApiAuth.authentic?(signed_request, @secret_key).should be_false
+        expect(ApiAuth.authentic?(signed_request, @secret_key)).to be_falsey
       end
 
       it "should retrieve the access_id" do
-        ApiAuth.access_id(@signed_request).should == "1044"
+        expect(ApiAuth.access_id(@signed_request)).to eq("1044")
       end
 
       describe 'request_uri' do
         context 'with parameters' do
           it "should return urls with a query string" do
             req = ::ApiAuth::RequestDrivers::FaradayRequest.new(@request)
-            req.request_uri.should == '/resource.xml?bar=foo&foo=bar'
+            expect(req.request_uri).to eq('/resource.xml?bar=foo&foo=bar')
           end
         end
 
@@ -681,7 +681,7 @@ describe "ApiAuth" do
               request.headers.merge!({'content-type' => 'text/plain',
                                        'DATE' => Time.now.utc.httpdate})
               req = ::ApiAuth::RequestDrivers::FaradayRequest.new(request)
-              req.request_uri.should == '/resource.xml'
+              expect(req.request_uri).to eq('/resource.xml')
             end
           end
         end

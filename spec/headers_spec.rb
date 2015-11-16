@@ -14,11 +14,11 @@ describe ApiAuth::Headers do
     end
 
     it "should set the content-type" do
-      @headers.canonical_string.split(',')[0].should match 'multipart/form-data; boundary='
+      expect(@headers.canonical_string.split(',')[0]).to match 'multipart/form-data; boundary='
     end
 
     it "should generate the proper content-md5" do
-      @headers.canonical_string.split(',')[1].should match 'zap0d6zuh6wRBSrsvO2bcw=='
+      expect(@headers.canonical_string.split(',')[1]).to match 'zap0d6zuh6wRBSrsvO2bcw=='
     end
 
   end
@@ -34,12 +34,12 @@ describe ApiAuth::Headers do
     end
 
     it "should generate the proper canonical string" do
-      @headers.canonical_string.should == CANONICAL_STRING
+      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
     end
 
     it "should set the authorization header" do
       @headers.sign_header("alpha")
-      @headers.authorization_header.should == "alpha"
+      expect(@headers.authorization_header).to eq("alpha")
     end
 
     it "should set the DATE header if one is not already present" do
@@ -47,7 +47,7 @@ describe ApiAuth::Headers do
         'content-type' => 'text/plain',
         'content-md5' => 'e59ff97941044f85df5297e1c302d260')
       ApiAuth.sign!(@request, "some access id", "some secret key")
-      @request['DATE'].should_not be_nil
+      expect(@request['DATE']).not_to be_nil
     end
 
     it "should not set the DATE header just by asking for the canonical_string" do
@@ -56,7 +56,7 @@ describe ApiAuth::Headers do
         'content-md5' => 'e59ff97941044f85df5297e1c302d260')
       headers = ApiAuth::Headers.new(request)
       headers.canonical_string
-      request['DATE'].should be_nil
+      expect(request['DATE']).to be_nil
     end
 
     context "md5_mismatch?" do
@@ -64,7 +64,7 @@ describe ApiAuth::Headers do
         request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
         'content-type' => 'text/plain')
         headers = ApiAuth::Headers.new(request)
-        headers.md5_mismatch?.should be_false
+        expect(headers.md5_mismatch?).to be_falsey
       end
     end
   end
@@ -82,12 +82,12 @@ describe ApiAuth::Headers do
     end
 
     it "should generate the proper canonical string" do
-      @headers.canonical_string.should == CANONICAL_STRING
+      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
     end
 
     it "should set the authorization header" do
       @headers.sign_header("alpha")
-      @headers.authorization_header.should == "alpha"
+      expect(@headers.authorization_header).to eq("alpha")
     end
 
     it "should set the DATE header if one is not already present" do
@@ -97,7 +97,7 @@ describe ApiAuth::Headers do
         :headers => headers,
         :method => :put)
       ApiAuth.sign!(@request, "some access id", "some secret key")
-      @request.headers['DATE'].should_not be_nil
+      expect(@request.headers['DATE']).not_to be_nil
     end
 
     it "should not set the DATE header just by asking for the canonical_string" do
@@ -108,7 +108,7 @@ describe ApiAuth::Headers do
         :method => :put)
       headers = ApiAuth::Headers.new(request)
       headers.canonical_string
-      request.headers['DATE'].should be_nil
+      expect(request.headers['DATE']).to be_nil
     end
 
     it "doesn't mess up symbol based headers" do
@@ -120,7 +120,7 @@ describe ApiAuth::Headers do
         :method => :put)
       @headers = ApiAuth::Headers.new(@request)
       ApiAuth.sign!(@request, "some access id", "some secret key")
-      @request.processed_headers.should have_key('Content-Type')
+      expect(@request.processed_headers).to have_key('Content-Type')
     end
   end
 
@@ -137,12 +137,12 @@ describe ApiAuth::Headers do
     end
 
     it "should generate the proper canonical string" do
-      @headers.canonical_string.should == CANONICAL_STRING
+      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
     end
 
     it "should set the authorization header" do
       @headers.sign_header("alpha")
-      @headers.authorization_header.should == "alpha"
+      expect(@headers.authorization_header).to eq("alpha")
     end
 
     it "should set the DATE header if one is not already present" do
@@ -152,7 +152,7 @@ describe ApiAuth::Headers do
         curl.headers = headers
       end
       ApiAuth.sign!(@request, "some access id", "some secret key")
-      @request.headers['DATE'].should_not be_nil
+      expect(@request.headers['DATE']).not_to be_nil
     end
 
     it "should not set the DATE header just by asking for the canonical_string" do
@@ -163,7 +163,7 @@ describe ApiAuth::Headers do
       end
       headers = ApiAuth::Headers.new(request)
       headers.canonical_string
-      request.headers['DATE'].should be_nil
+      expect(request.headers['DATE']).to be_nil
     end
   end
 
@@ -183,12 +183,12 @@ describe ApiAuth::Headers do
     end
 
     it "should generate the proper canonical string" do
-      @headers.canonical_string.should == CANONICAL_STRING
+      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
     end
 
     it "should set the authorization header" do
       @headers.sign_header("alpha")
-      @headers.authorization_header.should == "alpha"
+      expect(@headers.authorization_header).to eq("alpha")
     end
 
     it "should set the DATE header if one is not already present" do
@@ -199,7 +199,7 @@ describe ApiAuth::Headers do
         'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
         'CONTENT_TYPE' => 'text/plain')
       ApiAuth.sign!(@request, "some access id", "some secret key")
-      @request.headers['DATE'].should_not be_nil
+      expect(@request.headers['DATE']).not_to be_nil
     end
 
     it "should not set the DATE header just by asking for the canonical_string" do
@@ -211,7 +211,7 @@ describe ApiAuth::Headers do
         'CONTENT_TYPE' => 'text/plain')
       headers = ApiAuth::Headers.new(request)
       headers.canonical_string
-      request.headers['DATE'].should be_nil
+      expect(request.headers['DATE']).to be_nil
     end
   end
 
@@ -227,12 +227,12 @@ describe ApiAuth::Headers do
     end
 
     it "should generate the proper canonical string" do
-      @headers.canonical_string.should == CANONICAL_STRING
+      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
     end
 
     it "should set the authorization header" do
       @headers.sign_header("alpha")
-      @headers.authorization_header.should == "alpha"
+      expect(@headers.authorization_header).to eq("alpha")
     end
 
     it "should set the DATE header if one is not already present" do
@@ -240,7 +240,7 @@ describe ApiAuth::Headers do
                   'Content-Type' => "text/plain" }
       @request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
       ApiAuth.sign!(@request, "some access id", "some secret key")
-      @request.env['DATE'].should_not be_nil
+      expect(@request.env['DATE']).not_to be_nil
     end
 
     it "should not set the DATE header just by asking for the canonical_string" do
@@ -249,7 +249,7 @@ describe ApiAuth::Headers do
       request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
       headers = ApiAuth::Headers.new(request)
       headers.canonical_string
-      request.env['DATE'].should be_nil
+      expect(request.env['DATE']).to be_nil
     end
   end
 
@@ -265,12 +265,12 @@ describe ApiAuth::Headers do
      end
 
      it "should generate the proper canonical string" do
-       @headers.canonical_string.should == CANONICAL_STRING
+       expect(@headers.canonical_string).to eq(CANONICAL_STRING)
      end
 
      it "should set the authorization header" do
        @headers.sign_header("alpha")
-       @headers.authorization_header.should == "alpha"
+       expect(@headers.authorization_header).to eq("alpha")
      end
 
      it "should set the DATE header if one is not already present" do
@@ -278,7 +278,7 @@ describe ApiAuth::Headers do
          'content-type' => 'text/plain',
          'content-md5' => 'e59ff97941044f85df5297e1c302d260')
        ApiAuth.sign!(@request, "some access id", "some secret key")
-       @request['DATE'].should_not be_nil
+       expect(@request['DATE']).not_to be_nil
      end
 
      it "should not set the DATE header just by asking for the canonical_string" do
@@ -287,7 +287,7 @@ describe ApiAuth::Headers do
          'content-md5' => 'e59ff97941044f85df5297e1c302d260')
        headers = ApiAuth::Headers.new(request)
        headers.canonical_string
-       request['DATE'].should be_nil
+       expect(request['DATE']).to be_nil
      end
 
      context "md5_mismatch?" do
@@ -295,7 +295,7 @@ describe ApiAuth::Headers do
          request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
          'content-type' => 'text/plain')
          headers = ApiAuth::Headers.new(request)
-         headers.md5_mismatch?.should be_false
+         expect(headers.md5_mismatch?).to be_falsey
        end
      end
    end
@@ -308,7 +308,7 @@ describe ApiAuth::Headers do
       let(:uri) { ''.freeze }
 
       it 'adds / to canonical string' do
-        subject.canonical_string.should eq(',,/,')
+        expect(subject.canonical_string).to eq(',,/,')
       end
     end
 
@@ -316,11 +316,11 @@ describe ApiAuth::Headers do
       let(:uri) { 'http://google.com'.freeze }
 
       it 'return / as canonical string path' do
-        subject.canonical_string.should eq(',,/,')
+        expect(subject.canonical_string).to eq(',,/,')
       end
 
       it 'does not change request url (by removing host)' do
-        request.url.should eq(uri)
+        expect(request.url).to eq(uri)
       end
     end
 
@@ -328,11 +328,11 @@ describe ApiAuth::Headers do
       let(:uri) { 'http://google.com/'.freeze }
 
       it 'return / as canonical string path' do
-        subject.canonical_string.should eq(',,/,')
+        expect(subject.canonical_string).to eq(',,/,')
       end
 
       it 'does not change request url (by removing host)' do
-        request.url.should eq(uri)
+        expect(request.url).to eq(uri)
       end
     end
   end
