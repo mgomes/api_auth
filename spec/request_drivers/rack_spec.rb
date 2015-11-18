@@ -9,9 +9,9 @@ describe ApiAuth::RequestDrivers::RackRequest do
   let(:request_headers){
     {
       'Authorization'  => 'APIAuth 1044:12345',
-      'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-      'content-type' => 'text/plain',
-      'date' => timestamp
+      'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+      'Content-Type' => 'text/plain',
+      'Date' => timestamp
     }
   }
 
