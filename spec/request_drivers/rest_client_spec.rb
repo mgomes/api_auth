@@ -264,4 +264,18 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       end
     end
   end
+
+  describe "edge cases" do
+    it "doesn't mess up symbol based headers" do
+      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+                  :content_type => "text/plain",
+                  'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
+      request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
+        :headers => headers,
+        :method => :put)
+      headers = ApiAuth::Headers.new(request)
+      ApiAuth.sign!(request, "some access id", "some secret key")
+      expect(request.processed_headers).to have_key('Content-Type')
+    end
+  end
 end

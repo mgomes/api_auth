@@ -2,343 +2,70 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe ApiAuth::Headers do
 
-  CANONICAL_STRING = "text/plain,e59ff97941044f85df5297e1c302d260,/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT"
-
-  describe "with Net::HTTP::Put::Multipart" do
-
-    before(:each) do
-      request = Net::HTTP::Put::Multipart.new("/resource.xml?foo=bar&bar=foo",
-        'file' => UploadIO.new(File.new('spec/fixtures/upload.png'), 'image/png', 'upload.png'))
-      ApiAuth.sign!(request, "some access id", "some secret key")
-      @headers = ApiAuth::Headers.new(request)
-    end
-
-    it "should set the content-type" do
-      expect(@headers.canonical_string.split(',')[0]).to match 'multipart/form-data; boundary='
-    end
-
-    it "should generate the proper content-md5" do
-      expect(@headers.canonical_string.split(',')[1]).to match 'zap0d6zuh6wRBSrsvO2bcw=='
-    end
-
-  end
-
-  describe "with Net::HTTP" do
-
-    before(:each) do
-      @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-        'content-type' => 'text/plain',
-        'content-md5' => 'e59ff97941044f85df5297e1c302d260',
-        'date' => "Mon, 23 Jan 1984 03:29:56 GMT")
-      @headers = ApiAuth::Headers.new(@request)
-    end
-
-    it "should generate the proper canonical string" do
-      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
-    end
-
-    it "should set the authorization header" do
-      @headers.sign_header("alpha")
-      expect(@headers.authorization_header).to eq("alpha")
-    end
-
-    it "should set the DATE header if one is not already present" do
-      @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-        'content-type' => 'text/plain',
-        'content-md5' => 'e59ff97941044f85df5297e1c302d260')
-      ApiAuth.sign!(@request, "some access id", "some secret key")
-      expect(@request['DATE']).not_to be_nil
-    end
-
-    it "should not set the DATE header just by asking for the canonical_string" do
-      request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-        'content-type' => 'text/plain',
-        'content-md5' => 'e59ff97941044f85df5297e1c302d260')
-      headers = ApiAuth::Headers.new(request)
-      headers.canonical_string
-      expect(request['DATE']).to be_nil
-    end
-
-    context "md5_mismatch?" do
-      it "is false if no md5 header is present" do
-        request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-        'content-type' => 'text/plain')
-        headers = ApiAuth::Headers.new(request)
-        expect(headers.md5_mismatch?).to be false
-      end
-    end
-  end
-
-  describe "with RestClient" do
-
-    before(:each) do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain",
-                  'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
-      @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
-        :headers => headers,
-        :method => :put)
-      @headers = ApiAuth::Headers.new(@request)
-    end
-
-    it "should generate the proper canonical string" do
-      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
-    end
-
-    it "should set the authorization header" do
-      @headers.sign_header("alpha")
-      expect(@headers.authorization_header).to eq("alpha")
-    end
-
-    it "should set the DATE header if one is not already present" do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain" }
-      @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
-        :headers => headers,
-        :method => :put)
-      ApiAuth.sign!(@request, "some access id", "some secret key")
-      expect(@request.headers['DATE']).not_to be_nil
-    end
-
-    it "should not set the DATE header just by asking for the canonical_string" do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain" }
-      request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
-        :headers => headers,
-        :method => :put)
-      headers = ApiAuth::Headers.new(request)
-      headers.canonical_string
-      expect(request.headers['DATE']).to be_nil
-    end
-
-    it "doesn't mess up symbol based headers" do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  :content_type => "text/plain",
-                  'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
-      @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
-        :headers => headers,
-        :method => :put)
-      @headers = ApiAuth::Headers.new(@request)
-      ApiAuth.sign!(@request, "some access id", "some secret key")
-      expect(@request.processed_headers).to have_key('Content-Type')
-    end
-  end
-
-  describe "with Curb" do
-
-    before(:each) do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain",
-                  'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
-      @request = Curl::Easy.new("/resource.xml?foo=bar&bar=foo") do |curl|
-        curl.headers = headers
-      end
-      @headers = ApiAuth::Headers.new(@request)
-    end
-
-    it "should generate the proper canonical string" do
-      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
-    end
-
-    it "should set the authorization header" do
-      @headers.sign_header("alpha")
-      expect(@headers.authorization_header).to eq("alpha")
-    end
-
-    it "should set the DATE header if one is not already present" do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain" }
-      @request = Curl::Easy.new("/resource.xml?foo=bar&bar=foo") do |curl|
-        curl.headers = headers
-      end
-      ApiAuth.sign!(@request, "some access id", "some secret key")
-      expect(@request.headers['DATE']).not_to be_nil
-    end
-
-    it "should not set the DATE header just by asking for the canonical_string" do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain" }
-      request = Curl::Easy.new("/resource.xml?foo=bar&bar=foo") do |curl|
-        curl.headers = headers
-      end
-      headers = ApiAuth::Headers.new(request)
-      headers.canonical_string
-      expect(request.headers['DATE']).to be_nil
-    end
-  end
-
-  describe "with ActionController" do
-
-    let(:request_klass){ ActionDispatch::Request rescue ActionController::Request }
-
-    before(:each) do
-      @request = request_klass.new(
-        'PATH_INFO' => '/resource.xml',
-        'QUERY_STRING' => 'foo=bar&bar=foo',
-        'REQUEST_METHOD' => 'PUT',
-        'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
-        'CONTENT_TYPE' => 'text/plain',
-        'HTTP_DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT')
-      @headers = ApiAuth::Headers.new(@request)
-    end
-
-    it "should generate the proper canonical string" do
-      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
-    end
-
-    it "should set the authorization header" do
-      @headers.sign_header("alpha")
-      expect(@headers.authorization_header).to eq("alpha")
-    end
-
-    it "should set the DATE header if one is not already present" do
-      @request = request_klass.new(
-        'PATH_INFO' => '/resource.xml',
-        'QUERY_STRING' => 'foo=bar&bar=foo',
-        'REQUEST_METHOD' => 'PUT',
-        'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
-        'CONTENT_TYPE' => 'text/plain')
-      ApiAuth.sign!(@request, "some access id", "some secret key")
-      expect(@request.headers['DATE']).not_to be_nil
-    end
-
-    it "should not set the DATE header just by asking for the canonical_string" do
-      request = request_klass.new(
-        'PATH_INFO' => '/resource.xml',
-        'QUERY_STRING' => 'foo=bar&bar=foo',
-        'REQUEST_METHOD' => 'PUT',
-        'CONTENT_MD5' => 'e59ff97941044f85df5297e1c302d260',
-        'CONTENT_TYPE' => 'text/plain')
-      headers = ApiAuth::Headers.new(request)
-      headers.canonical_string
-      expect(request.headers['DATE']).to be_nil
-    end
-  end
-
-  describe "with Rack::Request" do
-
-    before(:each) do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain",
-                  'Date' => "Mon, 23 Jan 1984 03:29:56 GMT"
-                  }
-      @request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
-      @headers = ApiAuth::Headers.new(@request)
-    end
-
-    it "should generate the proper canonical string" do
-      expect(@headers.canonical_string).to eq(CANONICAL_STRING)
-    end
-
-    it "should set the authorization header" do
-      @headers.sign_header("alpha")
-      expect(@headers.authorization_header).to eq("alpha")
-    end
-
-    it "should set the DATE header if one is not already present" do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain" }
-      @request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
-      ApiAuth.sign!(@request, "some access id", "some secret key")
-      expect(@request.env['DATE']).not_to be_nil
-    end
-
-    it "should not set the DATE header just by asking for the canonical_string" do
-      headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-                  'Content-Type' => "text/plain" }
-      request = Rack::Request.new(Rack::MockRequest.env_for("/resource.xml?foo=bar&bar=foo", :method => :put).merge!(headers))
-      headers = ApiAuth::Headers.new(request)
-      headers.canonical_string
-      expect(request.env['DATE']).to be_nil
-    end
-  end
-
-  describe "with HTTPI" do
-     before(:each) do
-       @request = HTTPI::Request.new("http://localhost/resource.xml?foo=bar&bar=foo")
-       @request.headers.merge!({
-         'content-type' => 'text/plain',
-         'content-md5'  => 'e59ff97941044f85df5297e1c302d260',
-         'date'         => "Mon, 23 Jan 1984 03:29:56 GMT"
-       })
-       @headers = ApiAuth::Headers.new(@request)
-     end
-
-     it "should generate the proper canonical string" do
-       expect(@headers.canonical_string).to eq(CANONICAL_STRING)
-     end
-
-     it "should set the authorization header" do
-       @headers.sign_header("alpha")
-       expect(@headers.authorization_header).to eq("alpha")
-     end
-
-     it "should set the DATE header if one is not already present" do
-       @request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-         'content-type' => 'text/plain',
-         'content-md5' => 'e59ff97941044f85df5297e1c302d260')
-       ApiAuth.sign!(@request, "some access id", "some secret key")
-       expect(@request['DATE']).not_to be_nil
-     end
-
-     it "should not set the DATE header just by asking for the canonical_string" do
-       request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-         'content-type' => 'text/plain',
-         'content-md5' => 'e59ff97941044f85df5297e1c302d260')
-       headers = ApiAuth::Headers.new(request)
-       headers.canonical_string
-       expect(request['DATE']).to be_nil
-     end
-
-     context "md5_mismatch?" do
-       it "is false if no md5 header is present" do
-         request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
-         'content-type' => 'text/plain')
-         headers = ApiAuth::Headers.new(request)
-         expect(headers.md5_mismatch?).to be false
-       end
-     end
-   end
-
   describe '#canonical_string' do
-    let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
-    subject { described_class.new(request) }
+    context "uri edge cases" do
+      let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
+      subject(:headers) { described_class.new(request) }
+      let(:uri) { '' }
 
-    context 'empty uri' do
-      let(:uri) { ''.freeze }
+      context 'empty uri' do
+        let(:uri) { ''.freeze }
 
-      it 'adds / to canonical string' do
-        expect(subject.canonical_string).to eq(',,/,')
+        it 'adds / to canonical string' do
+          expect(subject.canonical_string).to eq(',,/,')
+        end
+      end
+
+      context 'uri with just host without /' do
+        let(:uri) { 'http://google.com'.freeze }
+
+        it 'return / as canonical string path' do
+          expect(subject.canonical_string).to eq(',,/,')
+        end
+
+        it 'does not change request url (by removing host)' do
+          expect(request.url).to eq(uri)
+        end
+      end
+
+      context 'uri with host and /' do
+        let(:uri) { 'http://google.com/'.freeze }
+
+        it 'return / as canonical string path' do
+          expect(subject.canonical_string).to eq(',,/,')
+        end
+
+        it 'does not change request url (by removing host)' do
+          expect(request.url).to eq(uri)
+        end
       end
     end
 
-    context 'uri with just host without /' do
-      let(:uri) { 'http://google.com'.freeze }
+    context "string construction" do
+      let(:request){ RestClient::Request.new(:url => "http://google.com", :method => :get) }
+      subject(:headers) { described_class.new(request) }
+      let(:driver){ headers.instance_variable_get("@request")}
 
-      it 'return / as canonical string path' do
-        expect(subject.canonical_string).to eq(',,/,')
+      it "constructs the string in the correct order" do
+        expect(driver).to receive(:content_type).ordered.and_call_original
+        expect(driver).to receive(:content_md5).ordered.and_call_original
+        expect(driver).to receive(:request_uri).ordered.and_call_original
+        expect(driver).to receive(:timestamp).ordered.and_call_original
+        headers.canonical_string
       end
 
-      it 'does not change request url (by removing host)' do
-        expect(request.url).to eq(uri)
-      end
-    end
-
-    context 'uri with host and /' do
-      let(:uri) { 'http://google.com/'.freeze }
-
-      it 'return / as canonical string path' do
-        expect(subject.canonical_string).to eq(',,/,')
-      end
-
-      it 'does not change request url (by removing host)' do
-        expect(request.url).to eq(uri)
+      it "puts the canonical string together correctly" do
+        allow(driver).to receive(:content_type).and_return "text/html"
+        allow(driver).to receive(:content_md5).and_return "12345"
+        allow(driver).to receive(:request_uri).and_return "/foo"
+        allow(driver).to receive(:timestamp).and_return "Mon, 23 Jan 1984 03:29:56 GMT"
+        expect(headers.canonical_string).to eq "text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT"
       end
     end
   end
 
   describe '#calculate_md5' do
-    subject(:headers) { described_class.new(request) }
+    subject(:headers){ described_class.new(request) }
     let(:driver){ headers.instance_variable_get("@request")}
 
     context "no md5 already calculated" do
@@ -369,6 +96,36 @@ describe ApiAuth::Headers do
       it "doesn't populate the md5 header" do
         expect(driver).not_to receive(:populate_content_md5)
         headers.calculate_md5
+      end
+    end
+  end
+
+  describe "#md5_mismatch?" do
+    let(:request){ RestClient::Request.new(:url => "http://google.com", :method => :get) }
+    subject(:headers){ described_class.new(request) }
+    let(:driver){ headers.instance_variable_get("@request") }
+
+    context "when request has md5 header" do
+      it "asks the driver" do
+        allow(driver).to receive(:content_md5).and_return "1234"
+
+        expect(driver).to receive(:md5_mismatch?).and_call_original
+        headers.md5_mismatch?
+      end
+    end
+
+    context "when request has no md5" do
+      it "doesn't ask the driver" do
+        allow(driver).to receive(:content_md5).and_return ""
+
+        expect(driver).not_to receive(:md5_mismatch?).and_call_original
+        headers.md5_mismatch?
+      end
+
+      it "returns false" do
+        allow(driver).to receive(:content_md5).and_return ""
+
+        expect(headers.md5_mismatch?).to be false
       end
     end
   end
