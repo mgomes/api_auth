@@ -336,4 +336,40 @@ describe ApiAuth::Headers do
       end
     end
   end
+
+  describe '#calculate_md5' do
+    subject(:headers) { described_class.new(request) }
+    let(:driver){ headers.instance_variable_get("@request")}
+
+    context "no md5 already calculated" do
+      let(:request) {
+        RestClient::Request.new(
+          :url => 'http://google.com',
+          :method => :post,
+          :payload => "hello\nworld"
+        )
+      }
+
+      it "populates the md5 header" do
+        expect(driver).to receive(:populate_content_md5)
+        headers.calculate_md5
+      end
+    end
+
+    context "md5 already calculated" do
+      let(:request) {
+        RestClient::Request.new(
+          :url => 'http://google.com',
+          :method => :post,
+          :payload => "hello\nworld",
+          :headers => {:content_md5 => "abcd"}
+        )
+      }
+
+      it "doesn't populate the md5 header" do
+        expect(driver).not_to receive(:populate_content_md5)
+        headers.calculate_md5
+      end
+    end
+  end
 end

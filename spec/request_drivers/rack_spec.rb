@@ -48,8 +48,21 @@ describe ApiAuth::RequestDrivers::RackRequest do
       expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
     end
 
-    it "calculates md5 from the body" do
-      expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+    describe "#calculated_md5" do
+      it "calculates md5 from the body" do
+        expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+      end
+
+      it "treats no body as empty string" do
+        request = Rack::Request.new(
+          Rack::MockRequest.env_for(
+            request_path,
+            :method => :put
+          ).merge!(request_headers)
+        )
+        driven_request = ApiAuth::RequestDrivers::RackRequest.new(request)
+        expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+      end
     end
   end
 

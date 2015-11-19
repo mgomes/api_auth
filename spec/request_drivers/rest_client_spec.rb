@@ -47,8 +47,20 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
     end
 
-    it "calculates md5 from the body" do
-      expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+    describe "#calculated_md5" do
+      it "calculates md5 from the body" do
+        expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+      end
+
+      it "treats no body as empty string" do
+        request = RestClient::Request.new(
+          :url => "/resource.xml?foo=bar&bar=foo",
+          :headers => request_headers,
+          :method => :put
+        )
+        driven_request = ApiAuth::RequestDrivers::RestClientRequest.new(request)
+        expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+      end
     end
   end
 

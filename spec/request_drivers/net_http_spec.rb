@@ -44,8 +44,21 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
       expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
     end
 
-    it "calculates md5 from the body" do
-      expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+    describe "#calculated_md5" do
+      it "calculates md5 from the body" do
+        expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+      end
+
+      it "treats no body as empty string" do
+        request.body = nil
+        expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+      end
+
+      it "calculates correctly for multipart content" do
+        request.body = nil
+        request.body_stream = File.new('spec/fixtures/upload.png')
+        expect(driven_request.calculated_md5).to eq('k4U8MTA3RHDcewBzymVNEQ==')
+      end
     end
   end
 
