@@ -4,26 +4,34 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
 
   let(:timestamp){ Time.now.utc.httpdate }
 
-  let(:request) do
-    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+  let(:faraday_stubs) do
+    Faraday::Adapter::Test::Stubs.new do |stub|
       stub.put('/resource.xml?foo=bar&bar=foo') { [200, {}, ''] }
       stub.put('/resource.xml') { [200, {}, ''] }
     end
+  end
 
-    faraday_conn = Faraday.new do |builder|
-      builder.adapter :test, stubs
+  let(:faraday_conn) do
+    Faraday.new do |builder|
+      builder.adapter :test, faraday_stubs
     end
+  end
 
+  let(:request_headers) do
+    {
+      'Authorization'  => 'APIAuth 1044:12345',
+      'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
+      'content-type' => 'text/plain',
+      'DATE' => timestamp
+    }
+  end
+
+  let(:request) do
     faraday_request = nil
 
     faraday_conn.put '/resource.xml?foo=bar&bar=foo', "hello\nworld" do |request|
       faraday_request = request
-      faraday_request.headers.merge!({
-        'Authorization'  => 'APIAuth 1044:12345',
-        'Content-MD5' => "1B2M2Y8AsgTpgAmY7PhCfg==",
-        'content-type' => 'text/plain',
-        'DATE' => timestamp
-      })
+      faraday_request.headers.merge!(request_headers)
     end
 
     faraday_request
@@ -65,26 +73,10 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
   end
 
   describe "setting headers correctly" do
-    let(:request) do
-      stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-        stub.put('/resource.xml?foo=bar&bar=foo') { [200, {}, ''] }
-        stub.put('/resource.xml') { [200, {}, ''] }
-      end
-
-      faraday_conn = Faraday.new do |builder|
-        builder.adapter :test, stubs
-      end
-
-      faraday_request = nil
-
-      faraday_conn.put '/resource.xml?foo=bar&bar=foo', "hello\nworld" do |request|
-        faraday_request = request
-        faraday_request.headers.merge!({
-          'content-type' => 'text/plain'
-        })
-      end
-
-      faraday_request
+    let(:request_headers) do
+      {
+        'content-type' => 'text/plain'
+      }
     end
 
     describe "#populate_content_md5" do
