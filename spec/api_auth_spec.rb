@@ -28,24 +28,31 @@ describe "ApiAuth" do
   end
 
   describe ".sign!" do
-    it "generates date and content-md5 headers before signing" do
-      request = RestClient::Request.new(:url => "http://google.com", :method => :get)
-      headers = ApiAuth::Headers.new(request)
+    let(:request){ RestClient::Request.new(:url => "http://google.com", :method => :get) }
+    let(:headers){ ApiAuth::Headers.new(request) }
+
+    it "generates date header before signing" do
       expect(ApiAuth::Headers).to receive(:new).and_return(headers)
-      expect(headers).to receive(:calculate_md5).ordered
+
       expect(headers).to receive(:set_date).ordered
       expect(headers).to receive(:sign_header).ordered
 
       ApiAuth.sign!(request, "abc", "123")
     end
 
+    it "generates content-md5 header before signing" do
+      expect(ApiAuth::Headers).to receive(:new).and_return(headers)
+      expect(headers).to receive(:calculate_md5).ordered
+      expect(headers).to receive(:sign_header).ordered
+
+      ApiAuth.sign!(request, "abc", "123")
+    end
+
     it "returns the same request object back" do
-      request = RestClient::Request.new(:url => "http://google.com", :method => :get)
       expect(ApiAuth.sign!(request, "abc", "123")).to be request
     end
 
     it "calculates the hmac_signature as expected" do
-      request = RestClient::Request.new(:url => "http://google.com", :method => :get)
       ApiAuth.sign!(request, "1044", "123")
       signature = hmac("123", request)
       expect(request.headers['Authorization']).to eq("APIAuth 1044:#{signature}")

@@ -46,14 +46,6 @@ describe ApiAuth::Headers do
       subject(:headers) { described_class.new(request) }
       let(:driver){ headers.instance_variable_get("@request")}
 
-      it "constructs the string in the correct order" do
-        expect(driver).to receive(:content_type).ordered.and_call_original
-        expect(driver).to receive(:content_md5).ordered.and_call_original
-        expect(driver).to receive(:request_uri).ordered.and_call_original
-        expect(driver).to receive(:timestamp).ordered.and_call_original
-        headers.canonical_string
-      end
-
       it "puts the canonical string together correctly" do
         allow(driver).to receive(:content_type).and_return "text/html"
         allow(driver).to receive(:content_md5).and_return "12345"
