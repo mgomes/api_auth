@@ -41,6 +41,10 @@ module ApiAuth
         capitalize_keys @request.env
       end
 
+      def http_method
+        @request.request_method.to_s.upcase
+      end
+
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
         value.nil? ? "" : value

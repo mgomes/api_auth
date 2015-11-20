@@ -7,6 +7,7 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
   let(:faraday_stubs) do
     Faraday::Adapter::Test::Stubs.new do |stub|
       stub.put('/resource.xml?foo=bar&bar=foo') { [200, {}, ''] }
+      stub.get('/resource.xml?foo=bar&bar=foo') { [200, {}, ''] }
       stub.put('/resource.xml') { [200, {}, ''] }
     end
   end
@@ -68,6 +69,42 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
       it "treats no body as empty string" do
         request.body = nil
         expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+      end
+    end
+
+    describe "http_method" do
+      context "when put request" do
+        let(:request) do
+          faraday_request = nil
+
+          faraday_conn.put '/resource.xml?foo=bar&bar=foo', "hello\nworld" do |request|
+            faraday_request = request
+            faraday_request.headers.merge!(request_headers)
+          end
+
+          faraday_request
+        end
+
+        it "returns upcased put" do
+          expect(driven_request.http_method).to eq('PUT')
+        end
+      end
+
+      context "when get request" do
+        let(:request) do
+          faraday_request = nil
+
+          faraday_conn.get '/resource.xml?foo=bar&bar=foo' do |request|
+            faraday_request = request
+            faraday_request.headers.merge!(request_headers)
+          end
+
+          faraday_request
+        end
+
+        it "returns upcased get" do
+          expect(driven_request.http_method).to eq('GET')
+        end
       end
     end
   end

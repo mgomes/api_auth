@@ -62,6 +62,36 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
         expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
       end
     end
+
+    describe "http_method" do
+      context "when put request" do
+        let(:request) do
+          RestClient::Request.new(
+            :url => "/resource.xml?foo=bar&bar=foo",
+            :headers => request_headers,
+            :method => :put
+          )
+        end
+
+        it "returns upcased put" do
+          expect(driven_request.http_method).to eq('PUT')
+        end
+      end
+
+      context "when get request" do
+        let(:request) do
+          RestClient::Request.new(
+            :url => "/resource.xml?foo=bar&bar=foo",
+            :headers => request_headers,
+            :method => :get
+          )
+        end
+
+        it "returns upcased get" do
+          expect(driven_request.http_method).to eq('GET')
+        end
+      end
+    end
   end
 
   describe "setting headers correctly" do

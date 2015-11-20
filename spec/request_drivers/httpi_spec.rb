@@ -49,6 +49,12 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
         expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
       end
     end
+
+    describe "http_method" do
+      it "is always nil" do
+        expect(driven_request.http_method).to be_nil
+      end
+    end
   end
 
   describe "setting headers correctly" do

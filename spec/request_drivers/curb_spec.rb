@@ -39,6 +39,12 @@ describe ApiAuth::RequestDrivers::CurbRequest do
     it "gets the authorization_header" do
       expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
     end
+
+    describe "http_method" do
+      it "is always nil" do
+        expect(driven_request.http_method).to be_nil
+      end
+    end
   end
 
   describe "setting headers correctly" do

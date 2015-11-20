@@ -47,6 +47,10 @@ module ApiAuth
         @request
       end
 
+      def http_method
+        @request.method.upcase
+      end
+
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
         value.nil? ? "" : value
