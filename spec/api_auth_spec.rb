@@ -57,6 +57,24 @@ describe "ApiAuth" do
       signature = hmac("123", request)
       expect(request.headers['Authorization']).to eq("APIAuth 1044:#{signature}")
     end
+
+    context "when passed the with_http_method option" do
+      let(:request){
+        Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+          'content-type' => 'text/plain',
+          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+          'date' => Time.now.utc.httpdate
+        )
+      }
+
+      let(:canonical_string){ ApiAuth::Headers.new(request).canonical_string_with_http_method }
+
+      it "calculates the hmac_signature with http method" do
+        ApiAuth.sign!(request, "1044", "123", { :with_http_method => true })
+        signature = hmac("123", request, canonical_string)
+        expect(request['Authorization']).to eq("APIAuth 1044:#{signature}")
+      end
+    end
   end
 
   describe ".authentic?" do

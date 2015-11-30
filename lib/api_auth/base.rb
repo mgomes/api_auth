@@ -22,11 +22,12 @@ module ApiAuth
     # access_id: The public unique identifier for the client
     #
     # secret_key: assigned secret key that is known to both parties
-    def sign!(request, access_id, secret_key)
+    def sign!(request, access_id, secret_key, options = {})
+      options = { :override_http_method => nil, :with_http_method => false }.merge(options)
       headers = Headers.new(request)
       headers.calculate_md5
       headers.set_date
-      headers.sign_header auth_header(headers, access_id, secret_key)
+      headers.sign_header auth_header(headers, access_id, secret_key, options)
     end
 
     # Determines if the request is authentic given the request and the client's
@@ -102,8 +103,8 @@ module ApiAuth
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
-    def auth_header(headers, access_id, secret_key)
-      "APIAuth #{access_id}:#{hmac_signature(headers, secret_key, {})}"
+    def auth_header(headers, access_id, secret_key, options)
+      "APIAuth #{access_id}:#{hmac_signature(headers, secret_key, options)}"
     end
 
     def parse_auth_header(auth_header)
