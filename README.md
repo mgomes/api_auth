@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/mgomes/api_auth.png?branch=master)](https://travis-ci.org/mgomes/api_auth)
 
+## IMPORTANT: See [CHANGELOG.md](/CHANGELOG.md) for security update information
+
 Logins and passwords are for humans. Communication between applications need to
 be protected through different means.
 
@@ -25,7 +27,7 @@ content-MD5 are not present, then a blank string is used in their place. If the
 timestamp isn't present, a valid HTTP date is automatically added to the
 request. The canonical string is computed as follows:
 
-    canonical_string = 'content-type,content-MD5,request URI,timestamp'
+    canonical_string = 'http method,content-type,content-MD5,request URI,timestamp'
 
 2. This string is then used to create the signature which is a Base64 encoded
 SHA1 HMAC, using the client's private secret key.
@@ -73,9 +75,7 @@ Here is the current list of supported request objects:
 
 ### HTTP Client Objects
 
-Here's a sample implementation of signing a request created with RestClient. For
-more examples, please check out the ApiAuth Spec where every supported HTTP
-client is tested.
+Here's a sample implementation of signing a request created with RestClient.
 
 Assuming you have a client access id and secret as follows:
 
@@ -106,6 +106,14 @@ object and it's ready to be transmitted. It's recommended that you sign the
 request as one of the last steps in building the request to ensure the headers
 don't change after the signing process which would cause the authentication
 check to fail on the server side.
+
+If you are signing a request for a driver that doesn't support automatic http
+method detection (like Curb or httpi), you can pass the http method as an option
+into the sign! method like so:
+
+``` ruby
+    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :override_http_method => "PUT")
+```
 
 ### ActiveResource Clients
 
