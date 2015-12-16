@@ -1,4 +1,4 @@
-# 1.4 (?)
+# 1.4 (2015-12-16)
 
 ## IMPORTANT SECURITY FIX (with backwards compatible fallback)
 
