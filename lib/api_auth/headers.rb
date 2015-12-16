@@ -52,8 +52,26 @@ module ApiAuth
     end
 
     # Returns the canonical string computed from the request's headers
-    def canonical_string
+    def canonical_string_without_http_method
       [ @request.content_type,
+        @request.content_md5,
+        parse_uri(@request.request_uri),
+        @request.timestamp
+      ].join(",")
+    end
+
+    # temp backwards compatibility
+    alias_method :canonical_string, :canonical_string_without_http_method
+
+    def canonical_string_with_http_method(override_method = nil)
+      request_method = override_method || @request.http_method
+
+      if request_method.nil?
+        raise ArgumentError, "unable to determine the http method from the request, please supply an override"
+      end
+
+      [ request_method.upcase,
+        @request.content_type,
         @request.content_md5,
         parse_uri(@request.request_uri),
         @request.timestamp

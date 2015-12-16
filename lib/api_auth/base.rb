@@ -22,22 +22,24 @@ module ApiAuth
     # access_id: The public unique identifier for the client
     #
     # secret_key: assigned secret key that is known to both parties
-    def sign!(request, access_id, secret_key)
+    def sign!(request, access_id, secret_key, options = {})
+      options = { :override_http_method => nil, :with_http_method => false }.merge(options)
       headers = Headers.new(request)
       headers.calculate_md5
       headers.set_date
-      headers.sign_header auth_header(headers, access_id, secret_key)
+      headers.sign_header auth_header(headers, access_id, secret_key, options)
     end
 
     # Determines if the request is authentic given the request and the client's
     # secret key. Returns true if the request is authentic and false otherwise.
-    def authentic?(request, secret_key)
+    def authentic?(request, secret_key, options = {})
       return false if secret_key.nil?
+      options = { :override_http_method => nil }.merge(options)
 
       headers = Headers.new(request)
       if headers.md5_mismatch?
         false
-      elsif !signatures_match?(headers, secret_key)
+      elsif !signatures_match?(headers, secret_key, options)
         false
       elsif request_too_old?(headers)
         false
@@ -78,23 +80,31 @@ module ApiAuth
       end
     end
 
-    def signatures_match?(headers, secret_key)
-      if match_data = parse_auth_header(headers.authorization_header)
-        hmac = match_data[2]
-        hmac == hmac_signature(headers, secret_key)
-      else
-        false
-      end
+    def signatures_match?(headers, secret_key, options)
+      match_data = parse_auth_header(headers.authorization_header)
+      return false unless match_data
+
+      options = options.merge(:with_http_method => true)
+
+      header_sig = match_data[2]
+      calculated_sig_no_http = hmac_signature(headers, secret_key, {})
+      calculated_sig_with_http = hmac_signature(headers, secret_key, options)
+
+      header_sig == calculated_sig_with_http || header_sig == calculated_sig_no_http
     end
 
-    def hmac_signature(headers, secret_key)
-      canonical_string = headers.canonical_string
+    def hmac_signature(headers, secret_key, options)
+      if options[:with_http_method]
+        canonical_string = headers.canonical_string_with_http_method(options[:override_http_method])
+      else
+        canonical_string = headers.canonical_string
+      end
       digest = OpenSSL::Digest.new('sha1')
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
-    def auth_header(headers, access_id, secret_key)
-      "APIAuth #{access_id}:#{hmac_signature(headers, secret_key)}"
+    def auth_header(headers, access_id, secret_key, options)
+      "APIAuth #{access_id}:#{hmac_signature(headers, secret_key, options)}"
     end
 
     def parse_auth_header(auth_header)

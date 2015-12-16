@@ -21,8 +21,8 @@ describe "ApiAuth" do
 
   end
 
-  def hmac(secret_key, request)
-    canonical_string = ApiAuth::Headers.new(request).canonical_string
+  def hmac(secret_key, request, canonical_string = nil)
+    canonical_string ||= ApiAuth::Headers.new(request).canonical_string
     digest = OpenSSL::Digest.new('sha1')
     ApiAuth.b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
   end
@@ -56,6 +56,24 @@ describe "ApiAuth" do
       ApiAuth.sign!(request, "1044", "123")
       signature = hmac("123", request)
       expect(request.headers['Authorization']).to eq("APIAuth 1044:#{signature}")
+    end
+
+    context "when passed the with_http_method option" do
+      let(:request){
+        Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+          'content-type' => 'text/plain',
+          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+          'date' => Time.now.utc.httpdate
+        )
+      }
+
+      let(:canonical_string){ ApiAuth::Headers.new(request).canonical_string_with_http_method }
+
+      it "calculates the hmac_signature with http method" do
+        ApiAuth.sign!(request, "1044", "123", { :with_http_method => true })
+        signature = hmac("123", request, canonical_string)
+        expect(request['Authorization']).to eq("APIAuth 1044:#{signature}")
+      end
     end
   end
 
@@ -93,6 +111,31 @@ describe "ApiAuth" do
     it "fails to validate if the date is invalid" do
       request['date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
       expect(ApiAuth.authentic?(request, "123")).to eq false
+    end
+
+    context "canonical string contains the http_method" do
+      let(:request){
+        new_request = Net::HTTP::Put.new("/resource.xml?foo=bar&bar=foo",
+          'content-type' => 'text/plain',
+          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+          'date' => Time.now.utc.httpdate
+        )
+        canonical_string = ApiAuth::Headers.new(new_request).canonical_string_with_http_method
+        signature = hmac("123", new_request, canonical_string)
+        new_request["Authorization"] = "APIAuth 1044:#{signature}"
+        new_request
+      }
+
+      it "validates for canonical_strings containing the http_method" do
+        expect(ApiAuth.authentic?(request, "123")).to eq true
+      end
+
+      it "fails to validate if the request method differs" do
+        canonical_string = ApiAuth::Headers.new(request).canonical_string_with_http_method('POST')
+        signature = hmac("123", request, canonical_string)
+        request["Authorization"] = "APIAuth 1044:#{signature}"
+        expect(ApiAuth.authentic?(request, "123")).to eq false
+      end
     end
   end
 

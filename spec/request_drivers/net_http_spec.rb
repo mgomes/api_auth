@@ -69,6 +69,24 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
         expect(driven_request.calculated_md5).to eq('k4U8MTA3RHDcewBzymVNEQ==')
       end
     end
+
+    describe "http_method" do
+      context "when put request" do
+        let(:request){ Net::HTTP::Put.new(request_path, request_headers) }
+
+        it "returns upcased put" do
+          expect(driven_request.http_method).to eq('PUT')
+        end
+      end
+
+      context "when get request" do
+        let(:request){ Net::HTTP::Get.new(request_path, request_headers) }
+
+        it "returns upcased get" do
+          expect(driven_request.http_method).to eq('GET')
+        end
+      end
+    end
   end
 
   describe "setting headers correctly" do
