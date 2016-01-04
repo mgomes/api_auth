@@ -1,3 +1,7 @@
+# 1.4.1 (2016-01-04)
+- Fixed an issue where getters wouldn't immdiately have the correct value after
+  setting a date or content md5 in some of the request drivers (#91)
+
 # 1.4 (2015-12-16)
 
 ## IMPORTANT SECURITY FIX (with backwards compatible fallback)
