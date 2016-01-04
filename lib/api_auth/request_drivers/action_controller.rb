@@ -8,13 +8,13 @@ module ApiAuth
 
       def initialize(request)
         @request = request
-        @headers = fetch_headers
+        fetch_headers
         true
       end
 
       def set_auth_header(header)
         @request.env["Authorization"] = header
-        @headers = fetch_headers
+        fetch_headers
         @request
       end
 
@@ -26,6 +26,7 @@ module ApiAuth
       def populate_content_md5
         if @request.put? || @request.post?
           @request.env["Content-MD5"] = calculated_md5
+          fetch_headers
         end
       end
 
@@ -38,7 +39,7 @@ module ApiAuth
       end
 
       def fetch_headers
-        capitalize_keys @request.env
+        @headers = capitalize_keys @request.env
       end
 
       def http_method
@@ -61,6 +62,7 @@ module ApiAuth
 
       def set_date
         @request.env['HTTP_DATE'] = Time.now.utc.httpdate
+        fetch_headers
       end
 
       def timestamp

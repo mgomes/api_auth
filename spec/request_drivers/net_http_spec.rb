@@ -123,14 +123,27 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
           driven_request.populate_content_md5
           expect(request["Content-MD5"]).to eq('kZXQvrKoieG+Be1rsZVINw==')
         end
+
+        it "refreshes the cached headers" do
+          driven_request.populate_content_md5
+          expect(driven_request.content_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+        end
       end
     end
 
     describe "#set_date" do
-      it "sets the date" do
+      before do
         allow(Time).to receive_message_chain(:now, :utc, :httpdate).and_return(timestamp)
+      end
+
+      it "sets the date header of the request" do
         driven_request.set_date
         expect(request['DATE']).to eq(timestamp)
+      end
+
+      it "refreshes the cached headers" do
+        driven_request.set_date
+        expect(driven_request.timestamp).to eq(timestamp)
       end
     end
 
