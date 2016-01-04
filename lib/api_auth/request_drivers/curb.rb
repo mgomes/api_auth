@@ -8,13 +8,13 @@ module ApiAuth
 
       def initialize(request)
         @request = request
-        @headers = fetch_headers
+        fetch_headers
         true
       end
 
       def set_auth_header(header)
         @request.headers.merge!({ "Authorization" => header })
-        @headers = fetch_headers
+        fetch_headers
         @request
       end
 
@@ -27,7 +27,7 @@ module ApiAuth
       end
 
       def fetch_headers
-        capitalize_keys @request.headers
+        @headers = capitalize_keys @request.headers
       end
 
       def http_method
@@ -50,6 +50,7 @@ module ApiAuth
 
       def set_date
         @request.headers.merge!({ "DATE" => Time.now.utc.httpdate })
+        fetch_headers
       end
 
       def timestamp

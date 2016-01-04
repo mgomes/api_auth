@@ -105,6 +105,11 @@ if defined?(ActionController::Request)
             driven_request.populate_content_md5
             expect(request.env["Content-MD5"]).to eq('kZXQvrKoieG+Be1rsZVINw==')
           end
+
+          it "refreshes the cached headers" do
+            driven_request.populate_content_md5
+            expect(driven_request.content_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+          end
         end
 
         context "when putting" do
@@ -112,6 +117,11 @@ if defined?(ActionController::Request)
             request.env['REQUEST_METHOD'] = 'PUT'
             driven_request.populate_content_md5
             expect(request.env["Content-MD5"]).to eq('kZXQvrKoieG+Be1rsZVINw==')
+          end
+
+          it "refreshes the cached headers" do
+            driven_request.populate_content_md5
+            expect(driven_request.content_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
           end
         end
 
@@ -126,10 +136,18 @@ if defined?(ActionController::Request)
       end
 
       describe "#set_date" do
-        it "sets the date" do
+        before do
           allow(Time).to receive_message_chain(:now, :utc, :httpdate).and_return(timestamp)
+        end
+
+        it "sets the date header of the request" do
           driven_request.set_date
           expect(request.env['HTTP_DATE']).to eq(timestamp)
+        end
+
+        it "refreshes the cached headers" do
+          driven_request.set_date
+          expect(driven_request.timestamp).to eq(timestamp)
         end
       end
 
