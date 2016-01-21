@@ -1,5 +1,10 @@
+# 1.5.0 (2016-01-21)
+- Added a sign_with_http_method configuration option to the ActiveResource
+  rails tie to correspond to passing the `:with_http_method => true` into
+  `ApiAuth.sign!`
+
 # 1.4.1 (2016-01-04)
-- Fixed an issue where getters wouldn't immdiately have the correct value after
+- Fixed an issue where getters wouldn't immediately have the correct value after
   setting a date or content md5 in some of the request drivers (#91)
 
 # 1.4 (2015-12-16)
