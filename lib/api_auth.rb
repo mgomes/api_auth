@@ -15,4 +15,4 @@ require 'api_auth/request_drivers/faraday'
 
 require 'api_auth/headers'
 require 'api_auth/base'
-require 'api_auth/railtie'
+require 'api_auth/railtie' if defined?(::Rails)
