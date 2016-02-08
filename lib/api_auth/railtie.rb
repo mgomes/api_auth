@@ -18,18 +18,6 @@ module ApiAuth
 
       end
 
-      unless defined?(ActionController)
-        begin
-          require 'rubygems'
-          gem 'actionpack'
-          gem 'activesupport'
-          require 'action_controller'
-          require 'active_support'
-        rescue LoadError
-          nil
-        end
-      end
-
       if defined?(ActionController::Base)
         ActionController::Base.send(:include, ControllerMethods::InstanceMethods)
       end
@@ -112,16 +100,6 @@ module ApiAuth
         end
 
       end # Connection
-
-      unless defined?(ActiveResource)
-        begin
-          require 'rubygems'
-          gem 'activeresource'
-          require 'active_resource'
-        rescue LoadError
-          nil
-        end
-      end
 
       if defined?(ActiveResource)
         ActiveResource::Base.send(:include, ActiveResourceApiAuth)
