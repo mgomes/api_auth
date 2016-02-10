@@ -81,11 +81,9 @@ module ApiAuth
       match_data = parse_auth_header(headers.authorization_header)
       return false unless match_data
 
-      options = options.merge(:with_http_method => true)
-
       header_sig = match_data[2]
-      calculated_sig_no_http = hmac_signature(headers, secret_key, {})
-      calculated_sig_with_http = hmac_signature(headers, secret_key, options)
+      calculated_sig_no_http = hmac_signature(headers, secret_key, options.merge(:with_http_method => false))
+      calculated_sig_with_http = hmac_signature(headers, secret_key, options.merge(:with_http_method => true))
 
       header_sig == calculated_sig_with_http || header_sig == calculated_sig_no_http
     end
