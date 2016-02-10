@@ -85,21 +85,6 @@ Style/AlignParameters:
     - 'spec/railtie_spec.rb'
     - 'spec/request_drivers/net_http_spec.rb'
 
-# Offense count: 17
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, ProceduralMethods, FunctionalMethods, IgnoredMethods.
-# SupportedStyles: line_count_based, semantic, braces_for_chaining
-# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
-# FunctionalMethods: let, let!, subject, watch
-# IgnoredMethods: lambda, proc, it
-Style/BlockDelimiters:
-  Exclude:
-    - 'spec/api_auth_spec.rb'
-    - 'spec/headers_spec.rb'
-    - 'spec/request_drivers/net_http_spec.rb'
-    - 'spec/request_drivers/rack_spec.rb'
-    - 'spec/request_drivers/rest_client_spec.rb'
-
 # Offense count: 14
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
@@ -161,68 +146,11 @@ Style/EmptyLines:
     - 'spec/request_drivers/httpi_spec.rb'
     - 'spec/request_drivers/net_http_spec.rb'
 
-# Offense count: 26
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty_lines, no_empty_lines
-Style/EmptyLinesAroundBlockBody:
-  Exclude:
-    - 'spec/api_auth_spec.rb'
-    - 'spec/headers_spec.rb'
-    - 'spec/railtie_spec.rb'
-    - 'spec/request_drivers/action_controller_spec.rb'
-    - 'spec/request_drivers/action_dispatch_spec.rb'
-    - 'spec/request_drivers/curb_spec.rb'
-    - 'spec/request_drivers/faraday_spec.rb'
-    - 'spec/request_drivers/httpi_spec.rb'
-    - 'spec/request_drivers/net_http_spec.rb'
-    - 'spec/request_drivers/rack_spec.rb'
-    - 'spec/request_drivers/rest_client_spec.rb'
-    - 'spec/spec_helper.rb'
-
-# Offense count: 23
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty_lines, no_empty_lines
-Style/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'lib/api_auth/base.rb'
-    - 'lib/api_auth/headers.rb'
-    - 'lib/api_auth/railtie.rb'
-    - 'lib/api_auth/request_drivers/action_controller.rb'
-    - 'lib/api_auth/request_drivers/action_dispatch.rb'
-    - 'lib/api_auth/request_drivers/curb.rb'
-    - 'lib/api_auth/request_drivers/faraday.rb'
-    - 'lib/api_auth/request_drivers/httpi.rb'
-    - 'lib/api_auth/request_drivers/net_http.rb'
-    - 'lib/api_auth/request_drivers/rack.rb'
-    - 'lib/api_auth/request_drivers/rest_client.rb'
-    - 'spec/railtie_spec.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/EmptyLinesAroundMethodBody:
   Exclude:
     - 'lib/api_auth/railtie.rb'
-
-# Offense count: 53
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty_lines, no_empty_lines
-Style/EmptyLinesAroundModuleBody:
-  Exclude:
-    - 'lib/api_auth/base.rb'
-    - 'lib/api_auth/headers.rb'
-    - 'lib/api_auth/helpers.rb'
-    - 'lib/api_auth/railtie.rb'
-    - 'lib/api_auth/request_drivers/action_controller.rb'
-    - 'lib/api_auth/request_drivers/action_dispatch.rb'
-    - 'lib/api_auth/request_drivers/curb.rb'
-    - 'lib/api_auth/request_drivers/faraday.rb'
-    - 'lib/api_auth/request_drivers/httpi.rb'
-    - 'lib/api_auth/request_drivers/net_http.rb'
-    - 'lib/api_auth/request_drivers/rack.rb'
-    - 'lib/api_auth/request_drivers/rest_client.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
@@ -250,13 +178,6 @@ Style/HashSyntax:
 # SupportedStyles: special_inside_parentheses, consistent, align_braces
 Style/IndentHash:
   Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: Width.
-Style/IndentationWidth:
-  Exclude:
-    - 'lib/api_auth/headers.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.

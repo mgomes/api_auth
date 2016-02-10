@@ -1,9 +1,6 @@
 module ApiAuth
-
   module RequestDrivers # :nodoc:
-
     class RackRequest # :nodoc:
-
       include ApiAuth::Helpers
 
       def initialize(request)
@@ -84,9 +81,6 @@ module ApiAuth
       def find_header(keys)
         keys.map {|key| @headers[key] }.compact.first
       end
-
     end
-
   end
-
 end

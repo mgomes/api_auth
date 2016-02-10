@@ -1,19 +1,18 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::RackRequest do
-
   let(:timestamp){ Time.now.utc.httpdate }
 
   let(:request_path){ '/resource.xml?foo=bar&bar=foo' }
 
-  let(:request_headers){
+  let(:request_headers) do
     {
       'Authorization'  => 'APIAuth 1044:12345',
       'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'Content-Type' => 'text/plain',
       'Date' => timestamp
     }
-  }
+  end
 
   let(:request) do
     Rack::Request.new(
@@ -99,11 +98,11 @@ describe ApiAuth::RequestDrivers::RackRequest do
   end
 
   describe 'setting headers correctly' do
-    let(:request_headers){
+    let(:request_headers) do
       {
         'content-type' => 'text/plain'
       }
-    }
+    end
 
     describe '#populate_content_md5' do
       context 'when getting' do
@@ -181,7 +180,6 @@ describe ApiAuth::RequestDrivers::RackRequest do
           expect(request.env['Content-MD5']).to be_nil
         end
       end
-
     end
 
     describe '#set_date' do

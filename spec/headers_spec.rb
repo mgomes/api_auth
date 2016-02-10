@@ -1,7 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe ApiAuth::Headers do
-
   describe '#canonical_string' do
     context 'uri edge cases' do
       let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
@@ -119,13 +118,13 @@ describe ApiAuth::Headers do
     let(:driver){ headers.instance_variable_get('@request')}
 
     context 'no md5 already calculated' do
-      let(:request) {
+      let(:request) do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :post,
           :payload => "hello\nworld"
         )
-      }
+      end
 
       it 'populates the md5 header' do
         expect(driver).to receive(:populate_content_md5)
@@ -134,14 +133,14 @@ describe ApiAuth::Headers do
     end
 
     context 'md5 already calculated' do
-      let(:request) {
+      let(:request) do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :post,
           :payload => "hello\nworld",
           :headers => {:content_md5 => 'abcd'}
         )
-      }
+      end
 
       it "doesn't populate the md5 header" do
         expect(driver).not_to receive(:populate_content_md5)

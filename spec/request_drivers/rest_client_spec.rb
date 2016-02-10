@@ -1,19 +1,18 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::RestClientRequest do
-
   let(:timestamp){ Time.now.utc.httpdate }
 
   let(:request_path){ '/resource.xml?foo=bar&bar=foo' }
 
-  let(:request_headers){
+  let(:request_headers) do
     {
       'Authorization'  => 'APIAuth 1044:12345',
       'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'Content-Type' => 'text/plain',
       'Date' => timestamp
     }
-  }
+  end
 
   let(:request) do
     RestClient::Request.new(
@@ -95,11 +94,11 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
   end
 
   describe 'setting headers correctly' do
-    let(:request_headers){
+    let(:request_headers) do
       {
         'Content-Type' => 'text/plain'
       }
-    }
+    end
 
     describe '#populate_content_md5' do
       context 'when getting' do
@@ -173,7 +172,6 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
           expect(request.headers['Content-MD5']).to be_nil
         end
       end
-
     end
 
     describe '#set_date' do
@@ -202,7 +200,6 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
   end
 
   describe 'md5_mismatch?' do
-
     context 'when getting' do
       let(:request) do
         RestClient::Request.new(
@@ -228,14 +225,14 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       end
 
       context 'when calculated matches sent' do
-        let(:request_headers){
+        let(:request_headers) do
           {
             'Authorization'  => 'APIAuth 1044:12345',
             'Content-MD5' => 'kZXQvrKoieG+Be1rsZVINw==',
             'Content-Type' => 'text/plain',
             'Date' => timestamp
           }
-        }
+        end
 
         it 'is false' do
           expect(driven_request.md5_mismatch?).to be false
@@ -243,14 +240,14 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       end
 
       context "when calculated doesn't match sent" do
-        let(:request_headers){
+        let(:request_headers) do
           {
             'Authorization'  => 'APIAuth 1044:12345',
             'Content-MD5' => '3',
             'Content-Type' => 'text/plain',
             'Date' => timestamp
           }
-        }
+        end
 
         it 'is true' do
           expect(driven_request.md5_mismatch?).to be true
@@ -269,14 +266,14 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       end
 
       context 'when calculated matches sent' do
-        let(:request_headers){
+        let(:request_headers) do
           {
             'Authorization'  => 'APIAuth 1044:12345',
             'Content-MD5' => 'kZXQvrKoieG+Be1rsZVINw==',
             'Content-Type' => 'text/plain',
             'Date' => timestamp
           }
-        }
+        end
 
         it 'is false' do
           expect(driven_request.md5_mismatch?).to be false
@@ -284,14 +281,14 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       end
 
       context "when calculated doesn't match sent" do
-        let(:request_headers){
+        let(:request_headers) do
           {
             'Authorization'  => 'APIAuth 1044:12345',
             'Content-MD5' => '3',
             'Content-Type' => 'text/plain',
             'Date' => timestamp
           }
-        }
+        end
 
         it 'is true' do
           expect(driven_request.md5_mismatch?).to be true

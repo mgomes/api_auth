@@ -3,7 +3,6 @@ require 'spec_helper'
 if defined?(ActionDispatch::Request)
 
   describe ApiAuth::RequestDrivers::ActionDispatchRequest do
-
     let(:timestamp){ Time.now.utc.httpdate }
 
     let(:request) do
@@ -133,7 +132,6 @@ if defined?(ActionDispatch::Request)
             expect(request.env['Content-MD5']).to be_nil
           end
         end
-
       end
 
       describe '#set_date' do

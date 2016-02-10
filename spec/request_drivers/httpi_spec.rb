@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::HttpiRequest do
-
   let(:timestamp){ Time.now.utc.httpdate }
 
   let(:request) do

@@ -2,11 +2,8 @@
 module RestClient;class Request;attr_accessor :processed_headers;end;end
 
 module ApiAuth
-
   module RequestDrivers # :nodoc:
-
     class RestClientRequest # :nodoc:
-
       include ApiAuth::Helpers
 
       def initialize(request)
@@ -92,9 +89,6 @@ module ApiAuth
         @request.processed_headers = @request.make_headers(@request.headers)
         @headers = fetch_headers
       end
-
     end
-
   end
-
 end

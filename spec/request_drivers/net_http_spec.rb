@@ -1,19 +1,18 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::NetHttpRequest do
-
   let(:timestamp){ Time.now.utc.httpdate }
 
   let(:request_path){ '/resource.xml?foo=bar&bar=foo' }
 
-  let(:request_headers){
+  let(:request_headers) do
     {
       'Authorization'  => 'APIAuth 1044:12345',
       'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'content-type' => 'text/plain',
       'date' => timestamp
     }
-  }
+  end
 
   let(:request) do
     net_http_request = Net::HTTP::Put.new(request_path, request_headers)
@@ -90,11 +89,11 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
   end
 
   describe 'setting headers correctly' do
-    let(:request_headers){
+    let(:request_headers) do
       {
         'content-type' => 'text/plain'
       }
-    }
+    end
 
     let(:request) do
       Net::HTTP::Put.new(request_path, request_headers)

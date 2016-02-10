@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::CurbRequest do
-
   let(:timestamp){ Time.now.utc.httpdate }
 
   let(:request) do
@@ -62,7 +61,6 @@ describe ApiAuth::RequestDrivers::CurbRequest do
         expect(driven_request.populate_content_md5).to be_nil
         expect(request.headers['Content-MD5']).to be_nil
       end
-
     end
 
     describe '#set_date' do

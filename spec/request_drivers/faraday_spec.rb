@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::FaradayRequest do
-
   let(:timestamp){ Time.now.utc.httpdate }
 
   let(:faraday_stubs) do
@@ -158,7 +157,6 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
           expect(request.headers['Content-MD5']).to be_nil
         end
       end
-
     end
 
     describe '#set_date' do

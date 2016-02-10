@@ -8,9 +8,7 @@
 # Rails ActiveResource, it will integrate with that. It will even generate the
 # secret keys necessary for your clients to sign their requests.
 module ApiAuth
-
   class << self
-
     include Helpers
 
     # Signs an HTTP request using the client's access id and secret key.
@@ -110,7 +108,5 @@ module ApiAuth
     def parse_auth_header(auth_header)
       AUTH_HEADER_PATTERN.match(auth_header)
     end
-
   end # class methods
-
 end # ApiAuth

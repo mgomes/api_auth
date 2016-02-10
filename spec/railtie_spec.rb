@@ -1,13 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe 'Rails integration' do
-
   API_KEY_STORE = { '1044' => 'l16imAXie1sRMcJODpOG7UwC1VyoqvO13jejkfpKWX4Z09W8DC9IrU23DvCwMry7pgSFW6c5S1GIfV0OY6F/vUA==' }
 
   describe 'Rails controller integration' do
-
     class ApplicationController < ActionController::Base
-
     private
 
       def require_api_auth
@@ -21,7 +18,6 @@ describe 'Rails integration' do
           format.html { render :text => 'You are unauthorized to perform this action', :status => 401 }
         end
       end
-
     end
 
     class TestController < ApplicationController
@@ -103,11 +99,9 @@ describe 'Rails integration' do
       response = generated_response(request, :public)
       expect(response.code).to eq('200')
     end
-
   end
 
   describe 'Rails ActiveResource integration' do
-
     class TestResource < ActiveResource::Base
       with_api_auth '1044', API_KEY_STORE['1044']
       self.site = 'http://localhost/'
@@ -153,7 +147,5 @@ describe 'Rails integration' do
         TestResourceForHttpMethod.find(1)
       end
     end
-
   end
-
 end

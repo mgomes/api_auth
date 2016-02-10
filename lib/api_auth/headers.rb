@@ -1,8 +1,6 @@
 module ApiAuth
-
   # Builds the canonical string given a request object.
   class Headers
-
     include RequestDrivers
 
     def initialize(request)
@@ -48,7 +46,7 @@ module ApiAuth
 
     # Returns the request timestamp
     def timestamp
-       @request.timestamp
+      @request.timestamp
     end
 
     # Returns the canonical string computed from the request's headers
