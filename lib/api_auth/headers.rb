@@ -57,7 +57,7 @@ module ApiAuth
         @request.content_md5,
         parse_uri(@request.request_uri),
         @request.timestamp
-      ].join(",")
+      ].join(',')
     end
 
     # temp backwards compatibility
@@ -67,7 +67,7 @@ module ApiAuth
       request_method = override_method || @request.http_method
 
       if request_method.nil?
-        raise ArgumentError, "unable to determine the http method from the request, please supply an override"
+        raise ArgumentError, 'unable to determine the http method from the request, please supply an override'
       end
 
       [ request_method.upcase,
@@ -75,7 +75,7 @@ module ApiAuth
         @request.content_md5,
         parse_uri(@request.request_uri),
         @request.timestamp
-      ].join(",")
+      ].join(',')
     end
 
     # Returns the authorization header from the request's headers

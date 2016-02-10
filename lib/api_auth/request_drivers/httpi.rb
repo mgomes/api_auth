@@ -13,7 +13,7 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request.headers["Authorization"] = header
+        @request.headers['Authorization'] = header
         fetch_headers
         @request
       end
@@ -24,7 +24,7 @@ module ApiAuth
 
       def populate_content_md5
         if @request.body
-          @request.headers["Content-MD5"] = calculated_md5
+          @request.headers['Content-MD5'] = calculated_md5
           fetch_headers
         end
       end
@@ -47,12 +47,12 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "" : value
+        value.nil? ? '' : value
       end
 
       def content_md5
         value = find_header(%w(CONTENT-MD5 CONTENT_MD5))
-        value.nil? ? "" : value
+        value.nil? ? '' : value
       end
 
       def request_uri
@@ -60,13 +60,13 @@ module ApiAuth
       end
 
       def set_date
-        @request.headers["DATE"] = Time.now.utc.httpdate
+        @request.headers['DATE'] = Time.now.utc.httpdate
         fetch_headers
       end
 
       def timestamp
         value = find_header(%w(DATE HTTP_DATE))
-        value.nil? ? "" : value
+        value.nil? ? '' : value
       end
 
       def authorization_header
