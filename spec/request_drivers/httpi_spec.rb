@@ -5,12 +5,10 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
 
   let(:request) do
     httpi_request = HTTPI::Request.new('http://localhost/resource.xml?foo=bar&bar=foo')
-    httpi_request.headers.merge!({
-        'Authorization' => 'APIAuth 1044:12345',
-        'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-        'content-type' => 'text/plain',
-        'date' => timestamp
-    })
+    httpi_request.headers.merge!('Authorization' => 'APIAuth 1044:12345',
+                                 'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                 'content-type' => 'text/plain',
+                                 'date' => timestamp)
     httpi_request.body = "hello\nworld"
     httpi_request
   end

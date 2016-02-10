@@ -58,16 +58,16 @@ describe 'ApiAuth' do
     context 'when passed the with_http_method option' do
       let(:request) do
         Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
-          'content-type' => 'text/plain',
-          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-          'date' => Time.now.utc.httpdate
+                           'content-type' => 'text/plain',
+                           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                           'date' => Time.now.utc.httpdate
         )
       end
 
       let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string_with_http_method }
 
       it 'calculates the hmac_signature with http method' do
-        ApiAuth.sign!(request, '1044', '123', { :with_http_method => true })
+        ApiAuth.sign!(request, '1044', '123', :with_http_method => true)
         signature = hmac('123', request, canonical_string)
         expect(request['Authorization']).to eq("APIAuth 1044:#{signature}")
       end
@@ -77,9 +77,9 @@ describe 'ApiAuth' do
   describe '.authentic?' do
     let(:request) do
       new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
-        'content-type' => 'text/plain',
-        'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-        'date' => Time.now.utc.httpdate
+                                       'content-type' => 'text/plain',
+                                       'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                       'date' => Time.now.utc.httpdate
       )
 
       signature = hmac('123', new_request)
@@ -113,9 +113,9 @@ describe 'ApiAuth' do
     context 'canonical string contains the http_method' do
       let(:request) do
         new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
-          'content-type' => 'text/plain',
-          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-          'date' => Time.now.utc.httpdate
+                                         'content-type' => 'text/plain',
+                                         'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                         'date' => Time.now.utc.httpdate
         )
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string_with_http_method
         signature = hmac('123', new_request, canonical_string)

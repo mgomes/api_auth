@@ -113,14 +113,14 @@ describe 'Rails integration' do
       allow(Time).to receive(:now).at_least(1).times.and_return(timestamp)
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get '/test_resources/1.xml',
-          {
-            'Authorization' => 'APIAuth 1044:IbTx7VzSOGU55HNbV4y2jZDnVis=',
-            'Accept' => 'application/xml',
-            'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'
-          },
-          { :id => '1' }.to_xml(:root => 'test_resource')
+                 {
+                   'Authorization' => 'APIAuth 1044:IbTx7VzSOGU55HNbV4y2jZDnVis=',
+                   'Accept' => 'application/xml',
+                   'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'
+                 },
+                 { :id => '1' }.to_xml(:root => 'test_resource')
       end
-      expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], { :with_http_method => false }).and_call_original
+      expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], :with_http_method => false).and_call_original
       TestResource.find(1)
     end
 
@@ -136,14 +136,14 @@ describe 'Rails integration' do
         allow(Time).to receive(:now).at_least(1).times.and_return(timestamp)
         ActiveResource::HttpMock.respond_to do |mock|
           mock.get '/test_resource_for_http_methods/1.xml',
-            {
-              'Authorization' => 'APIAuth 1044:Gq190cxgKm7oWH1fc+y8+wmD9ts=',
-              'Accept' => 'application/xml',
-              'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'
-            },
-            { :id => '1' }.to_xml(:root => 'test_resource')
+                   {
+                     'Authorization' => 'APIAuth 1044:Gq190cxgKm7oWH1fc+y8+wmD9ts=',
+                     'Accept' => 'application/xml',
+                     'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'
+                   },
+                   { :id => '1' }.to_xml(:root => 'test_resource')
         end
-        expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], { :with_http_method => true }).and_call_original
+        expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], :with_http_method => true).and_call_original
         TestResourceForHttpMethod.find(1)
       end
     end

@@ -30,7 +30,7 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
 
       it 'gets multipart content_type' do
         request = Net::HTTP::Put::Multipart.new('/resource.xml?foo=bar&bar=foo',
-          'file' => UploadIO.new(File.new('spec/fixtures/upload.png'), 'image/png', 'upload.png'))
+                                                'file' => UploadIO.new(File.new('spec/fixtures/upload.png'), 'image/png', 'upload.png'))
         driven_request = ApiAuth::RequestDrivers::NetHttpRequest.new(request)
         expect(driven_request.content_type).to match 'multipart/form-data; boundary='
       end

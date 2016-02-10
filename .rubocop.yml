@@ -68,31 +68,6 @@ Style/AlignHash:
   Exclude:
     - 'spec/request_drivers/rest_client_spec.rb'
 
-# Offense count: 8
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: with_first_parameter, with_fixed_indentation
-Style/AlignParameters:
-  Exclude:
-    - 'spec/api_auth_spec.rb'
-    - 'spec/railtie_spec.rb'
-    - 'spec/request_drivers/net_http_spec.rb'
-
-# Offense count: 14
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: braces, no_braces, context_dependent
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'lib/api_auth/railtie.rb'
-    - 'lib/api_auth/request_drivers/curb.rb'
-    - 'lib/api_auth/request_drivers/faraday.rb'
-    - 'lib/api_auth/request_drivers/rack.rb'
-    - 'lib/api_auth/request_drivers/rest_client.rb'
-    - 'spec/api_auth_spec.rb'
-    - 'spec/railtie_spec.rb'
-    - 'spec/request_drivers/httpi_spec.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
