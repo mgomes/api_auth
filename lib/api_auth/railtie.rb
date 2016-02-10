@@ -1,13 +1,9 @@
 module ApiAuth
-
   # Integration with Rails
   #
   class Rails # :nodoc:
-
     module ControllerMethods # :nodoc:
-
       module InstanceMethods # :nodoc:
-
         def get_api_access_id_from_request
           ApiAuth.access_id(request)
         end
@@ -15,19 +11,15 @@ module ApiAuth
         def api_authenticated?(secret_key)
           ApiAuth.authentic?(request, secret_key)
         end
-
       end
 
       if defined?(ActionController::Base)
         ActionController::Base.send(:include, ControllerMethods::InstanceMethods)
       end
-
     end # ControllerMethods
 
-    module ActiveResourceExtension  # :nodoc:
-
+    module ActiveResourceExtension # :nodoc:
       module ActiveResourceApiAuth # :nodoc:
-
         def self.included(base)
           base.extend(ClassMethods)
 
@@ -42,11 +34,9 @@ module ApiAuth
             base.class_inheritable_accessor :use_hmac
             base.class_inheritable_accessor :sign_with_http_method
           end
-
         end
 
         module ClassMethods
-
           def with_api_auth(access_id, secret_key, options = {})
             sign_with_http_method = options[:sign_with_http_method] || false
 
@@ -68,16 +58,13 @@ module ApiAuth
             c.sign_with_http_method = self.sign_with_http_method
             c
           end
-
         end # class methods
 
         module InstanceMethods
         end
-
       end # BaseApiAuth
 
       module Connection
-
         def self.included(base)
           base.send :alias_method_chain, :request, :auth
           base.class_eval do
