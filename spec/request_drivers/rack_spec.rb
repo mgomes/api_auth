@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::RackRequest do
-  let(:timestamp){ Time.now.utc.httpdate }
+  let(:timestamp) { Time.now.utc.httpdate }
 
-  let(:request_path){ '/resource.xml?foo=bar&bar=foo' }
+  let(:request_path) { '/resource.xml?foo=bar&bar=foo' }
 
   let(:request_headers) do
     {
-      'Authorization'  => 'APIAuth 1044:12345',
+      'Authorization' => 'APIAuth 1044:12345',
       'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'Content-Type' => 'text/plain',
       'Date' => timestamp
@@ -24,7 +24,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
     )
   end
 
-  subject(:driven_request){ ApiAuth::RequestDrivers::RackRequest.new(request) }
+  subject(:driven_request) { ApiAuth::RequestDrivers::RackRequest.new(request) }
 
   describe 'getting headers correctly' do
     it 'gets the content_type' do

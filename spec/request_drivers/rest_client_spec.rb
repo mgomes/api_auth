@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::RestClientRequest do
-  let(:timestamp){ Time.now.utc.httpdate }
+  let(:timestamp) { Time.now.utc.httpdate }
 
-  let(:request_path){ '/resource.xml?foo=bar&bar=foo' }
+  let(:request_path) { '/resource.xml?foo=bar&bar=foo' }
 
   let(:request_headers) do
     {
-      'Authorization'  => 'APIAuth 1044:12345',
+      'Authorization' => 'APIAuth 1044:12345',
       'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'Content-Type' => 'text/plain',
       'Date' => timestamp
@@ -23,7 +23,7 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
     )
   end
 
-  subject(:driven_request){ ApiAuth::RequestDrivers::RestClientRequest.new(request) }
+  subject(:driven_request) { ApiAuth::RequestDrivers::RestClientRequest.new(request) }
 
   describe 'getting headers correctly' do
     it 'gets the content_type' do
@@ -227,7 +227,7 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when calculated matches sent' do
         let(:request_headers) do
           {
-            'Authorization'  => 'APIAuth 1044:12345',
+            'Authorization' => 'APIAuth 1044:12345',
             'Content-MD5' => 'kZXQvrKoieG+Be1rsZVINw==',
             'Content-Type' => 'text/plain',
             'Date' => timestamp
@@ -242,7 +242,7 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context "when calculated doesn't match sent" do
         let(:request_headers) do
           {
-            'Authorization'  => 'APIAuth 1044:12345',
+            'Authorization' => 'APIAuth 1044:12345',
             'Content-MD5' => '3',
             'Content-Type' => 'text/plain',
             'Date' => timestamp
@@ -268,7 +268,7 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when calculated matches sent' do
         let(:request_headers) do
           {
-            'Authorization'  => 'APIAuth 1044:12345',
+            'Authorization' => 'APIAuth 1044:12345',
             'Content-MD5' => 'kZXQvrKoieG+Be1rsZVINw==',
             'Content-Type' => 'text/plain',
             'Date' => timestamp
@@ -283,7 +283,7 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context "when calculated doesn't match sent" do
         let(:request_headers) do
           {
-            'Authorization'  => 'APIAuth 1044:12345',
+            'Authorization' => 'APIAuth 1044:12345',
             'Content-MD5' => '3',
             'Content-Type' => 'text/plain',
             'Date' => timestamp

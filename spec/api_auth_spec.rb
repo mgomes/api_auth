@@ -25,8 +25,8 @@ describe 'ApiAuth' do
   end
 
   describe '.sign!' do
-    let(:request){ RestClient::Request.new(:url => 'http://google.com', :method => :get) }
-    let(:headers){ ApiAuth::Headers.new(request) }
+    let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+    let(:headers) { ApiAuth::Headers.new(request) }
 
     it 'generates date header before signing' do
       expect(ApiAuth::Headers).to receive(:new).and_return(headers)
@@ -64,7 +64,7 @@ describe 'ApiAuth' do
         )
       end
 
-      let(:canonical_string){ ApiAuth::Headers.new(request).canonical_string_with_http_method }
+      let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string_with_http_method }
 
       it 'calculates the hmac_signature with http method' do
         ApiAuth.sign!(request, '1044', '123', { :with_http_method => true })

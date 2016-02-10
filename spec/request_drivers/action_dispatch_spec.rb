@@ -3,7 +3,7 @@ require 'spec_helper'
 if defined?(ActionDispatch::Request)
 
   describe ApiAuth::RequestDrivers::ActionDispatchRequest do
-    let(:timestamp){ Time.now.utc.httpdate }
+    let(:timestamp) { Time.now.utc.httpdate }
 
     let(:request) do
       ActionDispatch::Request.new(
@@ -19,7 +19,7 @@ if defined?(ActionDispatch::Request)
       )
     end
 
-    subject(:driven_request){ ApiAuth::RequestDrivers::ActionDispatchRequest.new(request) }
+    subject(:driven_request) { ApiAuth::RequestDrivers::ActionDispatchRequest.new(request) }
 
     describe 'getting headers correctly' do
       it 'gets the content_type' do

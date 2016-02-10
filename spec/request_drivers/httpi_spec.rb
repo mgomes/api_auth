@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::HttpiRequest do
-  let(:timestamp){ Time.now.utc.httpdate }
+  let(:timestamp) { Time.now.utc.httpdate }
 
   let(:request) do
     httpi_request = HTTPI::Request.new('http://localhost/resource.xml?foo=bar&bar=foo')
     httpi_request.headers.merge!({
-        'Authorization'  => 'APIAuth 1044:12345',
+        'Authorization' => 'APIAuth 1044:12345',
         'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
         'content-type' => 'text/plain',
         'date' => timestamp
@@ -15,7 +15,7 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
     httpi_request
   end
 
-  subject(:driven_request){ ApiAuth::RequestDrivers::HttpiRequest.new(request) }
+  subject(:driven_request) { ApiAuth::RequestDrivers::HttpiRequest.new(request) }
 
   describe 'getting headers correctly' do
     it 'gets the content_type' do

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::FaradayRequest do
-  let(:timestamp){ Time.now.utc.httpdate }
+  let(:timestamp) { Time.now.utc.httpdate }
 
   let(:faraday_stubs) do
     Faraday::Adapter::Test::Stubs.new do |stub|
@@ -19,7 +19,7 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
 
   let(:request_headers) do
     {
-      'Authorization'  => 'APIAuth 1044:12345',
+      'Authorization' => 'APIAuth 1044:12345',
       'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'content-type' => 'text/plain',
       'DATE' => timestamp
@@ -37,7 +37,7 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
     faraday_request
   end
 
-  subject(:driven_request){ ApiAuth::RequestDrivers::FaradayRequest.new(request) }
+  subject(:driven_request) { ApiAuth::RequestDrivers::FaradayRequest.new(request) }
 
   describe 'getting headers correctly' do
     it 'gets the content_type' do

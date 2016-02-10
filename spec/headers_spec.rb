@@ -41,9 +41,9 @@ describe ApiAuth::Headers do
     end
 
     context 'string construction' do
-      let(:request){ RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+      let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
       subject(:headers) { described_class.new(request) }
-      let(:driver){ headers.instance_variable_get('@request')}
+      let(:driver) { headers.instance_variable_get('@request') }
 
       it 'puts the canonical string together correctly' do
         allow(driver).to receive(:content_type).and_return 'text/html'
@@ -57,9 +57,9 @@ describe ApiAuth::Headers do
 
   describe '#canonical_string_with_http_method' do
     context 'with a driver that supplies http_method' do
-      let(:request){ RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+      let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
       subject(:headers) { described_class.new(request) }
-      let(:driver){ headers.instance_variable_get('@request')}
+      let(:driver) { headers.instance_variable_get('@request') }
 
       before do
         allow(driver).to receive(:http_method).and_return 'GET'
@@ -85,11 +85,11 @@ describe ApiAuth::Headers do
     context "when a driver that doesn't supply http_method" do
       let(:request) do
         Curl::Easy.new('/resource.xml?foo=bar&bar=foo') do |curl|
-          curl.headers = { 'Content-Type'  => 'text/plain' }
+          curl.headers = { 'Content-Type' => 'text/plain' }
         end
       end
       subject(:headers) { described_class.new(request) }
-      let(:driver){ headers.instance_variable_get('@request')}
+      let(:driver) { headers.instance_variable_get('@request') }
 
       before do
         allow(driver).to receive(:http_method).and_return nil
@@ -101,7 +101,7 @@ describe ApiAuth::Headers do
 
       context 'when not passed an override' do
         it 'raises an error' do
-          expect{ headers.canonical_string_with_http_method }.to raise_error(ArgumentError)
+          expect { headers.canonical_string_with_http_method }.to raise_error(ArgumentError)
         end
       end
 
@@ -114,8 +114,8 @@ describe ApiAuth::Headers do
   end
 
   describe '#calculate_md5' do
-    subject(:headers){ described_class.new(request) }
-    let(:driver){ headers.instance_variable_get('@request')}
+    subject(:headers) { described_class.new(request) }
+    let(:driver) { headers.instance_variable_get('@request') }
 
     context 'no md5 already calculated' do
       let(:request) do
@@ -150,9 +150,9 @@ describe ApiAuth::Headers do
   end
 
   describe '#md5_mismatch?' do
-    let(:request){ RestClient::Request.new(:url => 'http://google.com', :method => :get) }
-    subject(:headers){ described_class.new(request) }
-    let(:driver){ headers.instance_variable_get('@request') }
+    let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+    subject(:headers) { described_class.new(request) }
+    let(:driver) { headers.instance_variable_get('@request') }
 
     context 'when request has md5 header' do
       it 'asks the driver' do

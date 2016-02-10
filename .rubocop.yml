@@ -181,12 +181,6 @@ Style/IndentHash:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-Style/LeadingCommentSpace:
-  Exclude:
-    - 'lib/api_auth/request_drivers/curb.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 Style/MutableConstant:
   Exclude:
     - 'spec/railtie_spec.rb'
@@ -229,35 +223,6 @@ Style/SpaceAfterSemicolon:
   Exclude:
     - 'lib/api_auth/request_drivers/rest_client.rb'
 
-# Offense count: 13
-# Cop supports --auto-correct.
-# Configuration parameters: AllowForAlignment.
-Style/SpaceAroundOperators:
-  Exclude:
-    - 'lib/api_auth/request_drivers/rest_client.rb'
-    - 'spec/headers_spec.rb'
-    - 'spec/request_drivers/action_controller_spec.rb'
-    - 'spec/request_drivers/curb_spec.rb'
-    - 'spec/request_drivers/faraday_spec.rb'
-    - 'spec/request_drivers/httpi_spec.rb'
-    - 'spec/request_drivers/net_http_spec.rb'
-    - 'spec/request_drivers/rack_spec.rb'
-    - 'spec/request_drivers/rest_client_spec.rb'
-
-# Offense count: 36
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: space, no_space
-Style/SpaceBeforeBlockBraces:
-  Enabled: false
-
-# Offense count: 15
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
-# SupportedStyles: space, no_space
-Style/SpaceInsideBlockBraces:
-  Enabled: false
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/SpaceInsideBrackets:
@@ -277,22 +242,6 @@ Style/SpaceInsideHashLiteralBraces:
 # SupportedStyles: use_perl_names, use_english_names
 Style/SpecialGlobalVars:
   Enabled: false
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: final_newline, final_blank_line
-Style/TrailingBlankLines:
-  Exclude:
-    - 'lib/api-auth.rb'
-    - 'spec/helpers_spec.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-Style/TrailingWhitespace:
-  Exclude:
-    - 'lib/api_auth/errors.rb'
-    - 'spec/helpers_spec.rb'
 
 # Offense count: 4
 # Cop supports --auto-correct.

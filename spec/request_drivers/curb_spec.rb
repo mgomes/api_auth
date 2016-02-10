@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::CurbRequest do
-  let(:timestamp){ Time.now.utc.httpdate }
+  let(:timestamp) { Time.now.utc.httpdate }
 
   let(:request) do
     headers = {
@@ -16,7 +16,7 @@ describe ApiAuth::RequestDrivers::CurbRequest do
   end
 
 
-  subject(:driven_request){ ApiAuth::RequestDrivers::CurbRequest.new(request) }
+  subject(:driven_request) { ApiAuth::RequestDrivers::CurbRequest.new(request) }
 
   describe 'getting headers correctly' do
     it 'gets the content_type' do
@@ -49,7 +49,7 @@ describe ApiAuth::RequestDrivers::CurbRequest do
   describe 'setting headers correctly' do
     let(:request) do
       headers = {
-        'Content-Type'  => 'text/plain'
+        'Content-Type' => 'text/plain'
       }
       Curl::Easy.new('/resource.xml?foo=bar&bar=foo') do |curl|
         curl.headers = headers

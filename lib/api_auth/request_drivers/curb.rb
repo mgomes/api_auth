@@ -16,7 +16,7 @@ module ApiAuth
       end
 
       def populate_content_md5
-        nil #doesn't appear to be possible
+        nil # doesn't appear to be possible
       end
 
       def md5_mismatch?
@@ -62,7 +62,7 @@ module ApiAuth
     private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map { |key| @headers[key] }.compact.first
       end
     end
   end

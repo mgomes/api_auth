@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::NetHttpRequest do
-  let(:timestamp){ Time.now.utc.httpdate }
+  let(:timestamp) { Time.now.utc.httpdate }
 
-  let(:request_path){ '/resource.xml?foo=bar&bar=foo' }
+  let(:request_path) { '/resource.xml?foo=bar&bar=foo' }
 
   let(:request_headers) do
     {
-      'Authorization'  => 'APIAuth 1044:12345',
+      'Authorization' => 'APIAuth 1044:12345',
       'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'content-type' => 'text/plain',
       'date' => timestamp
@@ -20,7 +20,7 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
     net_http_request
   end
 
-  subject(:driven_request){ ApiAuth::RequestDrivers::NetHttpRequest.new(request) }
+  subject(:driven_request) { ApiAuth::RequestDrivers::NetHttpRequest.new(request) }
 
   describe 'getting headers correctly' do
     describe '#content_type' do
@@ -71,7 +71,7 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
 
     describe 'http_method' do
       context 'when put request' do
-        let(:request){ Net::HTTP::Put.new(request_path, request_headers) }
+        let(:request) { Net::HTTP::Put.new(request_path, request_headers) }
 
         it 'returns upcased put' do
           expect(driven_request.http_method).to eq('PUT')
@@ -79,7 +79,7 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
       end
 
       context 'when get request' do
-        let(:request){ Net::HTTP::Get.new(request_path, request_headers) }
+        let(:request) { Net::HTTP::Get.new(request_path, request_headers) }
 
         it 'returns upcased get' do
           expect(driven_request.http_method).to eq('GET')

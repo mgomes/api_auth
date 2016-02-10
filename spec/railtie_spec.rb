@@ -41,7 +41,7 @@ describe 'Rails integration' do
     end
 
     unless defined?(ActionDispatch)
-      ActionController::Routing::Routes.draw {|map| map.resources :test }
+      ActionController::Routing::Routes.draw { |map| map.resources :test }
     end
 
     def generated_response(request, action = :index)

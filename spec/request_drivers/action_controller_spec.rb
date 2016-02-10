@@ -3,11 +3,11 @@ require 'spec_helper'
 if defined?(ActionController::Request)
 
   describe ApiAuth::RequestDrivers::ActionControllerRequest do
-    let(:timestamp){ Time.now.utc.httpdate }
+    let(:timestamp) { Time.now.utc.httpdate }
 
     let(:request) do
       ActionController::Request.new(
-        'AUTHORIZATION'  => 'APIAuth 1044:12345',
+        'AUTHORIZATION' => 'APIAuth 1044:12345',
         'PATH_INFO' => '/resource.xml',
         'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
@@ -19,7 +19,7 @@ if defined?(ActionController::Request)
       )
     end
 
-    subject(:driven_request){ ApiAuth::RequestDrivers::ActionControllerRequest.new(request) }
+    subject(:driven_request) { ApiAuth::RequestDrivers::ActionControllerRequest.new(request) }
 
     describe 'getting headers correctly' do
       it 'gets the content_type' do

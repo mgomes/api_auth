@@ -53,7 +53,7 @@ module ApiAuth
 
       def content_type
         value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? '': value
+        value.nil? ? '' : value
       end
 
       def content_md5
@@ -82,7 +82,7 @@ module ApiAuth
     private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map { |key| @headers[key] }.compact.first
       end
 
       def save_headers

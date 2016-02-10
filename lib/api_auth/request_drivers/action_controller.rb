@@ -74,7 +74,7 @@ module ApiAuth
     private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map { |key| @headers[key] }.compact.first
       end
     end
   end
