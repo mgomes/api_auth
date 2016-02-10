@@ -7,7 +7,7 @@ module ApiAuth
         Base64.strict_encode64(string)
       else
         # Fall back to stripping out newlines on Ruby 1.8.
-        Base64.encode64(string).gsub(/\n/, '')
+        Base64.encode64(string).delete("\n")
       end
     end
 

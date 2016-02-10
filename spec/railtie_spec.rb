@@ -58,7 +58,7 @@ describe 'Rails integration' do
         response
       else
         request.action = action.to_s
-        request.path = "/#{action.to_s}"
+        request.path = "/#{action}"
         TestController.new.process(request, ActionController::TestResponse.new)
       end
     end

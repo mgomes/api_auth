@@ -13,7 +13,7 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request.env.merge!({ 'Authorization' => header })
+        @request.env['Authorization'] = header
         fetch_headers
         @request
       end
@@ -66,7 +66,7 @@ module ApiAuth
       end
 
       def set_date
-        @request.env.merge!({ 'DATE' => Time.now.utc.httpdate })
+        @request.env['DATE'] = Time.now.utc.httpdate
         fetch_headers
       end
 

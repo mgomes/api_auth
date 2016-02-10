@@ -60,9 +60,7 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
   describe 'setting headers correctly' do
     let(:request) do
       httpi_request = HTTPI::Request.new('http://localhost/resource.xml?foo=bar&bar=foo')
-      httpi_request.headers.merge!({
-        'content-type' => 'text/plain'
-      })
+      httpi_request.headers['content-type'] = 'text/plain'
       httpi_request
     end
 

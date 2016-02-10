@@ -42,7 +42,7 @@ module ApiAuth
 
       return new_request if new_request
       return RackRequest.new(request) if request.kind_of?(Rack::Request)
-      raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
+      raise UnknownHTTPRequest, "#{request.class} is not yet supported."
     end
     private :initialize_request_driver
 

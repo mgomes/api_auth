@@ -16,7 +16,7 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request.headers.merge!({ 'Authorization' => header })
+        @request.headers['Authorization'] = header
         save_headers # enforce update of processed_headers based on last updated headers
         @request
       end
@@ -69,7 +69,7 @@ module ApiAuth
       end
 
       def set_date
-        @request.headers.merge!({ 'DATE' => Time.now.utc.httpdate })
+        @request.headers['DATE'] = Time.now.utc.httpdate
         save_headers
       end
 

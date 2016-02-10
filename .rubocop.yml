@@ -12,13 +12,6 @@ Lint/AssignmentInCondition:
   Exclude:
     - 'lib/api_auth/base.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Lint/StringConversionInInterpolation:
-  Exclude:
-    - 'lib/api_auth/headers.rb'
-    - 'spec/railtie_spec.rb'
-
 # Offense count: 1
 Lint/UselessAssignment:
   Exclude:
@@ -46,23 +39,6 @@ Metrics/MethodLength:
 # Offense count: 1
 Metrics/PerceivedComplexity:
   Max: 8
-
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: MaxKeyValuePairs.
-Performance/RedundantMerge:
-  Exclude:
-    - 'lib/api_auth/request_drivers/curb.rb'
-    - 'lib/api_auth/request_drivers/faraday.rb'
-    - 'lib/api_auth/request_drivers/rack.rb'
-    - 'lib/api_auth/request_drivers/rest_client.rb'
-    - 'spec/request_drivers/httpi_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Performance/StringReplacement:
-  Exclude:
-    - 'lib/api_auth/helpers.rb'
 
 # Offense count: 9
 # Cop supports --auto-correct.
