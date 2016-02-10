@@ -16,23 +16,19 @@ module ApiAuth
       end
 
       def calculated_md5
-        if @request.body
-          body = @request.body
-        else
-          body = ''
-        end
+        body = @request.body ? @request.body : ''
         md5_base64digest(body)
       end
 
       def populate_content_md5
-        if ['POST', 'PUT'].include?(@request.method.to_s.upcase)
+        if %w(POST PUT).include?(@request.method.to_s.upcase)
           @request.headers['Content-MD5'] = calculated_md5
           fetch_headers
         end
       end
 
       def md5_mismatch?
-        if ['POST', 'PUT'].include?(@request.method.to_s.upcase)
+        if %w(POST PUT).include?(@request.method.to_s.upcase)
           calculated_md5 != content_md5
         else
           false

@@ -37,7 +37,7 @@ module ApiAuth
         end
 
       return new_request if new_request
-      return RackRequest.new(request) if request.kind_of?(Rack::Request)
+      return RackRequest.new(request) if request.is_a?(Rack::Request)
       raise UnknownHTTPRequest, "#{request.class} is not yet supported."
     end
     private :initialize_request_driver
@@ -57,7 +57,7 @@ module ApiAuth
     end
 
     # temp backwards compatibility
-    alias_method :canonical_string, :canonical_string_without_http_method
+    alias canonical_string canonical_string_without_http_method
 
     def canonical_string_with_http_method(override_method = nil)
       request_method = override_method || @request.http_method

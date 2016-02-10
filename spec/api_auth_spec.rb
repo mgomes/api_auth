@@ -61,7 +61,7 @@ describe 'ApiAuth' do
                            'content-type' => 'text/plain',
                            'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
                            'date' => Time.now.utc.httpdate
-        )
+                          )
       end
 
       let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string_with_http_method }
@@ -80,7 +80,7 @@ describe 'ApiAuth' do
                                        'content-type' => 'text/plain',
                                        'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
                                        'date' => Time.now.utc.httpdate
-      )
+                                      )
 
       signature = hmac('123', new_request)
       new_request['Authorization'] = "APIAuth 1044:#{signature}"
@@ -116,7 +116,7 @@ describe 'ApiAuth' do
                                          'content-type' => 'text/plain',
                                          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
                                          'date' => Time.now.utc.httpdate
-        )
+                                        )
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string_with_http_method
         signature = hmac('123', new_request, canonical_string)
         new_request['Authorization'] = "APIAuth 1044:#{signature}"

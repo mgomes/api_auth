@@ -317,8 +317,8 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
                   :content_type => 'text/plain',
                   'Date' => 'Mon, 23 Jan 1984 03:29:56 GMT' }
       request = RestClient::Request.new(:url => '/resource.xml?foo=bar&bar=foo',
-        :headers => headers,
-        :method => :put)
+                                        :headers => headers,
+                                        :method => :put)
       headers = ApiAuth::Headers.new(request)
       ApiAuth.sign!(request, 'some access id', 'some secret key')
       expect(request.processed_headers).to have_key('Content-Type')

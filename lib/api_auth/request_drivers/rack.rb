@@ -26,14 +26,14 @@ module ApiAuth
       end
 
       def populate_content_md5
-        if ['POST', 'PUT'].include?(@request.request_method)
+        if %w(POST PUT).include?(@request.request_method)
           @request.env['Content-MD5'] = calculated_md5
           fetch_headers
         end
       end
 
       def md5_mismatch?
-        if ['POST', 'PUT'].include?(@request.request_method)
+        if %w(POST PUT).include?(@request.request_method)
           calculated_md5 != content_md5
         else
           false

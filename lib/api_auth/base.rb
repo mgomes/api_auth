@@ -71,11 +71,10 @@ module ApiAuth
 
     def request_too_old?(headers)
       # 900 seconds is 15 minutes
-      begin
-        Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
-      rescue ArgumentError
-        true
-      end
+
+      Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
+    rescue ArgumentError
+      true
     end
 
     def signatures_match?(headers, secret_key, options)

@@ -52,43 +52,6 @@ Style/AccessorMethodName:
     - 'lib/api_auth/request_drivers/rack.rb'
     - 'lib/api_auth/request_drivers/rest_client.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: prefer_alias, prefer_alias_method
-Style/Alias:
-  Exclude:
-    - 'lib/api_auth/headers.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle, SupportedLastArgumentHashStyles.
-# SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Style/AlignHash:
-  Exclude:
-    - 'spec/request_drivers/rest_client_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: is_a?, kind_of?
-Style/ClassCheck:
-  Exclude:
-    - 'lib/api_auth/headers.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-Style/ClosingParenthesisIndentation:
-  Exclude:
-    - 'spec/api_auth_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: SingleLineConditionsOnly.
-Style/ConditionalAssignment:
-  Exclude:
-    - 'lib/api_auth/request_drivers/faraday.rb'
-
 # Offense count: 4
 Style/Documentation:
   Exclude:
@@ -96,12 +59,6 @@ Style/Documentation:
     - 'test/**/*'
     - 'lib/api_auth/railtie.rb'
     - 'lib/api_auth/request_drivers/rest_client.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/EmptyLinesAroundMethodBody:
-  Exclude:
-    - 'lib/api_auth/railtie.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
@@ -125,29 +82,10 @@ Style/HashSyntax:
 
 # Offense count: 4
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, IndentationWidth.
-# SupportedStyles: special_inside_parentheses, consistent, align_braces
-Style/IndentHash:
-  Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/MutableConstant:
-  Exclude:
-    - 'spec/railtie_spec.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
 # Configuration parameters: PreferredDelimiters.
 Style/PercentLiteralDelimiters:
   Exclude:
     - 'api_auth.gemspec'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantBegin:
-  Exclude:
-    - 'lib/api_auth/base.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
@@ -162,10 +100,3 @@ Style/UnneededPercentQ:
   Exclude:
     - 'api_auth.gemspec'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: SupportedStyles, WordRegex.
-# SupportedStyles: percent, brackets
-Style/WordArray:
-  EnforcedStyle: percent
-  MinSize: 3
