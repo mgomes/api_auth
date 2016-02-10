@@ -160,7 +160,6 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
         Net::HTTP::Get.new(request_path, request_headers)
       end
 
-
       it 'is false' do
         expect(driven_request.md5_mismatch?).to be false
       end

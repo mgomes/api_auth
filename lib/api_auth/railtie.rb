@@ -52,10 +52,10 @@ module ApiAuth
 
           def connection_with_auth(refresh = false)
             c = connection_without_auth(refresh)
-            c.hmac_access_id = self.hmac_access_id
-            c.hmac_secret_key = self.hmac_secret_key
-            c.use_hmac = self.use_hmac
-            c.sign_with_http_method = self.sign_with_http_method
+            c.hmac_access_id = hmac_access_id
+            c.hmac_secret_key = hmac_secret_key
+            c.use_hmac = use_hmac
+            c.sign_with_http_method = sign_with_http_method
             c
           end
         end # class methods

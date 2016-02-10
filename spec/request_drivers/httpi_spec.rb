@@ -120,7 +120,6 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
         request.body = nil
       end
 
-
       it 'is false' do
         expect(driven_request.md5_mismatch?).to be false
       end

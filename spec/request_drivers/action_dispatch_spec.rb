@@ -54,7 +54,6 @@ if defined?(ActionDispatch::Request)
         end
       end
 
-
       describe 'http_method' do
         context 'when put request' do
           let(:request) do

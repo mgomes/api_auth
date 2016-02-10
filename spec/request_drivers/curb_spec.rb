@@ -15,7 +15,6 @@ describe ApiAuth::RequestDrivers::CurbRequest do
     end
   end
 
-
   subject(:driven_request) { ApiAuth::RequestDrivers::CurbRequest.new(request) }
 
   describe 'getting headers correctly' do

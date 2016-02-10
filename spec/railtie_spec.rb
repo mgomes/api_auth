@@ -37,7 +37,9 @@ describe 'Rails integration' do
         render :text => 'OK'
       end
 
-      def rescue_action(e); raise(e); end
+      def rescue_action(e)
+        raise(e)
+      end
     end
 
     unless defined?(ActionDispatch)

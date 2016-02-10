@@ -34,8 +34,6 @@ module ApiAuth
           HttpiRequest.new(request)
         when /Faraday::Request/
           FaradayRequest.new(request)
-        else
-          nil
         end
 
       return new_request if new_request
@@ -51,10 +49,10 @@ module ApiAuth
 
     # Returns the canonical string computed from the request's headers
     def canonical_string_without_http_method
-      [ @request.content_type,
-        @request.content_md5,
-        parse_uri(@request.request_uri),
-        @request.timestamp
+      [@request.content_type,
+       @request.content_md5,
+       parse_uri(@request.request_uri),
+       @request.timestamp
       ].join(',')
     end
 
@@ -68,11 +66,11 @@ module ApiAuth
         raise ArgumentError, 'unable to determine the http method from the request, please supply an override'
       end
 
-      [ request_method.upcase,
-        @request.content_type,
-        @request.content_md5,
-        parse_uri(@request.request_uri),
-        @request.timestamp
+      [request_method.upcase,
+       @request.content_type,
+       @request.content_md5,
+       parse_uri(@request.request_uri),
+       @request.timestamp
       ].join(',')
     end
 

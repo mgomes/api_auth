@@ -99,23 +99,6 @@ Style/Documentation:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty, nil, both
-Style/EmptyElse:
-  Exclude:
-    - 'lib/api_auth/headers.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/EmptyLines:
-  Exclude:
-    - 'spec/request_drivers/action_dispatch_spec.rb'
-    - 'spec/request_drivers/curb_spec.rb'
-    - 'spec/request_drivers/httpi_spec.rb'
-    - 'spec/request_drivers/net_http_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 Style/EmptyLinesAroundMethodBody:
   Exclude:
     - 'lib/api_auth/railtie.rb'
@@ -165,25 +148,6 @@ Style/PercentLiteralDelimiters:
 Style/RedundantBegin:
   Exclude:
     - 'lib/api_auth/base.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/RedundantSelf:
-  Exclude:
-    - 'lib/api_auth/railtie.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowIfMethodIsEmpty.
-Style/SingleLineMethods:
-  Exclude:
-    - 'spec/railtie_spec.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/SpaceInsideBrackets:
-  Exclude:
-    - 'lib/api_auth/headers.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
