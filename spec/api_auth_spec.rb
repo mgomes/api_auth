@@ -142,7 +142,7 @@ describe 'ApiAuth' do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :get,
-          :headers => {:authorization => 'APIAuth 1044:aGVsbG8gd29ybGQ='}
+          :headers => { :authorization => 'APIAuth 1044:aGVsbG8gd29ybGQ=' }
         )
       end
 
@@ -156,7 +156,7 @@ describe 'ApiAuth' do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :get,
-          :headers => {:authorization => 'Corporate APIAuth 1044:aGVsbG8gd29ybGQ='}
+          :headers => { :authorization => 'Corporate APIAuth 1044:aGVsbG8gd29ybGQ=' }
         )
       end
 

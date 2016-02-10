@@ -138,7 +138,7 @@ describe ApiAuth::Headers do
           :url => 'http://google.com',
           :method => :post,
           :payload => "hello\nworld",
-          :headers => {:content_md5 => 'abcd'}
+          :headers => { :content_md5 => 'abcd' }
         )
       end
 

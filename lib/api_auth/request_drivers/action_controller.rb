@@ -71,7 +71,7 @@ module ApiAuth
         find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
       end
 
-    private
+      private
 
       def find_header(keys)
         keys.map { |key| @headers[key] }.compact.first

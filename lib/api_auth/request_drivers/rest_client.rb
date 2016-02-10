@@ -1,5 +1,5 @@
 # give access to RestClient @processed_headers
-module RestClient;class Request;attr_accessor :processed_headers;end;end
+module RestClient; class Request; attr_accessor :processed_headers; end; end
 
 module ApiAuth
   module RequestDrivers # :nodoc:
@@ -79,7 +79,7 @@ module ApiAuth
         find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
       end
 
-    private
+      private
 
       def find_header(keys)
         keys.map { |key| @headers[key] }.compact.first

@@ -40,13 +40,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 8
 
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, IndentationWidth.
-# SupportedStyles: outdent, indent
-Style/AccessModifierIndentation:
-  Enabled: false
-
 # Offense count: 8
 Style/AccessorMethodName:
   Exclude:
@@ -211,30 +204,11 @@ Style/SingleLineMethods:
   Exclude:
     - 'spec/railtie_spec.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/SpaceAfterComma:
-  Exclude:
-    - 'lib/api_auth/helpers.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/SpaceAfterSemicolon:
-  Exclude:
-    - 'lib/api_auth/request_drivers/rest_client.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/SpaceInsideBrackets:
   Exclude:
     - 'lib/api_auth/headers.rb'
-
-# Offense count: 8
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SupportedStyles.
-# SupportedStyles: space, no_space
-Style/SpaceInsideHashLiteralBraces:
-  Enabled: false
 
 # Offense count: 1
 # Cop supports --auto-correct.

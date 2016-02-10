@@ -5,7 +5,7 @@ describe 'Rails integration' do
 
   describe 'Rails controller integration' do
     class ApplicationController < ActionController::Base
-    private
+      private
 
       def require_api_auth
         if (access_id = get_api_access_id_from_request)

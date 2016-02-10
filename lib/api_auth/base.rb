@@ -65,7 +65,7 @@ module ApiAuth
       b64_encode(Digest::SHA2.new(512).digest(random_bytes))
     end
 
-  private
+    private
 
     AUTH_HEADER_PATTERN = /APIAuth ([^:]+):(.+)$/
 

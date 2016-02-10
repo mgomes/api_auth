@@ -20,7 +20,7 @@ module ApiAuth
     # Capitalizes the keys of a hash
     def capitalize_keys(hsh)
       capitalized_hash = {}
-      hsh.each_pair { |k,v| capitalized_hash[k.to_s.upcase] = v }
+      hsh.each_pair { |k, v| capitalized_hash[k.to_s.upcase] = v }
       capitalized_hash
     end
   end

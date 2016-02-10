@@ -78,7 +78,7 @@ module ApiAuth
             h = arguments.last
             tmp = "Net::HTTP::#{method.to_s.capitalize}".constantize.new(path, h)
             tmp.body = arguments[0] if arguments.length > 1
-            ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, {:with_http_method => (sign_with_http_method || false)})
+            ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, { :with_http_method => (sign_with_http_method || false) })
             arguments.last['Content-MD5'] = tmp['Content-MD5'] if tmp['Content-MD5']
             arguments.last['DATE'] = tmp['DATE']
             arguments.last['Authorization'] = tmp['Authorization']
