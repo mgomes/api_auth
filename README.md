@@ -115,6 +115,13 @@ into the sign! method like so:
     @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :override_http_method => "PUT")
 ```
 
+If you want to use another digest existing in `OpenSSL::Digest`,
+you can pass the http method as an option into the sign! method like so:
+
+``` ruby
+    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :digest => 'sha256')
+```
+
 ### ActiveResource Clients
 
 ApiAuth can transparently protect your ActiveResource communications with a
@@ -152,6 +159,12 @@ To validate whether or not a request is authentic:
 
 ``` ruby
     ApiAuth.authentic?(signed_request, secret_key)
+```
+
+If you want to use another digest method, you should pass it as an option parameter:
+
+``` ruby
+    ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')
 ```
 
 If your server is a Rails app, the signed request will be the `request` object.

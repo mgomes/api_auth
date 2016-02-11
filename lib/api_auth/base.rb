@@ -21,7 +21,7 @@ module ApiAuth
     #
     # secret_key: assigned secret key that is known to both parties
     def sign!(request, access_id, secret_key, options = {})
-      options = { :override_http_method => nil, :with_http_method => false }.merge(options)
+      options = { :override_http_method => nil, :with_http_method => false, :digest => 'sha1' }.merge(options)
       headers = Headers.new(request)
       headers.calculate_md5
       headers.set_date
@@ -32,7 +32,7 @@ module ApiAuth
     # secret key. Returns true if the request is authentic and false otherwise.
     def authentic?(request, secret_key, options = {})
       return false if secret_key.nil?
-      options = { :override_http_method => nil }.merge(options)
+      options = { :override_http_method => nil, :digest => 'sha1' }.merge(options)
 
       headers = Headers.new(request)
       if headers.md5_mismatch?
@@ -94,7 +94,7 @@ module ApiAuth
                          else
                            headers.canonical_string
                          end
-      digest = OpenSSL::Digest.new('sha1')
+      digest = OpenSSL::Digest.new(options[:digest])
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
