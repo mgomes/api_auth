@@ -1,9 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe ApiAuth::Headers do
-
   describe '#canonical_string' do
-    context "uri edge cases" do
+    context 'uri edge cases' do
       let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
       subject(:headers) { described_class.new(request) }
       let(:uri) { '' }
@@ -41,107 +40,107 @@ describe ApiAuth::Headers do
       end
     end
 
-    context "string construction" do
-      let(:request){ RestClient::Request.new(:url => "http://google.com", :method => :get) }
+    context 'string construction' do
+      let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
       subject(:headers) { described_class.new(request) }
-      let(:driver){ headers.instance_variable_get("@request")}
+      let(:driver) { headers.instance_variable_get('@request') }
 
-      it "puts the canonical string together correctly" do
-        allow(driver).to receive(:content_type).and_return "text/html"
-        allow(driver).to receive(:content_md5).and_return "12345"
-        allow(driver).to receive(:request_uri).and_return "/foo"
-        allow(driver).to receive(:timestamp).and_return "Mon, 23 Jan 1984 03:29:56 GMT"
-        expect(headers.canonical_string).to eq "text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT"
+      it 'puts the canonical string together correctly' do
+        allow(driver).to receive(:content_type).and_return 'text/html'
+        allow(driver).to receive(:content_md5).and_return '12345'
+        allow(driver).to receive(:request_uri).and_return '/foo'
+        allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
+        expect(headers.canonical_string).to eq 'text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT'
       end
     end
   end
 
-  describe "#canonical_string_with_http_method" do
-    context "with a driver that supplies http_method" do
-      let(:request){ RestClient::Request.new(:url => "http://google.com", :method => :get) }
+  describe '#canonical_string_with_http_method' do
+    context 'with a driver that supplies http_method' do
+      let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
       subject(:headers) { described_class.new(request) }
-      let(:driver){ headers.instance_variable_get("@request")}
+      let(:driver) { headers.instance_variable_get('@request') }
 
       before do
-        allow(driver).to receive(:http_method).and_return "GET"
-        allow(driver).to receive(:content_type).and_return "text/html"
-        allow(driver).to receive(:content_md5).and_return "12345"
-        allow(driver).to receive(:request_uri).and_return "/foo"
-        allow(driver).to receive(:timestamp).and_return "Mon, 23 Jan 1984 03:29:56 GMT"
+        allow(driver).to receive(:http_method).and_return 'GET'
+        allow(driver).to receive(:content_type).and_return 'text/html'
+        allow(driver).to receive(:content_md5).and_return '12345'
+        allow(driver).to receive(:request_uri).and_return '/foo'
+        allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
       end
 
-      context "when not passed an override" do
+      context 'when not passed an override' do
         it "constructs the canonical_string with the driver's http method" do
-          expect(headers.canonical_string_with_http_method).to eq "GET,text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT"
+          expect(headers.canonical_string_with_http_method).to eq 'GET,text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT'
         end
       end
 
-      context "when passed an override" do
-        it "constructs the canonical_string with the overridden http method" do
-          expect(headers.canonical_string_with_http_method("put")).to eq "PUT,text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT"
+      context 'when passed an override' do
+        it 'constructs the canonical_string with the overridden http method' do
+          expect(headers.canonical_string_with_http_method('put')).to eq 'PUT,text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT'
         end
       end
     end
 
     context "when a driver that doesn't supply http_method" do
       let(:request) do
-        Curl::Easy.new("/resource.xml?foo=bar&bar=foo") do |curl|
-          curl.headers = { 'Content-Type'  => "text/plain" }
+        Curl::Easy.new('/resource.xml?foo=bar&bar=foo') do |curl|
+          curl.headers = { 'Content-Type' => 'text/plain' }
         end
       end
       subject(:headers) { described_class.new(request) }
-      let(:driver){ headers.instance_variable_get("@request")}
+      let(:driver) { headers.instance_variable_get('@request') }
 
       before do
         allow(driver).to receive(:http_method).and_return nil
-        allow(driver).to receive(:content_type).and_return "text/html"
-        allow(driver).to receive(:content_md5).and_return "12345"
-        allow(driver).to receive(:request_uri).and_return "/foo"
-        allow(driver).to receive(:timestamp).and_return "Mon, 23 Jan 1984 03:29:56 GMT"
+        allow(driver).to receive(:content_type).and_return 'text/html'
+        allow(driver).to receive(:content_md5).and_return '12345'
+        allow(driver).to receive(:request_uri).and_return '/foo'
+        allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
       end
 
-      context "when not passed an override" do
-        it "raises an error" do
-          expect{ headers.canonical_string_with_http_method }.to raise_error(ArgumentError)
+      context 'when not passed an override' do
+        it 'raises an error' do
+          expect { headers.canonical_string_with_http_method }.to raise_error(ArgumentError)
         end
       end
 
-      context "when passed an override" do
-        it "constructs the canonical_string with the overridden http method" do
-          expect(headers.canonical_string_with_http_method("put")).to eq "PUT,text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT"
+      context 'when passed an override' do
+        it 'constructs the canonical_string with the overridden http method' do
+          expect(headers.canonical_string_with_http_method('put')).to eq 'PUT,text/html,12345,/foo,Mon, 23 Jan 1984 03:29:56 GMT'
         end
       end
     end
   end
 
   describe '#calculate_md5' do
-    subject(:headers){ described_class.new(request) }
-    let(:driver){ headers.instance_variable_get("@request")}
+    subject(:headers) { described_class.new(request) }
+    let(:driver) { headers.instance_variable_get('@request') }
 
-    context "no md5 already calculated" do
-      let(:request) {
+    context 'no md5 already calculated' do
+      let(:request) do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :post,
           :payload => "hello\nworld"
         )
-      }
+      end
 
-      it "populates the md5 header" do
+      it 'populates the md5 header' do
         expect(driver).to receive(:populate_content_md5)
         headers.calculate_md5
       end
     end
 
-    context "md5 already calculated" do
-      let(:request) {
+    context 'md5 already calculated' do
+      let(:request) do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :post,
           :payload => "hello\nworld",
-          :headers => {:content_md5 => "abcd"}
+          :headers => { :content_md5 => 'abcd' }
         )
-      }
+      end
 
       it "doesn't populate the md5 header" do
         expect(driver).not_to receive(:populate_content_md5)
@@ -150,30 +149,30 @@ describe ApiAuth::Headers do
     end
   end
 
-  describe "#md5_mismatch?" do
-    let(:request){ RestClient::Request.new(:url => "http://google.com", :method => :get) }
-    subject(:headers){ described_class.new(request) }
-    let(:driver){ headers.instance_variable_get("@request") }
+  describe '#md5_mismatch?' do
+    let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+    subject(:headers) { described_class.new(request) }
+    let(:driver) { headers.instance_variable_get('@request') }
 
-    context "when request has md5 header" do
-      it "asks the driver" do
-        allow(driver).to receive(:content_md5).and_return "1234"
+    context 'when request has md5 header' do
+      it 'asks the driver' do
+        allow(driver).to receive(:content_md5).and_return '1234'
 
         expect(driver).to receive(:md5_mismatch?).and_call_original
         headers.md5_mismatch?
       end
     end
 
-    context "when request has no md5" do
+    context 'when request has no md5' do
       it "doesn't ask the driver" do
-        allow(driver).to receive(:content_md5).and_return ""
+        allow(driver).to receive(:content_md5).and_return ''
 
         expect(driver).not_to receive(:md5_mismatch?).and_call_original
         headers.md5_mismatch?
       end
 
-      it "returns false" do
-        allow(driver).to receive(:content_md5).and_return ""
+      it 'returns false' do
+        allow(driver).to receive(:content_md5).and_return ''
 
         expect(headers.md5_mismatch?).to be false
       end

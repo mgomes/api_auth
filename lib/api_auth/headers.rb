@@ -1,8 +1,6 @@
 module ApiAuth
-
   # Builds the canonical string given a request object.
   class Headers
-
     include RequestDrivers
 
     def initialize(request)
@@ -36,46 +34,44 @@ module ApiAuth
           HttpiRequest.new(request)
         when /Faraday::Request/
           FaradayRequest.new(request)
-        else
-          nil
         end
 
       return new_request if new_request
-      return RackRequest.new(request) if request.kind_of?(Rack::Request)
-      raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
+      return RackRequest.new(request) if request.is_a?(Rack::Request)
+      raise UnknownHTTPRequest, "#{request.class} is not yet supported."
     end
     private :initialize_request_driver
 
     # Returns the request timestamp
     def timestamp
-       @request.timestamp
+      @request.timestamp
     end
 
     # Returns the canonical string computed from the request's headers
     def canonical_string_without_http_method
-      [ @request.content_type,
-        @request.content_md5,
-        parse_uri(@request.request_uri),
-        @request.timestamp
-      ].join(",")
+      [@request.content_type,
+       @request.content_md5,
+       parse_uri(@request.request_uri),
+       @request.timestamp
+      ].join(',')
     end
 
     # temp backwards compatibility
-    alias_method :canonical_string, :canonical_string_without_http_method
+    alias canonical_string canonical_string_without_http_method
 
     def canonical_string_with_http_method(override_method = nil)
       request_method = override_method || @request.http_method
 
       if request_method.nil?
-        raise ArgumentError, "unable to determine the http method from the request, please supply an override"
+        raise ArgumentError, 'unable to determine the http method from the request, please supply an override'
       end
 
-      [ request_method.upcase,
-        @request.content_type,
-        @request.content_md5,
-        parse_uri(@request.request_uri),
-        @request.timestamp
-      ].join(",")
+      [request_method.upcase,
+       @request.content_type,
+       @request.content_md5,
+       parse_uri(@request.request_uri),
+       @request.timestamp
+      ].join(',')
     end
 
     # Returns the authorization header from the request's headers

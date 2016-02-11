@@ -8,9 +8,7 @@
 # Rails ActiveResource, it will integrate with that. It will even generate the
 # secret keys necessary for your clients to sign their requests.
 module ApiAuth
-
   class << self
-
     include Helpers
 
     # Signs an HTTP request using the client's access id and secret key.
@@ -67,17 +65,16 @@ module ApiAuth
       b64_encode(Digest::SHA2.new(512).digest(random_bytes))
     end
 
-  private
+    private
 
     AUTH_HEADER_PATTERN = /APIAuth ([^:]+):(.+)$/
 
     def request_too_old?(headers)
       # 900 seconds is 15 minutes
-      begin
-        Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
-      rescue ArgumentError
-        true
-      end
+
+      Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
+    rescue ArgumentError
+      true
     end
 
     def signatures_match?(headers, secret_key, options)
@@ -94,11 +91,11 @@ module ApiAuth
     end
 
     def hmac_signature(headers, secret_key, options)
-      if options[:with_http_method]
-        canonical_string = headers.canonical_string_with_http_method(options[:override_http_method])
-      else
-        canonical_string = headers.canonical_string
-      end
+      canonical_string = if options[:with_http_method]
+                           headers.canonical_string_with_http_method(options[:override_http_method])
+                         else
+                           headers.canonical_string
+                         end
       digest = OpenSSL::Digest.new('sha1')
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
@@ -110,7 +107,5 @@ module ApiAuth
     def parse_auth_header(auth_header)
       AUTH_HEADER_PATTERN.match(auth_header)
     end
-
   end # class methods
-
 end # ApiAuth
