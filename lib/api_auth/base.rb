@@ -32,9 +32,11 @@ module ApiAuth
     # secret key. Returns true if the request is authentic and false otherwise.
     def authentic?(request, secret_key, options = {})
       return false if secret_key.nil?
-      options = { :override_http_method => nil, :digest => 'sha1' }.merge(options)
+
+      options = { :override_http_method => nil }.merge(options)
 
       headers = Headers.new(request)
+
       if headers.md5_mismatch?
         false
       elsif !signatures_match?(headers, secret_key, options)
@@ -50,7 +52,7 @@ module ApiAuth
     def access_id(request)
       headers = Headers.new(request)
       if match_data = parse_auth_header(headers.authorization_header)
-        return match_data[1]
+        return match_data[2]
       end
 
       nil
@@ -67,7 +69,7 @@ module ApiAuth
 
     private
 
-    AUTH_HEADER_PATTERN = /APIAuth ([^:]+):(.+)$/
+    AUTH_HEADER_PATTERN = /APIAuth(?:-HMAC-(MD[245]|SHA(?:1|224|256|384|512)*))? ([^:]+):(.+)$/
 
     def request_too_old?(headers)
       # 900 seconds is 15 minutes
@@ -81,7 +83,12 @@ module ApiAuth
       match_data = parse_auth_header(headers.authorization_header)
       return false unless match_data
 
-      header_sig = match_data[2]
+      digest = match_data[1].blank? ? 'SHA1' : match_data[1].upcase
+      raise InvalidRequestDigest if !options[:digest].nil? && !options[:digest].casecmp(digest).zero?
+
+      options = { :digest => digest }.merge(options)
+
+      header_sig = match_data[3]
       calculated_sig_no_http = hmac_signature(headers, secret_key, options.merge(:with_http_method => false))
       calculated_sig_with_http = hmac_signature(headers, secret_key, options.merge(:with_http_method => true))
 
@@ -99,7 +106,8 @@ module ApiAuth
     end
 
     def auth_header(headers, access_id, secret_key, options)
-      "APIAuth #{access_id}:#{hmac_signature(headers, secret_key, options)}"
+      hmac_string = "-HMAC-#{options[:digest].upcase}" unless options[:digest] == 'sha1'
+      "APIAuth#{hmac_string} #{access_id}:#{hmac_signature(headers, secret_key, options)}"
     end
 
     def parse_auth_header(auth_header)

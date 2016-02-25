@@ -122,6 +122,14 @@ you can pass the http method as an option into the sign! method like so:
     @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :digest => 'sha256')
 ```
 
+With the `digest` option, the `Authorization` header will be change from:
+
+    Authorization = APIAuth 'client access id':'signature'
+
+to:
+
+    Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
+
 ### ActiveResource Clients
 
 ApiAuth can transparently protect your ActiveResource communications with a
@@ -161,7 +169,14 @@ To validate whether or not a request is authentic:
     ApiAuth.authentic?(signed_request, secret_key)
 ```
 
-If you want to use another digest method, you should pass it as an option parameter:
+The `authentic?` method uses the digest specified in the `Authorization` header.
+For exemple SHA256 for:
+
+    Authorization = APIAuth-HMAC-SHA256 'client access id':'signature'
+
+And by default SHA1 if the HMAC-DIGEST is not specified.
+
+If you want to force the usage of another digest method, you should pass it as an option parameter:
 
 ``` ruby
     ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')

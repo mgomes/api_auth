@@ -87,7 +87,7 @@ describe 'ApiAuth' do
       it 'calculates the hmac_signature with http method' do
         ApiAuth.sign!(request, '1044', '123', :with_http_method => true, :digest => 'sha256')
         signature = hmac('123', request, canonical_string, 'sha256')
-        expect(request['Authorization']).to eq("APIAuth 1044:#{signature}")
+        expect(request['Authorization']).to eq("APIAuth-HMAC-SHA256 1044:#{signature}")
       end
     end
   end
@@ -162,12 +162,16 @@ describe 'ApiAuth' do
                                         )
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string_with_http_method
         signature = hmac('123', new_request, canonical_string, 'sha256')
-        new_request['Authorization'] = "APIAuth 1044:#{signature}"
+        new_request['Authorization'] = "APIAuth-HMAC-SHA256 1044:#{signature}"
         new_request
       end
 
       it 'validates for sha256 digest' do
         expect(ApiAuth.authentic?(request, '123', :digest => 'sha256')).to eq true
+      end
+
+      it 'validates exception with wrong client digest' do
+        expect { ApiAuth.authentic?(request, '123', :digest => 'sha512') }.to raise_error(ApiAuth::InvalidRequestDigest)
       end
     end
   end
