@@ -55,24 +55,6 @@ describe 'ApiAuth' do
       expect(request.headers['Authorization']).to eq("APIAuth 1044:#{signature}")
     end
 
-    context 'when passed the with_http_method option' do
-      let(:request) do
-        Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
-                           'content-type' => 'text/plain',
-                           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                           'date' => Time.now.utc.httpdate
-                          )
-      end
-
-      let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string_with_http_method }
-
-      it 'calculates the hmac_signature with http method' do
-        ApiAuth.sign!(request, '1044', '123', :with_http_method => true)
-        signature = hmac('123', request, canonical_string)
-        expect(request['Authorization']).to eq("APIAuth 1044:#{signature}")
-      end
-    end
-
     context 'when passed the hmac digest option' do
       let(:request) do
         Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
@@ -82,10 +64,10 @@ describe 'ApiAuth' do
                           )
       end
 
-      let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string_with_http_method }
+      let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string }
 
       it 'calculates the hmac_signature with http method' do
-        ApiAuth.sign!(request, '1044', '123', :with_http_method => true, :digest => 'sha256')
+        ApiAuth.sign!(request, '1044', '123', :digest => 'sha256')
         signature = hmac('123', request, canonical_string, 'sha256')
         expect(request['Authorization']).to eq("APIAuth-HMAC-SHA256 1044:#{signature}")
       end
@@ -128,29 +110,12 @@ describe 'ApiAuth' do
       expect(ApiAuth.authentic?(request, '123')).to eq false
     end
 
-    context 'canonical string contains the http_method' do
-      let(:request) do
-        new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
-                                         'content-type' => 'text/plain',
-                                         'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                         'date' => Time.now.utc.httpdate
-                                        )
-        canonical_string = ApiAuth::Headers.new(new_request).canonical_string_with_http_method
-        signature = hmac('123', new_request, canonical_string)
-        new_request['Authorization'] = "APIAuth 1044:#{signature}"
-        new_request
-      end
 
-      it 'validates for canonical_strings containing the http_method' do
-        expect(ApiAuth.authentic?(request, '123')).to eq true
-      end
-
-      it 'fails to validate if the request method differs' do
-        canonical_string = ApiAuth::Headers.new(request).canonical_string_with_http_method('POST')
-        signature = hmac('123', request, canonical_string)
-        request['Authorization'] = "APIAuth 1044:#{signature}"
-        expect(ApiAuth.authentic?(request, '123')).to eq false
-      end
+    it 'fails to validate if the request method differs' do
+      canonical_string = ApiAuth::Headers.new(request).canonical_string('POST')
+      signature = hmac('123', request, canonical_string)
+      request['Authorization'] = "APIAuth 1044:#{signature}"
+      expect(ApiAuth.authentic?(request, '123')).to eq false
     end
 
     context 'when passed the hmac digest option' do
@@ -160,7 +125,7 @@ describe 'ApiAuth' do
                                          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
                                          'date' => Time.now.utc.httpdate
                                         )
-        canonical_string = ApiAuth::Headers.new(new_request).canonical_string_with_http_method
+        canonical_string = ApiAuth::Headers.new(new_request).canonical_string
         signature = hmac('123', new_request, canonical_string, 'sha256')
         new_request['Authorization'] = "APIAuth-HMAC-SHA256 1044:#{signature}"
         new_request

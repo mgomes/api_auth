@@ -21,7 +21,7 @@ module ApiAuth
     #
     # secret_key: assigned secret key that is known to both parties
     def sign!(request, access_id, secret_key, options = {})
-      options = { :override_http_method => nil, :with_http_method => false, :digest => 'sha1' }.merge(options)
+      options = { :override_http_method => nil, :digest => 'sha1' }.merge(options)
       headers = Headers.new(request)
       headers.calculate_md5
       headers.set_date
@@ -89,18 +89,13 @@ module ApiAuth
       options = { :digest => digest }.merge(options)
 
       header_sig = match_data[3]
-      calculated_sig_no_http = hmac_signature(headers, secret_key, options.merge(:with_http_method => false))
-      calculated_sig_with_http = hmac_signature(headers, secret_key, options.merge(:with_http_method => true))
+      calculated_sig = hmac_signature(headers, secret_key, options)
 
-      header_sig == calculated_sig_with_http || header_sig == calculated_sig_no_http
+      header_sig == calculated_sig
     end
 
     def hmac_signature(headers, secret_key, options)
-      canonical_string = if options[:with_http_method]
-                           headers.canonical_string_with_http_method(options[:override_http_method])
-                         else
-                           headers.canonical_string
-                         end
+      canonical_string = headers.canonical_string(options[:override_http_method])
       digest = OpenSSL::Digest.new(options[:digest])
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end

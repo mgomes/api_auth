@@ -27,22 +27,17 @@ module ApiAuth
             base.class_attribute :hmac_access_id
             base.class_attribute :hmac_secret_key
             base.class_attribute :use_hmac
-            base.class_attribute :sign_with_http_method
           else
             base.class_inheritable_accessor :hmac_access_id
             base.class_inheritable_accessor :hmac_secret_key
             base.class_inheritable_accessor :use_hmac
-            base.class_inheritable_accessor :sign_with_http_method
           end
         end
 
         module ClassMethods
           def with_api_auth(access_id, secret_key, options = {})
-            sign_with_http_method = options[:sign_with_http_method] || false
-
             self.hmac_access_id = access_id
             self.hmac_secret_key = secret_key
-            self.sign_with_http_method = sign_with_http_method
             self.use_hmac = true
 
             class << self
@@ -55,7 +50,6 @@ module ApiAuth
             c.hmac_access_id = hmac_access_id
             c.hmac_secret_key = hmac_secret_key
             c.use_hmac = use_hmac
-            c.sign_with_http_method = sign_with_http_method
             c
           end
         end # class methods
@@ -68,7 +62,7 @@ module ApiAuth
         def self.included(base)
           base.send :alias_method_chain, :request, :auth
           base.class_eval do
-            attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac, :sign_with_http_method
+            attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac
           end
         end
 
@@ -77,7 +71,7 @@ module ApiAuth
             h = arguments.last
             tmp = "Net::HTTP::#{method.to_s.capitalize}".constantize.new(path, h)
             tmp.body = arguments[0] if arguments.length > 1
-            ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, :with_http_method => (sign_with_http_method || false))
+            ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key)
             arguments.last['Content-MD5'] = tmp['Content-MD5'] if tmp['Content-MD5']
             arguments.last['DATE'] = tmp['DATE']
             arguments.last['Authorization'] = tmp['Authorization']
