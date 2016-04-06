@@ -27,10 +27,12 @@ module ApiAuth
             base.class_attribute :hmac_access_id
             base.class_attribute :hmac_secret_key
             base.class_attribute :use_hmac
+            base.class_attribute :api_auth_options
           else
             base.class_inheritable_accessor :hmac_access_id
             base.class_inheritable_accessor :hmac_secret_key
             base.class_inheritable_accessor :use_hmac
+            base.class_inheritable_accessor :api_auth_options
           end
         end
 
@@ -39,6 +41,7 @@ module ApiAuth
             self.hmac_access_id = access_id
             self.hmac_secret_key = secret_key
             self.use_hmac = true
+            self.api_auth_options = options
 
             class << self
               alias_method_chain :connection, :auth
@@ -50,6 +53,7 @@ module ApiAuth
             c.hmac_access_id = hmac_access_id
             c.hmac_secret_key = hmac_secret_key
             c.use_hmac = use_hmac
+            c.api_auth_options = api_auth_options
             c
           end
         end # class methods
@@ -62,7 +66,7 @@ module ApiAuth
         def self.included(base)
           base.send :alias_method_chain, :request, :auth
           base.class_eval do
-            attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac
+            attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac, :api_auth_options
           end
         end
 
@@ -71,7 +75,7 @@ module ApiAuth
             h = arguments.last
             tmp = "Net::HTTP::#{method.to_s.capitalize}".constantize.new(path, h)
             tmp.body = arguments[0] if arguments.length > 1
-            ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key)
+            ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, api_auth_options)
             arguments.last['Content-MD5'] = tmp['Content-MD5'] if tmp['Content-MD5']
             arguments.last['DATE'] = tmp['DATE']
             arguments.last['Authorization'] = tmp['Authorization']
