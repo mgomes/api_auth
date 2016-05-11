@@ -1,3 +1,10 @@
+# 2.0.0 (2016-05-11)
+- IMPORTANT: 2.0.0 is backwards incompatible with the default settings of v1.x
+  v2.0.0 always includes the http method in the canonical string.
+  You can use the upgrade strategy in v1.4.x and above to migrate to v2.0.0
+  without any down time. Please see the 1.4.0 release nodes for more info
+- Added support for other digest algorithms like SHA-256 (#98 fwininger)
+
 # 1.5.0 (2016-01-21)
 - Added a sign_with_http_method configuration option to the ActiveResource
   rails tie to correspond to passing the `:with_http_method => true` into
@@ -7,7 +14,7 @@
 - Fixed an issue where getters wouldn't immediately have the correct value after
   setting a date or content md5 in some of the request drivers (#91)
 
-# 1.4 (2015-12-16)
+# 1.4.0 (2015-12-16)
 
 ## IMPORTANT SECURITY FIX (with backwards compatible fallback)
 
