@@ -2,6 +2,8 @@
 
 source "https://rubygems.org"
 
+gem "rake", "< 11.0", :platforms => :ruby_18
+gem "tins", "< 1.7", :platforms => :ruby_19
 gem "actionpack", "~> 4.1.0"
 gem "activeresource", "~> 4.0.0"
 gem "activesupport", "~> 4.1.0"
