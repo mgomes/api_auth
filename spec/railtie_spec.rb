@@ -63,7 +63,7 @@ describe 'Rails integration' do
 
     it 'should permit a request with properly signed headers' do
       request = ActionController::TestRequest.new
-      request.env['DATE'] = Time.now.utc.httpdate
+      request.env[ApiAuth.configuration.date_header] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
       expect(response.code).to eq('200')
@@ -71,7 +71,7 @@ describe 'Rails integration' do
 
     it 'should forbid a request with properly signed headers but timestamp > 15 minutes' do
       request = ActionController::TestRequest.new
-      request.env['DATE'] = 'Mon, 23 Jan 1984 03:29:56 GMT'
+      request.env[ApiAuth.configuration.date_header] = 'Mon, 23 Jan 1984 03:29:56 GMT'
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
@@ -80,7 +80,7 @@ describe 'Rails integration' do
     it "should insert a DATE header in the request when one hasn't been specified" do
       request = ActionController::TestRequest.new
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
-      expect(request.headers['DATE']).not_to be_nil
+      expect(request.headers[ApiAuth.configuration.date_header]).not_to be_nil
     end
 
     it 'should forbid an unsigned request to a protected controller action' do
@@ -91,7 +91,7 @@ describe 'Rails integration' do
 
     it 'should forbid a request with a bogus signature' do
       request = ActionController::TestRequest.new
-      request.env['Authorization'] = 'APIAuth bogus:bogus'
+      request.env['Authorization'] = "#{ApiAuth.configuration.algorithm} bogus:bogus"
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
     end
@@ -116,9 +116,9 @@ describe 'Rails integration' do
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get '/test_resources/1.xml',
                  {
-                   'Authorization' => 'APIAuth 1044:LZ1jujf3x1nnGR70/208WPXdUHw=',
+                   'Authorization' => "#{ApiAuth.configuration.algorithm} 1044:LZ1jujf3x1nnGR70/208WPXdUHw=",
                    'Accept' => 'application/xml',
-                   'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'
+                   ApiAuth.configuration.date_header => timestamp.strftime(ApiAuth.configuration.date_format)
                  },
                  { :id => '1' }.to_xml(:root => 'test_resource')
       end

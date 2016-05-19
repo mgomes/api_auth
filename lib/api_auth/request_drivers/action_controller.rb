@@ -1,13 +1,6 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class ActionControllerRequest # :nodoc:
-      include ApiAuth::Helpers
-
-      def initialize(request)
-        @request = request
-        fetch_headers
-        true
-      end
+    class ActionControllerRequest < Base # :nodoc:
 
       def set_auth_header(header)
         @request.env['Authorization'] = header
@@ -28,7 +21,7 @@ module ApiAuth
       end
 
       def md5_mismatch?
-        if @request.put? || @request.post?
+        if (@request.put? || @request.post?) && !@request.body.nil?
           calculated_md5 != content_md5
         else
           false
@@ -58,23 +51,13 @@ module ApiAuth
       end
 
       def set_date
-        @request.env['HTTP_DATE'] = Time.now.utc.httpdate
+        @request.env["HTTP_#{ApiAuth.configuration.date_header}"] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
         fetch_headers
       end
 
       def timestamp
-        value = find_header(%w(DATE HTTP_DATE))
+        value = find_header([ApiAuth.configuration.date_header, "HTTP_#{ApiAuth.configuration.date_header}"])
         value.nil? ? '' : value
-      end
-
-      def authorization_header
-        find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
-      end
-
-      private
-
-      def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
       end
     end
   end

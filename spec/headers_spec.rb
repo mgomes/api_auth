@@ -96,6 +96,31 @@ describe ApiAuth::Headers do
           end
         end
       end
+
+      context 'with a custom canonical string factory' do
+        let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+        subject(:headers) { described_class.new(request) }
+        let(:driver) { headers.instance_variable_get('@request') }
+
+        before do
+          allow(driver).to receive(:http_method).and_return 'GET'
+          allow(driver).to receive(:content_type).and_return 'text/html'
+          allow(driver).to receive(:content_md5).and_return '12345'
+          allow(driver).to receive(:request_uri).and_return '/foo'
+          allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
+
+          class CustomCanonicalStringFactory
+            def self.canonical_string(_request, _request_method)
+              'I AM A CANONICAL STRING'
+            end
+          end
+          allow(ApiAuth.configuration).to receive(:canonical_string_factory) { CustomCanonicalStringFactory }
+        end
+
+        it 'constructs the canonical string' do
+          expect(headers.canonical_string).to eq 'I AM A CANONICAL STRING'
+        end
+      end
     end
   end
 
