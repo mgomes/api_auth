@@ -83,7 +83,7 @@ module ApiAuth
       match_data = parse_auth_header(headers.authorization_header)
       return false unless match_data
 
-      digest = match_data[1].blank? ? 'SHA1' : match_data[1].upcase
+      digest = match_data[1].nil? ? 'SHA1' : match_data[1].upcase
       raise InvalidRequestDigest if !options[:digest].nil? && !options[:digest].casecmp(digest).zero?
 
       options = { :digest => digest }.merge(options)
