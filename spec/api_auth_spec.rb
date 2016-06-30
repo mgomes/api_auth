@@ -52,7 +52,7 @@ describe 'ApiAuth' do
     it 'calculates the hmac_signature as expected' do
       ApiAuth.sign!(request, '1044', '123')
       signature = hmac('123', request)
-      expect(request.headers['Authorization']).to eq("APIAuth 1044:#{signature}")
+      expect(request.headers['Authorization']).to eq("#{ApiAuth.configuration.algorithm} 1044:#{signature}")
     end
 
     context 'when passed the hmac digest option' do
@@ -60,7 +60,7 @@ describe 'ApiAuth' do
         Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                            'content-type' => 'text/plain',
                            'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                           'date' => Time.now.utc.httpdate
+                           ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
                           )
       end
 
@@ -69,7 +69,23 @@ describe 'ApiAuth' do
       it 'calculates the hmac_signature with http method' do
         ApiAuth.sign!(request, '1044', '123', :digest => 'sha256')
         signature = hmac('123', request, canonical_string, 'sha256')
-        expect(request['Authorization']).to eq("APIAuth-HMAC-SHA256 1044:#{signature}")
+        expect(request['Authorization']).to eq("#{ApiAuth.configuration.algorithm}-HMAC-SHA256 1044:#{signature}")
+      end
+    end
+
+    context 'when there is a custom auth header factory' do
+      before do
+        class CustomAuthHeaderFactory
+          def self.auth_header(_headers, _access_id, _options, _signature)
+            'FOOBAR'
+          end
+        end
+        allow(ApiAuth.configuration).to receive(:auth_header_factory) { CustomAuthHeaderFactory }
+      end
+
+      it 'calculates the signature as expected' do
+        ApiAuth.sign!(request, '1044', '123', :digest => 'sha1')
+        expect(request.headers['Authorization']).to eq('FOOBAR')
       end
     end
   end
@@ -79,11 +95,11 @@ describe 'ApiAuth' do
       new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                        'content-type' => 'text/plain',
                                        'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                       'date' => Time.now.utc.httpdate
+                                       ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
                                       )
 
       signature = hmac('123', new_request)
-      new_request['Authorization'] = "APIAuth 1044:#{signature}"
+      new_request['Authorization'] = "#{ApiAuth.configuration.algorithm} 1044:#{signature}"
       new_request
     end
 
@@ -101,20 +117,28 @@ describe 'ApiAuth' do
     end
 
     it 'fails to validate expired requests' do
-      request['date'] = 16.minutes.ago.utc.httpdate
+      request[ApiAuth.configuration.date_header] = 16.minutes.ago.utc.strftime(ApiAuth.configuration.date_format)
       expect(ApiAuth.authentic?(request, '123')).to eq false
+    end
+
+    context 'when there is a custom date format' do
+      before { allow(ApiAuth.configuration).to receive(:date_format) { '%Y-%m-%d' } }
+
+      it 'fails to validate expired requests' do
+        request[ApiAuth.configuration.date_header] = 16.minutes.ago.utc.strftime(ApiAuth.configuration.date_format)
+        expect(ApiAuth.authentic?(request, '123')).to eq false
+      end
     end
 
     it 'fails to validate if the date is invalid' do
-      request['date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+      request[ApiAuth.configuration.date_header] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
       expect(ApiAuth.authentic?(request, '123')).to eq false
     end
-
 
     it 'fails to validate if the request method differs' do
       canonical_string = ApiAuth::Headers.new(request).canonical_string('POST')
       signature = hmac('123', request, canonical_string)
-      request['Authorization'] = "APIAuth 1044:#{signature}"
+      request['Authorization'] = "#{ApiAuth.configuration.algorithm} 1044:#{signature}"
       expect(ApiAuth.authentic?(request, '123')).to eq false
     end
 
@@ -123,11 +147,11 @@ describe 'ApiAuth' do
         new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                          'content-type' => 'text/plain',
                                          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                         'date' => Time.now.utc.httpdate
+                                         ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
                                         )
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string
         signature = hmac('123', new_request, canonical_string, 'sha256')
-        new_request['Authorization'] = "APIAuth-HMAC-SHA256 1044:#{signature}"
+        new_request['Authorization'] = "#{ApiAuth.configuration.algorithm}-HMAC-SHA256 1044:#{signature}"
         new_request
       end
 
@@ -138,6 +162,59 @@ describe 'ApiAuth' do
       it 'validates exception with wrong client digest' do
         expect { ApiAuth.authentic?(request, '123', :digest => 'sha512') }.to raise_error(ApiAuth::InvalidRequestDigest)
       end
+
+      context 'when there is a custom signer' do
+        before do
+          class CustomSigner
+            class << self
+              include ApiAuth::Helpers
+
+              def sign(_, secret_key, options)
+                digest = OpenSSL::Digest.new(options[:digest])
+                b64_encode(OpenSSL::HMAC.digest(digest, secret_key, 'foobar'))
+              end
+            end
+          end
+          allow(ApiAuth.configuration).to receive(:signer) { CustomSigner }
+        end
+        let(:request) do
+          new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
+                                           'content-type' => 'text/plain',
+                                           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                           ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
+                                          )
+
+          signature = ApiAuth.configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')
+          new_request['Authorization'] = "#{ApiAuth.configuration.algorithm} 1044:#{signature}"
+          new_request
+        end
+
+        it 'validates that the signature in the request header matches the way we sign it' do
+          expect(ApiAuth.authentic?(request, '123')).to eq true
+        end
+      end
+
+      context 'when there is a custom auth header pattern' do
+        before do
+          allow(ApiAuth.configuration).to receive(:auth_header_pattern) { /FOO(.*)BAR(.*)BAZ(.*)/ }
+        end
+
+        let(:request) do
+          new_request = Net::HTTP::Put.new('http://google.com',
+                                           'content-type' => 'text/plain',
+                                           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                           ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
+                                          )
+
+          signature = ApiAuth.configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')
+          new_request['Authorization'] = "FOOSHA1BAR1044BAZ#{signature}"
+          new_request
+        end
+
+        it 'validates that the signature in the request header matches the way we sign it' do
+          expect(ApiAuth.authentic?(request, '123')).to eq true
+        end
+      end
     end
   end
 
@@ -147,7 +224,7 @@ describe 'ApiAuth' do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :get,
-          :headers => { :authorization => 'APIAuth 1044:aGVsbG8gd29ybGQ=' }
+          :headers => { :authorization => "#{ApiAuth.configuration.algorithm} 1044:aGVsbG8gd29ybGQ=" }
         )
       end
 
@@ -161,11 +238,29 @@ describe 'ApiAuth' do
         RestClient::Request.new(
           :url => 'http://google.com',
           :method => :get,
-          :headers => { :authorization => 'Corporate APIAuth 1044:aGVsbG8gd29ybGQ=' }
+          :headers => { :authorization => "Corporate #{ApiAuth.configuration.algorithm} 1044:aGVsbG8gd29ybGQ=" }
         )
       end
 
       it 'parses it from the Auth Header' do
+        expect(ApiAuth.access_id(request)).to eq('1044')
+      end
+    end
+
+    context 'Custom Auth Header pattern' do
+      let(:request) do
+        RestClient::Request.new(
+          :url => 'http://google.com',
+          :method => :get,
+          :headers => { :authorization => 'FOOBUZZBAR1044BAZ:aGVsbG8gd29ybGQ=' }
+        )
+      end
+
+      before do
+        allow(ApiAuth.configuration).to receive(:auth_header_pattern) { /FOO(.*)BAR(.*)BAZ(.*)/ }
+      end
+
+      it 'parses it from the Auth header' do
         expect(ApiAuth.access_id(request)).to eq('1044')
       end
     end

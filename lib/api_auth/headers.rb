@@ -54,12 +54,7 @@ module ApiAuth
         raise ArgumentError, 'unable to determine the http method from the request, please supply an override'
       end
 
-      [request_method.upcase,
-       @request.content_type,
-       @request.content_md5,
-       parse_uri(@request.request_uri),
-       @request.timestamp
-      ].join(',')
+      ApiAuth.configuration.canonical_string_factory.canonical_string(@request, request_method)
     end
 
     # Returns the authorization header from the request's headers
@@ -92,14 +87,8 @@ module ApiAuth
       @request.set_auth_header header
     end
 
-    private
-
-    URI_WITHOUT_HOST_REGEXP = %r{https?://[^,?/]*}
-
-    def parse_uri(uri)
-      uri_without_host = uri.gsub(URI_WITHOUT_HOST_REGEXP, '')
-      return '/' if uri_without_host.empty?
-      uri_without_host
+    def http_headers
+      @request.headers
     end
   end
 end

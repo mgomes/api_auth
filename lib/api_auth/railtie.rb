@@ -77,7 +77,7 @@ module ApiAuth
             tmp.body = arguments[0] if arguments.length > 1
             ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, api_auth_options)
             arguments.last['Content-MD5'] = tmp['Content-MD5'] if tmp['Content-MD5']
-            arguments.last['DATE'] = tmp['DATE']
+            arguments.last[ApiAuth.configuration.date_header] = tmp[ApiAuth.configuration.date_header]
             arguments.last['Authorization'] = tmp['Authorization']
           end
 

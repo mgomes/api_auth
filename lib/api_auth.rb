@@ -1,9 +1,15 @@
 require 'openssl'
 require 'base64'
 
+require 'api_auth/auth_header_factories/standard'
+require 'api_auth/canonical_string_factories/standard'
+require 'api_auth/signers/standard'
+
+require 'api_auth/configuration'
 require 'api_auth/errors'
 require 'api_auth/helpers'
 
+require 'api_auth/request_drivers/base'
 require 'api_auth/request_drivers/net_http'
 require 'api_auth/request_drivers/curb'
 require 'api_auth/request_drivers/rest_client'
