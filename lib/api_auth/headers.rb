@@ -58,8 +58,7 @@ module ApiAuth
        @request.content_type,
        @request.content_md5,
        parse_uri(@request.request_uri),
-       @request.timestamp
-      ].join(',')
+       @request.timestamp].join(',')
     end
 
     # Returns the authorization header from the request's headers
