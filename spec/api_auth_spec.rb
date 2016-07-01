@@ -127,16 +127,32 @@ describe 'ApiAuth' do
                                         )
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string
         signature = hmac('123', new_request, canonical_string, 'sha256')
-        new_request['Authorization'] = "APIAuth-HMAC-SHA256 1044:#{signature}"
+        new_request['Authorization'] = "APIAuth-HMAC-#{digest} 1044:#{signature}"
         new_request
       end
 
-      it 'validates for sha256 digest' do
-        expect(ApiAuth.authentic?(request, '123', :digest => 'sha256')).to eq true
+      context 'valid request digest' do
+        let(:digest) { 'SHA256' }
+
+        context 'matching client digest' do
+          it 'validates matching digest' do
+            expect(ApiAuth.authentic?(request, '123', :digest => 'sha256')).to eq true
+          end
+        end
+
+        context 'different client digest' do
+          it 'raises an exception' do
+            expect { ApiAuth.authentic?(request, '123', :digest => 'sha512') }.to raise_error(ApiAuth::InvalidRequestDigest)
+          end
+        end
       end
 
-      it 'validates exception with wrong client digest' do
-        expect { ApiAuth.authentic?(request, '123', :digest => 'sha512') }.to raise_error(ApiAuth::InvalidRequestDigest)
+      context 'invalid request digest' do
+        let(:digest) { 'SHA111' }
+
+        it 'fails validation' do
+          expect(ApiAuth.authentic?(request, '123', :digest => 'sha111')).to eq false
+        end
       end
     end
   end
