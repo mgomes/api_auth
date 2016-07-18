@@ -62,7 +62,11 @@ describe 'Rails integration' do
     end
 
     it 'should permit a request with properly signed headers' do
-      request = ActionController::TestRequest.new
+      request = if ActionController::TestRequest.respond_to?(:create)
+                  ActionController::TestRequest.create
+                else
+                  ActionController::TestRequest.new
+                end
       request.env['DATE'] = Time.now.utc.httpdate
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
@@ -70,7 +74,11 @@ describe 'Rails integration' do
     end
 
     it 'should forbid a request with properly signed headers but timestamp > 15 minutes' do
-      request = ActionController::TestRequest.new
+      request = if ActionController::TestRequest.respond_to?(:create)
+                  ActionController::TestRequest.create
+                else
+                  ActionController::TestRequest.new
+                end
       request.env['DATE'] = 'Mon, 23 Jan 1984 03:29:56 GMT'
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
@@ -78,26 +86,42 @@ describe 'Rails integration' do
     end
 
     it "should insert a DATE header in the request when one hasn't been specified" do
-      request = ActionController::TestRequest.new
+      request = if ActionController::TestRequest.respond_to?(:create)
+                  ActionController::TestRequest.create
+                else
+                  ActionController::TestRequest.new
+                end
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       expect(request.headers['DATE']).not_to be_nil
     end
 
     it 'should forbid an unsigned request to a protected controller action' do
-      request = ActionController::TestRequest.new
+      request = if ActionController::TestRequest.respond_to?(:create)
+                  ActionController::TestRequest.create
+                else
+                  ActionController::TestRequest.new
+                end
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
     end
 
     it 'should forbid a request with a bogus signature' do
-      request = ActionController::TestRequest.new
+      request = if ActionController::TestRequest.respond_to?(:create)
+                  ActionController::TestRequest.create
+                else
+                  ActionController::TestRequest.new
+                end
       request.env['Authorization'] = 'APIAuth bogus:bogus'
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
     end
 
     it 'should allow non-protected controller actions to function as before' do
-      request = ActionController::TestRequest.new
+      request = if ActionController::TestRequest.respond_to?(:create)
+                  ActionController::TestRequest.create
+                else
+                  ActionController::TestRequest.new
+                end
       response = generated_response(request, :public)
       expect(response.code).to eq('200')
     end
