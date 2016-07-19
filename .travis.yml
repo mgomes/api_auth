@@ -4,8 +4,9 @@ cache: bundler
 rvm:
   - 1.8.7-p374
   - 1.9.3
-  - 2.1.5
-  - 2.2.1
+  - 2.1.9
+  - 2.2.5
+  - 2.3.1
 gemfile:
   - gemfiles/rails_23.gemfile
   - gemfiles/rails_30.gemfile
@@ -14,6 +15,13 @@ gemfile:
   - gemfiles/rails_4.gemfile
   - gemfiles/rails_41.gemfile
   - gemfiles/rails_42.gemfile
+  - gemfiles/rails_5.gemfile
+env:
+  - TEST_SUITE=rake
+
+script:
+  - bundle exec $TEST_SUITE
+
 matrix:
   exclude:
     - rvm: 1.8.7-p374
@@ -22,20 +30,38 @@ matrix:
       gemfile: gemfiles/rails_41.gemfile
     - rvm: 1.8.7-p374
       gemfile: gemfiles/rails_42.gemfile
-    - rvm: 2.1.5
+    - rvm: 1.8.7-p374
+      gemfile: gemfiles/rails_5.gemfile
+    - rvm: 1.9.3
+      gemfile: gemfiles/rails_5.gemfile
+    - rvm: 2.1.9
       gemfile: gemfiles/rails_23.gemfile
-    - rvm: 2.1.5
+    - rvm: 2.1.9
       gemfile: gemfiles/rails_30.gemfile
-    - rvm: 2.1.5
+    - rvm: 2.1.9
       gemfile: gemfiles/rails_31.gemfile
-    - rvm: 2.2.1
+    - rvm: 2.1.9
+      gemfile: gemfiles/rails_5.gemfile
+    - rvm: 2.2.5
       gemfile: gemfiles/rails_23.gemfile
-    - rvm: 2.2.1
+    - rvm: 2.2.5
       gemfile: gemfiles/rails_30.gemfile
-    - rvm: 2.2.1
+    - rvm: 2.2.5
       gemfile: gemfiles/rails_31.gemfile
-    - rvm: 2.2.1
+    - rvm: 2.2.5
       gemfile: gemfiles/rails_32.gemfile
+    - rvm: 2.3.1
+      gemfile: gemfiles/rails_23.gemfile
+    - rvm: 2.3.1
+      gemfile: gemfiles/rails_30.gemfile
+    - rvm: 2.3.1
+      gemfile: gemfiles/rails_31.gemfile
+    - rvm: 2.3.1
+      gemfile: gemfiles/rails_32.gemfile
+  include:
+    - rvm: 2.3.1
+      gemfile: gemfiles/rails_5.gemfile
+      env: TEST_SUITE="rubocop lib/ spec/"
 
 notifications:
   email: false

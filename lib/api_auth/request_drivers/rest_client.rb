@@ -29,10 +29,9 @@ module ApiAuth
       end
 
       def populate_content_md5
-        if [:post, :put].include?(@request.method)
-          @request.headers['Content-MD5'] = calculated_md5
-          save_headers
-        end
+        return unless [:post, :put].include?(@request.method)
+        @request.headers['Content-MD5'] = calculated_md5
+        save_headers
       end
 
       def md5_mismatch?

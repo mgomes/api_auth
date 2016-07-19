@@ -60,8 +60,7 @@ describe 'ApiAuth' do
         Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                            'content-type' => 'text/plain',
                            'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                           'date' => Time.now.utc.httpdate
-                          )
+                           'date' => Time.now.utc.httpdate)
       end
 
       let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string }
@@ -79,8 +78,7 @@ describe 'ApiAuth' do
       new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                        'content-type' => 'text/plain',
                                        'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                       'date' => Time.now.utc.httpdate
-                                      )
+                                       'date' => Time.now.utc.httpdate)
 
       signature = hmac('123', new_request)
       new_request['Authorization'] = "APIAuth 1044:#{signature}"
@@ -106,10 +104,9 @@ describe 'ApiAuth' do
     end
 
     it 'fails to validate if the date is invalid' do
-      request['date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+      request['date'] = '٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠'
       expect(ApiAuth.authentic?(request, '123')).to eq false
     end
-
 
     it 'fails to validate if the request method differs' do
       canonical_string = ApiAuth::Headers.new(request).canonical_string('POST')
@@ -123,8 +120,7 @@ describe 'ApiAuth' do
         new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                          'content-type' => 'text/plain',
                                          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                         'date' => Time.now.utc.httpdate
-                                        )
+                                         'date' => Time.now.utc.httpdate)
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string
         signature = hmac('123', new_request, canonical_string, 'sha256')
         new_request['Authorization'] = "APIAuth-HMAC-#{digest} 1044:#{signature}"

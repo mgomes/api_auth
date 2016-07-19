@@ -27,9 +27,8 @@ module ApiAuth
       end
 
       def populate_content_md5
-        if @request.class::REQUEST_HAS_BODY
-          @request['Content-MD5'] = calculated_md5
-        end
+        return unless @request.class::REQUEST_HAS_BODY
+        @request['Content-MD5'] = calculated_md5
       end
 
       def md5_mismatch?

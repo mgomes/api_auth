@@ -21,10 +21,9 @@ module ApiAuth
       end
 
       def populate_content_md5
-        if %w(POST PUT).include?(@request.method.to_s.upcase)
-          @request.headers['Content-MD5'] = calculated_md5
-          fetch_headers
-        end
+        return unless %w(POST PUT).include?(@request.method.to_s.upcase)
+        @request.headers['Content-MD5'] = calculated_md5
+        fetch_headers
       end
 
       def md5_mismatch?
