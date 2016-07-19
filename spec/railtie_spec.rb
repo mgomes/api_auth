@@ -77,6 +77,14 @@ describe 'Rails integration' do
       expect(response.code).to eq('401')
     end
 
+    it 'should forbid a request with properly signed headers but timestamp > 15 minutes' do
+      request = ActionController::TestRequest.new
+      request.env['DATE'] = 'Mon, 23 Jan 2100 03:29:56 GMT'
+      ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
+      response = generated_response(request, :index)
+      expect(response.code).to eq('401')
+    end
+
     it "should insert a DATE header in the request when one hasn't been specified" do
       request = ActionController::TestRequest.new
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])

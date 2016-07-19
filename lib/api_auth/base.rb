@@ -41,7 +41,7 @@ module ApiAuth
         false
       elsif !signatures_match?(headers, secret_key, options)
         false
-      elsif request_too_old?(headers)
+      elsif !check_request_date?(headers)
         false
       else
         true
@@ -71,10 +71,11 @@ module ApiAuth
 
     AUTH_HEADER_PATTERN = /APIAuth(?:-HMAC-(MD[245]|SHA(?:1|224|256|384|512)?))? ([^:]+):(.+)$/
 
-    def request_too_old?(headers)
+    def check_request_date?(headers)
       # 900 seconds is 15 minutes
 
-      Time.httpdate(headers.timestamp).utc < (Time.now.utc - 900)
+      Time.httpdate(headers.timestamp).utc > (Time.now.utc - 900) &&
+        Time.httpdate(headers.timestamp).utc < (Time.now.utc + 900)
     rescue ArgumentError
       true
     end
