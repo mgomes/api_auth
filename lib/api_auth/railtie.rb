@@ -44,7 +44,8 @@ module ApiAuth
             self.api_auth_options = options
 
             class << self
-              alias_method_chain :connection, :auth
+              alias_method :connection_without_auth, :connection
+              alias_method :connection,              :connection_with_auth
             end
           end
 
@@ -64,7 +65,9 @@ module ApiAuth
 
       module Connection
         def self.included(base)
-          base.send :alias_method_chain, :request, :auth
+          base.send :alias_method, :request_without_auth, :request
+          base.send :alias_method, :request,              :request_with_auth
+
           base.class_eval do
             attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac, :api_auth_options
           end
