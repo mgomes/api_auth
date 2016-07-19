@@ -17,11 +17,10 @@ gemfile:
   - gemfiles/rails_42.gemfile
   - gemfiles/rails_5.gemfile
 env:
-  - AFTER_ALL=false
+  - TEST_SUITE=rake
 
 script:
-  - bundle exec rake
-  - if $AFTER_ALL; then bundle exec rubocop lib/ spec/; fi
+  - bundle exec $TEST_SUITE
 
 matrix:
   exclude:
@@ -62,7 +61,7 @@ matrix:
   include:
     - rvm: 2.3.1
       gemfile: gemfiles/rails_5.gemfile
-      env: AFTER_ALL=true
+      env: TEST_SUITE="rubocop lib/ spec/"
 
 notifications:
   email: false
