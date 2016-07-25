@@ -1,3 +1,10 @@
+# 2.0.1 (2016-07-25)
+- Support of `api_auth_options` in ActiveResource integration (#102 fwininger)
+- Replace use of `#blank?` with `#nil?` to not depend on ActiveSupport (#114 packrat386)
+- Fix Auth header matching to not match invalid SHA algorithms (#115 packrat386)
+- Replace `alias_method_chain` with `alias_method` in the railtie since
+  alias_method_chain is deprecated in Rails 5 (#118 mlarraz)
+
 # 2.0.0 (2016-05-11)
 - IMPORTANT: 2.0.0 is backwards incompatible with the default settings of v1.x
   v2.0.0 always includes the http method in the canonical string.
