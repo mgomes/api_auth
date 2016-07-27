@@ -30,8 +30,29 @@ if defined?(ActionDispatch::Request)
         expect(driven_request.content_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
       end
 
-      it 'gets the request_uri' do
-        expect(driven_request.request_uri).to eq('/resource.xml?foo=bar&bar=foo')
+      describe 'request_uri' do
+        context 'with url parameters' do
+          it 'gets the request_uri' do
+            expect(driven_request.request_uri).to eq('/resource.xml?foo=bar&bar=foo')
+          end
+        end
+
+        context 'with mutated path' do
+          let(:request) do
+            ActionDispatch::Request.new(
+              'PATH_INFO' => '/resource/',
+              'ORIGINAL_FULLPATH' => '/resource/'
+            )
+          end
+
+          before do
+            request.path_info = 'overwritten_in_action_dispatch'
+          end
+
+          it 'gets the original path' do
+            expect(driven_request.request_uri).to eq('/resource/')
+          end
+        end
       end
 
       it 'gets the timestamp' do
