@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::NetHttpRequest do
-  let(:timestamp) { Time.now.utc.strftime(ApiAuth.configuration.date_format) }
+  let(:timestamp) { Time.current.utc.strftime(ApiAuth.configuration.date_format) }
 
   let(:request_path) { '/resource.xml?foo=bar&bar=foo' }
 

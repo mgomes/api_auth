@@ -60,7 +60,7 @@ describe 'ApiAuth' do
         Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                            'content-type' => 'text/plain',
                            'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                           ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
+                           ApiAuth.configuration.date_header => Time.current.utc.strftime(ApiAuth.configuration.date_format)
                           )
       end
 
@@ -95,7 +95,7 @@ describe 'ApiAuth' do
       new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                        'content-type' => 'text/plain',
                                        'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                       ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
+                                       ApiAuth.configuration.date_header => Time.current.utc.strftime(ApiAuth.configuration.date_format)
                                       )
 
       signature = hmac('123', new_request)
@@ -147,7 +147,7 @@ describe 'ApiAuth' do
         new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                          'content-type' => 'text/plain',
                                          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                         ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
+                                         ApiAuth.configuration.date_header => Time.current.utc.strftime(ApiAuth.configuration.date_format)
                                         )
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string
         signature = hmac('123', new_request, canonical_string, 'sha256')
@@ -181,7 +181,7 @@ describe 'ApiAuth' do
           new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                            'content-type' => 'text/plain',
                                            'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                           ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
+                                           ApiAuth.configuration.date_header => Time.current.utc.strftime(ApiAuth.configuration.date_format)
                                           )
 
           signature = ApiAuth.configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')
@@ -203,7 +203,7 @@ describe 'ApiAuth' do
           new_request = Net::HTTP::Put.new('http://google.com',
                                            'content-type' => 'text/plain',
                                            'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                           ApiAuth.configuration.date_header => Time.now.utc.strftime(ApiAuth.configuration.date_format)
+                                           ApiAuth.configuration.date_header => Time.current.utc.strftime(ApiAuth.configuration.date_format)
                                           )
 
           signature = ApiAuth.configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')

@@ -3,7 +3,7 @@ require 'spec_helper'
 if defined?(ActionController::Request)
 
   describe ApiAuth::RequestDrivers::ActionControllerRequest do
-    let(:timestamp) { Time.now.utc.strftime(ApiAuth.configuration.date_format) }
+    let(:timestamp) { Time.current.utc.strftime(ApiAuth.configuration.date_format) }
 
     let(:request) do
       ActionController::Request.new(

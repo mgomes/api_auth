@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::HttpiRequest do
-  let(:timestamp) { Time.now.utc.strftime(ApiAuth.configuration.date_format) }
+  let(:timestamp) { Time.current.utc.strftime(ApiAuth.configuration.date_format) }
 
   let(:request) do
     httpi_request = HTTPI::Request.new('http://localhost/resource.xml?foo=bar&bar=foo')

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::FaradayRequest do
-  let(:timestamp) { Time.now.utc.strftime(ApiAuth.configuration.date_format) }
+  let(:timestamp) { Time.current.utc.strftime(ApiAuth.configuration.date_format) }
 
   let(:faraday_stubs) do
     Faraday::Adapter::Test::Stubs.new do |stub|

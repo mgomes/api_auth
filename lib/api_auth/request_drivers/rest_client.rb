@@ -59,7 +59,7 @@ module ApiAuth
       end
 
       def set_date
-        @request.headers[ApiAuth.configuration.date_header] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
+        @request.headers[ApiAuth.configuration.date_header] = Time.current.utc.strftime(ApiAuth.configuration.date_format)
         save_headers
       end
 

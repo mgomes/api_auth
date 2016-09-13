@@ -51,7 +51,7 @@ module ApiAuth
       end
 
       def set_date
-        @request.env["HTTP_#{ApiAuth.configuration.date_header}"] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
+        @request.env["HTTP_#{ApiAuth.configuration.date_header}"] = Time.current.utc.strftime(ApiAuth.configuration.date_format)
         fetch_headers
       end
 

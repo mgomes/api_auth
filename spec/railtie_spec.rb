@@ -63,7 +63,7 @@ describe 'Rails integration' do
 
     it 'should permit a request with properly signed headers' do
       request = ActionController::TestRequest.new
-      request.env[ApiAuth.configuration.date_header] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
+      request.env[ApiAuth.configuration.date_header] = Time.current.utc.strftime(ApiAuth.configuration.date_format)
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
       expect(response.code).to eq('200')

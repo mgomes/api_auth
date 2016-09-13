@@ -74,7 +74,7 @@ module ApiAuth
 
       timestamp = DateTime.strptime(headers.timestamp, ApiAuth.configuration.date_format)
       time = Time.local(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec)
-      time.utc < (Time.now.utc - 900)
+      time.utc < (Time.current.utc - 900)
     rescue ArgumentError
       true
     end
