@@ -1,3 +1,4 @@
+require 'time'
 module ApiAuth
   module RequestDrivers # :nodoc:
     class NetHttpRequest # :nodoc:
