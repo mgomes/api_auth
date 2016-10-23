@@ -72,6 +72,7 @@ Here is the current list of supported request objects:
 * Curb (Curl::Easy)
 * RestClient
 * Faraday
+* Httpi
 
 ### HTTP Client Objects
 
