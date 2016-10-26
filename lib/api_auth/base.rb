@@ -91,7 +91,16 @@ module ApiAuth
       header_sig = match_data[3]
       calculated_sig = hmac_signature(headers, secret_key, options)
 
-      header_sig == calculated_sig
+      secure_equals?(header_sig, calculated_sig, secret_key)
+    end
+
+    def secure_equals?(m1, m2, key)
+      sha1_hmac(key, m1) == sha1_hmac(key, m2)
+    end
+
+    def sha1_hmac(key, message)
+      digest = OpenSSL::Digest.new('sha1')
+      OpenSSL::HMAC.digest(digest, key, message)
     end
 
     def hmac_signature(headers, secret_key, options)
