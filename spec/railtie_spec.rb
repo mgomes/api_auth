@@ -69,7 +69,7 @@ describe 'Rails integration' do
       expect(response.code).to eq('200')
     end
 
-    it 'should forbid a request with properly signed headers but timestamp > 15 minutes' do
+    it 'should forbid a request with properly signed headers but timestamp > 15 minutes ago' do
       request = ActionController::TestRequest.new
       request.env['DATE'] = 'Mon, 23 Jan 1984 03:29:56 GMT'
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
@@ -77,7 +77,7 @@ describe 'Rails integration' do
       expect(response.code).to eq('401')
     end
 
-    it 'should forbid a request with properly signed headers but timestamp > 15 minutes' do
+    it 'should forbid a request with properly signed headers but timestamp > 15 minutes in the future' do
       request = ActionController::TestRequest.new
       request.env['DATE'] = 'Mon, 23 Jan 2100 03:29:56 GMT'
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
