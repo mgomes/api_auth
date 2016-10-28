@@ -107,6 +107,11 @@ describe 'ApiAuth' do
       expect(ApiAuth.authentic?(signed_request, '123')).to eq false
     end
 
+    it 'fails to validate far future requests' do
+      request['date'] = 16.minutes.from_now.utc.httpdate
+      expect(ApiAuth.authentic?(signed_request, '123')).to eq false
+    end
+
     it 'fails to validate if the date is invalid' do
       request['date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
       expect(ApiAuth.authentic?(signed_request, '123')).to eq false
