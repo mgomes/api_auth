@@ -76,38 +76,40 @@ describe 'ApiAuth' do
 
   describe '.authentic?' do
     let(:request) do
-      new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
-                                       'content-type' => 'text/plain',
-                                       'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                       'date' => Time.now.utc.httpdate
-                                      )
+      Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
+                         'content-type' => 'text/plain',
+                         'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                         'date' => Time.now.utc.httpdate
+                        )
+    end
 
-      signature = hmac('123', new_request)
-      new_request['Authorization'] = "APIAuth 1044:#{signature}"
-      new_request
+    let(:signed_request) do
+      signature = hmac('123', request)
+      request['Authorization'] = "APIAuth 1044:#{signature}"
+      request
     end
 
     it 'validates that the signature in the request header matches the way we sign it' do
-      expect(ApiAuth.authentic?(request, '123')).to eq true
+      expect(ApiAuth.authentic?(signed_request, '123')).to eq true
     end
 
     it 'fails to validate a non matching signature' do
-      expect(ApiAuth.authentic?(request, '456')).to eq false
+      expect(ApiAuth.authentic?(signed_request, '456')).to eq false
     end
 
     it 'fails to validate non matching md5' do
       request['content-md5'] = '12345'
-      expect(ApiAuth.authentic?(request, '123')).to eq false
+      expect(ApiAuth.authentic?(signed_request, '123')).to eq false
     end
 
     it 'fails to validate expired requests' do
       request['date'] = 16.minutes.ago.utc.httpdate
-      expect(ApiAuth.authentic?(request, '123')).to eq false
+      expect(ApiAuth.authentic?(signed_request, '123')).to eq false
     end
 
     it 'fails to validate if the date is invalid' do
       request['date'] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
-      expect(ApiAuth.authentic?(request, '123')).to eq false
+      expect(ApiAuth.authentic?(signed_request, '123')).to eq false
     end
 
 
