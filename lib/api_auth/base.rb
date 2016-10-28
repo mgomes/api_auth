@@ -77,7 +77,7 @@ module ApiAuth
       Time.httpdate(headers.timestamp).utc > (Time.now.utc - 900) &&
         Time.httpdate(headers.timestamp).utc < (Time.now.utc + 900)
     rescue ArgumentError
-      true
+      false
     end
 
     def signatures_match?(headers, secret_key, options)
