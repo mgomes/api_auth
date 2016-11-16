@@ -177,7 +177,7 @@ To validate whether or not a request is authentic:
 ```
 
 The `authentic?` method uses the digest specified in the `Authorization` header.
-For exemple SHA256 for:
+For example SHA256 for:
 
     Authorization = APIAuth-HMAC-SHA256 'client access id':'signature'
 
@@ -187,6 +187,17 @@ If you want to force the usage of another digest method, you should pass it as a
 
 ``` ruby
     ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')
+```
+
+For security, requests dated older or newer than a certain timespan are considered inauthentic.
+
+This prevents old requests from being reused in replay attacks, and also ensures requests
+can't be dated into the far future.
+
+The default span is 15 minutes, but you can override this:
+
+```ruby
+    ApiAuth.authentic?(signed_request, secret_key, :clock_skew => 60) # or 1.minute in ActiveSupport
 ```
 
 If your server is a Rails app, the signed request will be the `request` object.
