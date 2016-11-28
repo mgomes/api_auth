@@ -57,7 +57,7 @@ module ApiAuth
       [request_method.upcase,
        @request.content_type,
        @request.content_md5,
-       parse_uri(@request.request_uri),
+       parse_uri(@request.original_uri || @request.request_uri),
        @request.timestamp].join(',')
     end
 
