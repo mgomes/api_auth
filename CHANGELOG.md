@@ -1,3 +1,9 @@
+# 2.1.0 (2016-12-22)
+- Fixed a NoMethodError that might occur when using the NetHttp Driver (#130 grahamkenville)
+- More securely compare signatures in a way that prevents timing attacks (#56 leishman, #133 will0)
+- Remove support for MD2 and MD4 hashing algorithms since they are insecure (#134 will0)
+- Disallow requests that are too far in the future to limit the time available for a brute force signature guess (#119 fwininger)
+
 # 2.0.1 (2016-07-25)
 - Support of `api_auth_options` in ActiveResource integration (#102 fwininger)
 - Replace use of `#blank?` with `#nil?` to not depend on ActiveSupport (#114 packrat386)
