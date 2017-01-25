@@ -99,4 +99,3 @@ Style/SpecialGlobalVars:
 Style/UnneededPercentQ:
   Exclude:
     - 'api_auth.gemspec'
-
