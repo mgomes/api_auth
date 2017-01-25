@@ -19,6 +19,9 @@ gemfile:
 env:
   - TEST_SUITE=rake
 
+before_install:
+  - gem update bundler
+
 script:
   - bundle exec $TEST_SUITE
 
