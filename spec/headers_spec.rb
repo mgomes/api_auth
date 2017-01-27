@@ -96,6 +96,31 @@ describe ApiAuth::Headers do
           end
         end
       end
+
+      context "when there's a proxy server (e.g. Nginx) with rewrite rules" do
+        let(:request) do
+          Faraday::Request.create('GET') do |req|
+            req.options = Faraday::RequestOptions.new(Faraday::FlatParamsEncoder)
+            req.params = Faraday::Utils::ParamsHash.new
+            req.url('/resource.xml?foo=bar&bar=foo')
+            req.headers = { 'X-Original-URI' => '/api/resource.xml?foo=bar&bar=foo' }
+          end
+        end
+        subject(:headers) { described_class.new(request) }
+        let(:driver) { headers.instance_variable_get('@request') }
+
+        before do
+          allow(driver).to receive(:content_type).and_return 'text/html'
+          allow(driver).to receive(:content_md5).and_return '12345'
+          allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
+        end
+
+        context 'the driver uses the original_uri' do
+          it 'constructs the canonical_string with the original_uri' do
+            expect(headers.canonical_string).to eq 'GET,text/html,12345,/api/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT'
+          end
+        end
+      end
     end
   end
 

@@ -52,6 +52,10 @@ module ApiAuth
         value.nil? ? '' : value
       end
 
+      def original_uri
+        find_header(%w(X-ORIGINAL-URI X_ORIGINAL_URI HTTP_X_ORIGINAL_URI))
+      end
+
       def request_uri
         query_string = @request.params.to_query
         query_string = nil if query_string.empty?
