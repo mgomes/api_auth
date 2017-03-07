@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # api-auth is a Ruby gem designed to be used both in your client and server
 # HTTP-based applications. It implements the same authentication methods (HMAC)
 # used by Amazon Web Services.
