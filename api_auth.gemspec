@@ -1,10 +1,10 @@
-$:.push File.expand_path('../lib', __FILE__)
+$LOAD_PATH.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
-  s.name = %q{api-auth}
-  s.summary = %q{Simple HMAC authentication for your APIs}
-  s.description = %q{Full HMAC auth implementation for use in your gems and Rails apps.}
-  s.homepage = %q{https://github.com/mgomes/api_auth}
+  s.name = 'api-auth'
+  s.summary = 'Simple HMAC authentication for your APIs'
+  s.description = 'Full HMAC auth implementation for use in your gems and Rails apps.'
+  s.homepage = 'https://github.com/mgomes/api_auth'
   s.version = File.read(File.join(File.dirname(__FILE__), 'VERSION'))
   s.authors = ['Mauricio Gomes']
   s.email = 'mauricio@edge14.com'

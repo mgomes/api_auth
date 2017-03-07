@@ -61,34 +61,8 @@ Style/Documentation:
     - 'lib/api_auth/request_drivers/rest_client.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.
-Style/ExtraSpacing:
-  Exclude:
-    - 'lib/api_auth/railtie.rb'
-
-# Offense count: 1
 # Configuration parameters: ExpectMatchingDefinition, Regex, IgnoreExecutableScripts.
 Style/FileName:
   Exclude:
     - 'lib/api-auth.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'api_auth.gemspec'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: use_perl_names, use_english_names
-Style/SpecialGlobalVars:
-  Enabled: false
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/UnneededPercentQ:
-  Exclude:
-    - 'api_auth.gemspec'
+    - 'Appraisals'

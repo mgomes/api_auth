@@ -18,7 +18,7 @@ module ApiAuth
       end
     end # ControllerMethods
 
-    module ActiveResourceExtension  # :nodoc:
+    module ActiveResourceExtension # :nodoc:
       module ActiveResourceApiAuth # :nodoc:
         def self.included(base)
           base.extend(ClassMethods)
