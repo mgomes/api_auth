@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe ApiAuth::Headers do
   describe '#canonical_string' do
     context 'uri edge cases' do
-      let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
+      let(:request) { RestClient::Request.new(url: uri, method: :get) }
       subject(:headers) { described_class.new(request) }
       let(:uri) { '' }
 
@@ -42,7 +42,7 @@ describe ApiAuth::Headers do
 
     context 'string construction' do
       context 'with a driver that supplies http_method' do
-        let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+        let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
         subject(:headers) { described_class.new(request) }
         let(:driver) { headers.instance_variable_get('@request') }
 
@@ -131,9 +131,9 @@ describe ApiAuth::Headers do
     context 'no md5 already calculated' do
       let(:request) do
         RestClient::Request.new(
-          :url => 'http://google.com',
-          :method => :post,
-          :payload => "hello\nworld"
+          url: 'http://google.com',
+          method: :post,
+          payload: "hello\nworld"
         )
       end
 
@@ -146,10 +146,10 @@ describe ApiAuth::Headers do
     context 'md5 already calculated' do
       let(:request) do
         RestClient::Request.new(
-          :url => 'http://google.com',
-          :method => :post,
-          :payload => "hello\nworld",
-          :headers => { :content_md5 => 'abcd' }
+          url: 'http://google.com',
+          method: :post,
+          payload: "hello\nworld",
+          headers: { content_md5: 'abcd' }
         )
       end
 
@@ -161,7 +161,7 @@ describe ApiAuth::Headers do
   end
 
   describe '#md5_mismatch?' do
-    let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+    let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
     subject(:headers) { described_class.new(request) }
     let(:driver) { headers.instance_variable_get('@request') }
 
