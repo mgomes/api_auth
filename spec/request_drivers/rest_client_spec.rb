@@ -319,7 +319,6 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       request = RestClient::Request.new(url: '/resource.xml?foo=bar&bar=foo',
                                         headers: headers,
                                         method: :put)
-      headers = ApiAuth::Headers.new(request)
       ApiAuth.sign!(request, 'some access id', 'some secret key')
       expect(request.processed_headers).to have_key('Content-Type')
     end

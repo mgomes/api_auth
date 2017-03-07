@@ -12,11 +12,6 @@ Lint/AssignmentInCondition:
   Exclude:
     - 'lib/api_auth/base.rb'
 
-# Offense count: 1
-Lint/UselessAssignment:
-  Exclude:
-    - 'spec/request_drivers/rest_client_spec.rb'
-
 # Offense count: 2
 Metrics/AbcSize:
   Max: 25
