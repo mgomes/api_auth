@@ -160,6 +160,49 @@ describe 'ApiAuth' do
     end
   end
 
+  describe '.authenticity_report' do
+    let(:request) do
+      new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
+                                       'content-type' => 'text/plain',
+                                       'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                       'date' => Time.now.utc.httpdate)
+
+      signature = hmac('123', new_request)
+      new_request['Authorization'] = "APIAuth 1044:#{signature}"
+      new_request
+    end
+
+    it 'validates that the signature in the request header matches the way we sign it' do
+      expect(ApiAuth.authenticity_report(request, '123').values.include?(false)).to eq false
+    end
+
+    it 'fails to validate a non matching signature' do
+      expect(ApiAuth.authenticity_report(request, '456')[:signatures_match]).to eq false
+    end
+
+    it 'fails to validate non matching md5' do
+      request['content-md5'] = '12345'
+      expect(ApiAuth.authenticity_report(request, '123')[:md5_match]).to eq false
+    end
+
+    it 'fails to validate expired requests' do
+      request['date'] = 16.minutes.ago.utc.httpdate
+      expect(ApiAuth.authenticity_report(request, '123')[:request_within_time_window]).to eq false
+    end
+
+    it 'fails to validate if the date is invalid' do
+      request['date'] = '٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠'
+      expect(ApiAuth.authenticity_report(request, '123')[:request_within_time_window]).to eq false
+    end
+
+    it 'fails to validate if the request method differs' do
+      canonical_string = ApiAuth::Headers.new(request).canonical_string('POST')
+      signature = hmac('123', request, canonical_string)
+      request['Authorization'] = "APIAuth 1044:#{signature}"
+      expect(ApiAuth.authenticity_report(request, '123')[:signatures_match]).to eq false
+    end
+  end
+
   describe '.access_id' do
     context 'normal APIAuth Auth header' do
       let(:request) do
