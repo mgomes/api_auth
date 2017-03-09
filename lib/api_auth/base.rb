@@ -31,21 +31,22 @@ module ApiAuth
     # Determines if the request is authentic given the request and the client's
     # secret key. Returns true if the request is authentic and false otherwise.
     def authentic?(request, secret_key, options = {})
-      return false if secret_key.nil?
+      !authenticity_report(request, secret_key, options).values.include?(false)
+    end
+
+    # Run all tests to ensure that a request is authentic and give a hash with all
+    # test results
+    def authenticity_report(request, secret_key, options = {})
+      return { :secret_key => false } if secret_key.nil?
 
       options = { :override_http_method => nil }.merge(options)
-
       headers = Headers.new(request)
 
-      if headers.md5_mismatch?
-        false
-      elsif !signatures_match?(headers, secret_key, options)
-        false
-      elsif !request_within_time_window?(headers)
-        false
-      else
-        true
-      end
+      {
+        :md5_match => !headers.md5_mismatch?,
+        :signatures_match => signatures_match?(headers, secret_key, options),
+        :request_within_time_window => request_within_time_window?(headers)
+      }
     end
 
     # Returns the access id from the request's authorization header

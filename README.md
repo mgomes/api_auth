@@ -170,6 +170,12 @@ To validate whether or not a request is authentic:
     ApiAuth.authentic?(signed_request, secret_key)
 ```
 
+To display the reasons to be authentic in a Ruby Hash, use the `authenticity_report` method:
+
+```ruby
+    ApiAuth.authenticity_report(signed_request, secret_key)
+```
+
 The `authentic?` method uses the digest specified in the `Authorization` header.
 For exemple SHA256 for:
 
