@@ -158,6 +158,27 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
         end
       end
 
+      context 'when patching' do
+        let(:request) do
+          RestClient::Request.new(
+            :url => '/resource.xml?foo=bar&bar=foo',
+            :headers => request_headers,
+            :method => :patch,
+            :payload => "hello\nworld"
+          )
+        end
+
+        it 'populates content-md5' do
+          driven_request.populate_content_md5
+          expect(request.headers['Content-MD5']).to eq('kZXQvrKoieG+Be1rsZVINw==')
+        end
+
+        it 'refreshes the cached headers' do
+          driven_request.populate_content_md5
+          expect(driven_request.content_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+        end
+      end
+
       context 'when deleting' do
         let(:request) do
           RestClient::Request.new(
@@ -261,6 +282,47 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
           :url => '/resource.xml?foo=bar&bar=foo',
           :headers => request_headers,
           :method => :put,
+          :payload => "hello\nworld"
+        )
+      end
+
+      context 'when calculated matches sent' do
+        let(:request_headers) do
+          {
+            'Authorization' => 'APIAuth 1044:12345',
+            'Content-MD5' => 'kZXQvrKoieG+Be1rsZVINw==',
+            'Content-Type' => 'text/plain',
+            'Date' => timestamp
+          }
+        end
+
+        it 'is false' do
+          expect(driven_request.md5_mismatch?).to be false
+        end
+      end
+
+      context "when calculated doesn't match sent" do
+        let(:request_headers) do
+          {
+            'Authorization' => 'APIAuth 1044:12345',
+            'Content-MD5' => '3',
+            'Content-Type' => 'text/plain',
+            'Date' => timestamp
+          }
+        end
+
+        it 'is true' do
+          expect(driven_request.md5_mismatch?).to be true
+        end
+      end
+    end
+
+    context 'when patching' do
+      let(:request) do
+        RestClient::Request.new(
+          :url => '/resource.xml?foo=bar&bar=foo',
+          :headers => request_headers,
+          :method => :patch,
           :payload => "hello\nworld"
         )
       end
