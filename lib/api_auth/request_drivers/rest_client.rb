@@ -13,7 +13,7 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request.headers['Authorization'] = header
+        @request.headers[ApiAuth.header_to_assign] = header
         save_headers # enforce update of processed_headers based on last updated headers
         @request
       end
@@ -79,7 +79,7 @@ module ApiAuth
       end
 
       def authorization_header
-        find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
+        find_header ApiAuth.header_to_search
       end
 
       private

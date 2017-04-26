@@ -16,3 +16,12 @@ require 'api_auth/request_drivers/faraday'
 require 'api_auth/headers'
 require 'api_auth/base'
 require 'api_auth/railtie'
+
+module ApiAuth # :nodoc:
+  class << self
+    attr_accessor :header_to_assign, :header_to_search
+  end
+
+  self.header_to_assign = 'Authorization'
+  self.header_to_search = %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
+end
