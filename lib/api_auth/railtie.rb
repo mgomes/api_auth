@@ -81,7 +81,7 @@ module ApiAuth
             ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, api_auth_options)
             arguments.last['Content-MD5'] = tmp['Content-MD5'] if tmp['Content-MD5']
             arguments.last['DATE'] = tmp['DATE']
-            arguments.last['Authorization'] = tmp['Authorization']
+            arguments.last[ApiAuth.header_to_assign] = tmp[ApiAuth.header_to_assign]
           end
 
           request_without_auth(method, path, *arguments)

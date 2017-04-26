@@ -11,7 +11,7 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request['Authorization'] = header
+        @request[ApiAuth.header_to_assign] = header
         @headers = fetch_headers
         @request
       end
@@ -76,7 +76,7 @@ module ApiAuth
       end
 
       def authorization_header
-        find_header %w(Authorization AUTHORIZATION HTTP_AUTHORIZATION)
+        find_header ApiAuth.header_to_search
       end
 
       private
