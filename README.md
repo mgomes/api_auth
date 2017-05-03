@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/mgomes/api_auth.png?branch=master)](https://travis-ci.org/mgomes/api_auth)
 
-## IMPORTANT: v2.0.0 is backwards incompatible with the default settings of v1.x to address a security vulnerability. See [CHANGELOG.md](/CHANGELOG.md) for security update information.
-
 Logins and passwords are for humans. Communication between applications need to
 be protected through different means.
 
@@ -50,6 +48,14 @@ minutes in order to avoid replay attacks.
 * [SHA-1 Hash function](http://en.wikipedia.org/wiki/SHA-1)
 * [HMAC algorithm](http://en.wikipedia.org/wiki/HMAC)
 * [RFC 2104 (HMAC)](http://tools.ietf.org/html/rfc2104)
+
+## Requirement
+
+v3.X require Ruby 2.X and if you use Rails at least Rails 4.0.
+
+For older version of Ruby or Rails, please use ApiAuth v2.X.
+
+**IMPORTANT: v2.0.0 is backwards incompatible with the default settings of v1.x to address a security vulnerability. See [CHANGELOG.md](/CHANGELOG.md) for security update information.**
 
 ## Install
 

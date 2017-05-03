@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe 'ApiAuth' do
@@ -25,7 +24,7 @@ describe 'ApiAuth' do
   end
 
   describe '.sign!' do
-    let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+    let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
     let(:headers) { ApiAuth::Headers.new(request) }
 
     it 'generates date header before signing' do
@@ -66,7 +65,7 @@ describe 'ApiAuth' do
       let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string }
 
       it 'calculates the hmac_signature with http method' do
-        ApiAuth.sign!(request, '1044', '123', :digest => 'sha256')
+        ApiAuth.sign!(request, '1044', '123', digest: 'sha256')
         signature = hmac('123', request, canonical_string, 'sha256')
         expect(request['Authorization']).to eq("APIAuth-HMAC-SHA256 1044:#{signature}")
       end
@@ -139,13 +138,13 @@ describe 'ApiAuth' do
 
         context 'matching client digest' do
           it 'validates matching digest' do
-            expect(ApiAuth.authentic?(request, '123', :digest => 'sha256')).to eq true
+            expect(ApiAuth.authentic?(request, '123', digest: 'sha256')).to eq true
           end
         end
 
         context 'different client digest' do
           it 'raises an exception' do
-            expect { ApiAuth.authentic?(request, '123', :digest => 'sha512') }.to raise_error(ApiAuth::InvalidRequestDigest)
+            expect { ApiAuth.authentic?(request, '123', digest: 'sha512') }.to raise_error(ApiAuth::InvalidRequestDigest)
           end
         end
       end
@@ -154,7 +153,7 @@ describe 'ApiAuth' do
         let(:digest) { 'SHA111' }
 
         it 'fails validation' do
-          expect(ApiAuth.authentic?(request, '123', :digest => 'sha111')).to eq false
+          expect(ApiAuth.authentic?(request, '123', digest: 'sha111')).to eq false
         end
       end
     end
@@ -164,9 +163,9 @@ describe 'ApiAuth' do
     context 'normal APIAuth Auth header' do
       let(:request) do
         RestClient::Request.new(
-          :url => 'http://google.com',
-          :method => :get,
-          :headers => { :authorization => 'APIAuth 1044:aGVsbG8gd29ybGQ=' }
+          url: 'http://google.com',
+          method: :get,
+          headers: { authorization: 'APIAuth 1044:aGVsbG8gd29ybGQ=' }
         )
       end
 
@@ -178,9 +177,9 @@ describe 'ApiAuth' do
     context 'Corporate prefixed APIAuth header' do
       let(:request) do
         RestClient::Request.new(
-          :url => 'http://google.com',
-          :method => :get,
-          :headers => { :authorization => 'Corporate APIAuth 1044:aGVsbG8gd29ybGQ=' }
+          url: 'http://google.com',
+          method: :get,
+          headers: { authorization: 'Corporate APIAuth 1044:aGVsbG8gd29ybGQ=' }
         )
       end
 

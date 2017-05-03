@@ -16,10 +16,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
 
   let(:request) do
     RestClient::Request.new(
-      :url => '/resource.xml?foo=bar&bar=foo',
-      :headers => request_headers,
-      :method => :put,
-      :payload => "hello\nworld"
+      url: '/resource.xml?foo=bar&bar=foo',
+      headers: request_headers,
+      method: :put,
+      payload: "hello\nworld"
     )
   end
 
@@ -53,9 +53,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
 
       it 'treats no body as empty string' do
         request = RestClient::Request.new(
-          :url => '/resource.xml?foo=bar&bar=foo',
-          :headers => request_headers,
-          :method => :put
+          url: '/resource.xml?foo=bar&bar=foo',
+          headers: request_headers,
+          method: :put
         )
         driven_request = ApiAuth::RequestDrivers::RestClientRequest.new(request)
         expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
@@ -66,9 +66,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when put request' do
         let(:request) do
           RestClient::Request.new(
-            :url => '/resource.xml?foo=bar&bar=foo',
-            :headers => request_headers,
-            :method => :put
+            url: '/resource.xml?foo=bar&bar=foo',
+            headers: request_headers,
+            method: :put
           )
         end
 
@@ -80,9 +80,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when get request' do
         let(:request) do
           RestClient::Request.new(
-            :url => '/resource.xml?foo=bar&bar=foo',
-            :headers => request_headers,
-            :method => :get
+            url: '/resource.xml?foo=bar&bar=foo',
+            headers: request_headers,
+            method: :get
           )
         end
 
@@ -104,9 +104,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when getting' do
         let(:request) do
           RestClient::Request.new(
-            :url => '/resource.xml?foo=bar&bar=foo',
-            :headers => request_headers,
-            :method => :get
+            url: '/resource.xml?foo=bar&bar=foo',
+            headers: request_headers,
+            method: :get
           )
         end
 
@@ -119,10 +119,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when posting' do
         let(:request) do
           RestClient::Request.new(
-            :url => '/resource.xml?foo=bar&bar=foo',
-            :headers => request_headers,
-            :method => :post,
-            :payload => "hello\nworld"
+            url: '/resource.xml?foo=bar&bar=foo',
+            headers: request_headers,
+            method: :post,
+            payload: "hello\nworld"
           )
         end
 
@@ -140,10 +140,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when putting' do
         let(:request) do
           RestClient::Request.new(
-            :url => '/resource.xml?foo=bar&bar=foo',
-            :headers => request_headers,
-            :method => :put,
-            :payload => "hello\nworld"
+            url: '/resource.xml?foo=bar&bar=foo',
+            headers: request_headers,
+            method: :put,
+            payload: "hello\nworld"
           )
         end
 
@@ -161,9 +161,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when deleting' do
         let(:request) do
           RestClient::Request.new(
-            :url => '/resource.xml?foo=bar&bar=foo',
-            :headers => request_headers,
-            :method => :delete
+            url: '/resource.xml?foo=bar&bar=foo',
+            headers: request_headers,
+            method: :delete
           )
         end
 
@@ -203,9 +203,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
     context 'when getting' do
       let(:request) do
         RestClient::Request.new(
-          :url => '/resource.xml?foo=bar&bar=foo',
-          :headers => request_headers,
-          :method => :get
+          url: '/resource.xml?foo=bar&bar=foo',
+          headers: request_headers,
+          method: :get
         )
       end
 
@@ -217,10 +217,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
     context 'when posting' do
       let(:request) do
         RestClient::Request.new(
-          :url => '/resource.xml?foo=bar&bar=foo',
-          :headers => request_headers,
-          :method => :post,
-          :payload => "hello\nworld"
+          url: '/resource.xml?foo=bar&bar=foo',
+          headers: request_headers,
+          method: :post,
+          payload: "hello\nworld"
         )
       end
 
@@ -258,10 +258,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
     context 'when putting' do
       let(:request) do
         RestClient::Request.new(
-          :url => '/resource.xml?foo=bar&bar=foo',
-          :headers => request_headers,
-          :method => :put,
-          :payload => "hello\nworld"
+          url: '/resource.xml?foo=bar&bar=foo',
+          headers: request_headers,
+          method: :put,
+          payload: "hello\nworld"
         )
       end
 
@@ -299,9 +299,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
     context 'when deleting' do
       let(:request) do
         RestClient::Request.new(
-          :url => '/resource.xml?foo=bar&bar=foo',
-          :headers => request_headers,
-          :method => :delete
+          url: '/resource.xml?foo=bar&bar=foo',
+          headers: request_headers,
+          method: :delete
         )
       end
 
@@ -316,10 +316,9 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       headers = { 'Content-MD5' => 'e59ff97941044f85df5297e1c302d260',
                   :content_type => 'text/plain',
                   'Date' => 'Mon, 23 Jan 1984 03:29:56 GMT' }
-      request = RestClient::Request.new(:url => '/resource.xml?foo=bar&bar=foo',
-                                        :headers => headers,
-                                        :method => :put)
-      headers = ApiAuth::Headers.new(request)
+      request = RestClient::Request.new(url: '/resource.xml?foo=bar&bar=foo',
+                                        headers: headers,
+                                        method: :put)
       ApiAuth.sign!(request, 'some access id', 'some secret key')
       expect(request.processed_headers).to have_key('Content-Type')
     end

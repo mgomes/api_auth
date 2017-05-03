@@ -13,15 +13,15 @@ describe 'Rails integration' do
         end
 
         respond_to do |format|
-          format.xml { render :xml => 'You are unauthorized to perform this action.', :status => 401 }
-          format.json { render :json => 'You are unauthorized to perform this action.', :status => 401 }
-          format.html { render :text => 'You are unauthorized to perform this action', :status => 401 }
+          format.xml { render xml: 'You are unauthorized to perform this action.', status: 401 }
+          format.json { render json: 'You are unauthorized to perform this action.', status: 401 }
+          format.html { render text: 'You are unauthorized to perform this action', status: 401 }
         end
       end
     end
 
     class TestController < ApplicationController
-      before_filter :require_api_auth, :only => [:index]
+      before_filter :require_api_auth, only: [:index]
 
       if defined?(ActionDispatch)
         def self._routes
@@ -30,11 +30,11 @@ describe 'Rails integration' do
       end
 
       def index
-        render :text => 'OK'
+        render text: 'OK'
       end
 
       def public
-        render :text => 'OK'
+        render text: 'OK'
       end
 
       def rescue_action(e)
@@ -156,7 +156,7 @@ describe 'Rails integration' do
                    'Accept' => 'application/xml',
                    'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'
                  },
-                 { :id => '1' }.to_xml(:root => 'test_resource')
+                 { id: '1' }.to_xml(root: 'test_resource')
       end
       expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], {}).and_call_original
       TestResource.find(1)

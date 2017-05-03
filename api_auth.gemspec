@@ -1,11 +1,10 @@
-# -*- encoding: utf-8 -*-
-$:.push File.expand_path('../lib', __FILE__)
+$LOAD_PATH.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
-  s.name = %q{api-auth}
-  s.summary = %q{Simple HMAC authentication for your APIs}
-  s.description = %q{Full HMAC auth implementation for use in your gems and Rails apps.}
-  s.homepage = %q{https://github.com/mgomes/api_auth}
+  s.name = 'api-auth'
+  s.summary = 'Simple HMAC authentication for your APIs'
+  s.description = 'Full HMAC auth implementation for use in your gems and Rails apps.'
+  s.homepage = 'https://github.com/mgomes/api_auth'
   s.version = File.read(File.join(File.dirname(__FILE__), 'VERSION'))
   s.authors = ['Mauricio Gomes']
   s.email = 'mauricio@edge14.com'
@@ -14,14 +13,13 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake'
   s.add_development_dependency 'amatch'
   s.add_development_dependency 'rspec', '~> 3.4'
-  s.add_development_dependency 'actionpack', '< 5.0', '> 2.3.2'
-  s.add_development_dependency 'activesupport', '< 5.0', '> 2.3.2'
+  s.add_development_dependency 'actionpack', '< 6.0', '> 4.0'
+  s.add_development_dependency 'activesupport', '< 6.0', '> 4.0'
   s.add_development_dependency 'activeresource', '~> 4.0'
   s.add_development_dependency 'rest-client', '~> 1.6.0'
   s.add_development_dependency 'curb', '~> 0.8.1'
   s.add_development_dependency 'httpi'
-  faraday_version = RUBY_VERSION == '1.8.7' ? '< 0.10' : '>= 0.10'
-  s.add_development_dependency 'faraday', faraday_version
+  s.add_development_dependency 'faraday', '>= 0.10'
   s.add_development_dependency 'multipart-post', '~> 2.0'
 
   s.files         = `git ls-files`.split("\n")

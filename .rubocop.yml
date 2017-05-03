@@ -12,11 +12,6 @@ Lint/AssignmentInCondition:
   Exclude:
     - 'lib/api_auth/base.rb'
 
-# Offense count: 1
-Lint/UselessAssignment:
-  Exclude:
-    - 'spec/request_drivers/rest_client_spec.rb'
-
 # Offense count: 2
 Metrics/AbcSize:
   Max: 25
@@ -61,41 +56,8 @@ Style/Documentation:
     - 'lib/api_auth/request_drivers/rest_client.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.
-Style/ExtraSpacing:
-  Exclude:
-    - 'lib/api_auth/railtie.rb'
-
-# Offense count: 1
 # Configuration parameters: ExpectMatchingDefinition, Regex, IgnoreExecutableScripts.
 Style/FileName:
   Exclude:
     - 'lib/api-auth.rb'
-
-# Offense count: 110
-# Cop supports --auto-correct.
-# Configuration parameters: SupportedStyles, UseHashRocketsWithSymbolValues.
-# SupportedStyles: ruby19, ruby19_no_mixed_keys, hash_rockets
-Style/HashSyntax:
-  EnforcedStyle: hash_rockets
-
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'api_auth.gemspec'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: use_perl_names, use_english_names
-Style/SpecialGlobalVars:
-  Enabled: false
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/UnneededPercentQ:
-  Exclude:
-    - 'api_auth.gemspec'
+    - 'Appraisals'
