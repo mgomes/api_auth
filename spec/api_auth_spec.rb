@@ -157,6 +157,18 @@ describe 'ApiAuth' do
         end
       end
     end
+
+    context 'when passed the clock_skew option' do
+      it 'fails to validate expired requests' do
+        request['date'] = 90.seconds.ago.utc.httpdate
+        expect(ApiAuth.authentic?(signed_request, '123', clock_skew: 60.seconds)).to eq false
+      end
+
+      it 'fails to validate far future requests' do
+        request['date'] = 90.seconds.from_now.utc.httpdate
+        expect(ApiAuth.authentic?(signed_request, '123', clock_skew: 60.seconds)).to eq false
+      end
+    end
   end
 
   describe '.access_id' do

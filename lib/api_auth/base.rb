@@ -36,11 +36,14 @@ module ApiAuth
 
       headers = Headers.new(request)
 
+      # 900 seconds is 15 minutes
+      clock_skew = options.fetch(:clock_skew, 900)
+
       if headers.md5_mismatch?
         false
       elsif !signatures_match?(headers, secret_key, options)
         false
-      elsif !request_within_time_window?(headers)
+      elsif !request_within_time_window?(headers, clock_skew)
         false
       else
         true
@@ -70,11 +73,9 @@ module ApiAuth
 
     AUTH_HEADER_PATTERN = /APIAuth(?:-HMAC-(MD5|SHA(?:1|224|256|384|512)?))? ([^:]+):(.+)$/
 
-    def request_within_time_window?(headers)
-      # 900 seconds is 15 minutes
-
-      Time.httpdate(headers.timestamp).utc > (Time.now.utc - 900) &&
-        Time.httpdate(headers.timestamp).utc < (Time.now.utc + 900)
+    def request_within_time_window?(headers, clock_skew)
+      Time.httpdate(headers.timestamp).utc > (Time.now.utc - clock_skew) &&
+        Time.httpdate(headers.timestamp).utc < (Time.now.utc + clock_skew)
     rescue ArgumentError
       false
     end
