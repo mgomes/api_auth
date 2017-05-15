@@ -25,7 +25,9 @@ content-MD5 are not present, then a blank string is used in their place. If the
 timestamp isn't present, a valid HTTP date is automatically added to the
 request. The canonical string is computed as follows:
 
-    canonical_string = 'http method,content-type,content-MD5,request URI,timestamp'
+    canonical_string = 'content-type,content-MD5,request URI,timestamp' which is the default value
+    or
+    canonical_string = 'http method,content-type,content-MD5,request URI,timestamp' if with_http_method is set to true
 
 2. This string is then used to create the signature which is a Base64 encoded
 SHA1 HMAC, using the client's private secret key.
