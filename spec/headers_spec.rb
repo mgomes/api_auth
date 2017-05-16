@@ -188,14 +188,14 @@ describe ApiAuth::Headers do
 
     context 'when request has no md5' do
       it "doesn't ask the driver" do
-        allow(driver).to receive(:content_md5).and_return ''
+        allow(driver).to receive(:content_md5).and_return nil
 
         expect(driver).not_to receive(:md5_mismatch?).and_call_original
         headers.md5_mismatch?
       end
 
       it 'returns false' do
-        allow(driver).to receive(:content_md5).and_return ''
+        allow(driver).to receive(:content_md5).and_return nil
 
         expect(headers.md5_mismatch?).to be false
       end
