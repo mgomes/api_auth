@@ -5,12 +5,13 @@ rvm:
   - 2.1.9
   - 2.2.6
   - 2.3.3
-  - 2.4.0
+  - 2.4.1
 gemfile:
   - gemfiles/rails_4.gemfile
   - gemfiles/rails_41.gemfile
   - gemfiles/rails_42.gemfile
   - gemfiles/rails_5.gemfile
+  - gemfiles/rails_51.gemfile
 env:
   - TEST_SUITE=rake
 
@@ -24,8 +25,10 @@ matrix:
   exclude:
     - rvm: 2.1.9
       gemfile: gemfiles/rails_5.gemfile
+    - rvm: 2.1.9
+      gemfile: gemfiles/rails_51.gemfile
   include:
-    - rvm: 2.3.3
+    - rvm: 2.4.1
       gemfile: gemfiles/rails_5.gemfile
       env: TEST_SUITE="rubocop lib/ spec/"
 

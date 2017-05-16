@@ -15,26 +15,24 @@ describe 'Rails integration' do
         respond_to do |format|
           format.xml { render xml: 'You are unauthorized to perform this action.', status: 401 }
           format.json { render json: 'You are unauthorized to perform this action.', status: 401 }
-          format.html { render text: 'You are unauthorized to perform this action', status: 401 }
+          format.html { render plain: 'You are unauthorized to perform this action', status: 401 }
         end
       end
     end
 
     class TestController < ApplicationController
-      before_filter :require_api_auth, only: [:index]
+      before_action :require_api_auth, only: [:index]
 
-      if defined?(ActionDispatch)
-        def self._routes
-          ActionDispatch::Routing::RouteSet.new
-        end
+      def self._routes
+        ActionDispatch::Routing::RouteSet.new
       end
 
       def index
-        render text: 'OK'
+        render json: 'OK'
       end
 
       def public
-        render text: 'OK'
+        render json: 'OK'
       end
 
       def rescue_action(e)
@@ -42,31 +40,31 @@ describe 'Rails integration' do
       end
     end
 
-    unless defined?(ActionDispatch)
-      ActionController::Routing::Routes.draw { |map| map.resources :test }
-    end
-
     def generated_response(request, action = :index)
-      if defined?(ActionDispatch)
-        response = ActionDispatch::TestResponse.new
-        controller = TestController.new
-        controller.request = request
-        controller.response = response
-        controller.process(action)
-        response
-      else
-        request.action = action.to_s
-        request.path = "/#{action}"
-        TestController.new.process(request, ActionController::TestResponse.new)
-      end
+      response = ActionDispatch::TestResponse.new
+      controller = TestController.new
+      controller.request = request
+      controller.response = response
+      controller.process(action)
+      response
     end
 
-    it 'should permit a request with properly signed headers' do
+    def generated_request
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  if Gem.loaded_specs['actionpack'].version < Gem::Version.new('5.1.0')
+                    ActionController::TestRequest.create
+                  else
+                    ActionController::TestRequest.create(TestController)
+                  end
                 else
                   ActionController::TestRequest.new
                 end
+      request.accept = ['application/json']
+      request
+    end
+
+    it 'should permit a request with properly signed headers' do
+      request = generated_request
       request.env['DATE'] = Time.now.utc.httpdate
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
@@ -74,11 +72,7 @@ describe 'Rails integration' do
     end
 
     it 'should forbid a request with properly signed headers but timestamp > 15 minutes ago' do
-      request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
-                else
-                  ActionController::TestRequest.new
-                end
+      request = generated_request
       request.env['DATE'] = 'Mon, 23 Jan 1984 03:29:56 GMT'
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
@@ -86,11 +80,7 @@ describe 'Rails integration' do
     end
 
     it 'should forbid a request with properly signed headers but timestamp > 15 minutes in the future' do
-      request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
-                else
-                  ActionController::TestRequest.new
-                end
+      request = generated_request
       request.env['DATE'] = 'Mon, 23 Jan 2100 03:29:56 GMT'
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
@@ -98,42 +88,26 @@ describe 'Rails integration' do
     end
 
     it "should insert a DATE header in the request when one hasn't been specified" do
-      request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
-                else
-                  ActionController::TestRequest.new
-                end
+      request = generated_request
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       expect(request.headers['DATE']).not_to be_nil
     end
 
     it 'should forbid an unsigned request to a protected controller action' do
-      request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
-                else
-                  ActionController::TestRequest.new
-                end
+      request = generated_request
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
     end
 
     it 'should forbid a request with a bogus signature' do
-      request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
-                else
-                  ActionController::TestRequest.new
-                end
+      request = generated_request
       request.env['Authorization'] = 'APIAuth bogus:bogus'
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
     end
 
     it 'should allow non-protected controller actions to function as before' do
-      request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
-                else
-                  ActionController::TestRequest.new
-                end
+      request = generated_request
       response = generated_response(request, :public)
       expect(response.code).to eq('200')
     end
