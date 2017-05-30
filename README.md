@@ -20,19 +20,25 @@ have to be written in the same language as the clients.
 ## How it works
 
 1. A canonical string is first created using your HTTP headers containing the
-content-type, content-MD5, request URI and the timestamp. If content-type or
+content-type, content-MD5, request path and the date. If content-type or
 content-MD5 are not present, then a blank string is used in their place. If the
-timestamp isn't present, a valid HTTP date is automatically added to the
+date isn't present, a valid HTTP date is automatically added to the
 request. The canonical string is computed as follows:
 
-    canonical_string = 'http method,content-type,content-MD5,request URI,timestamp'
-
+    canonical_string = 'http method,content-type,content-MD5,request path,date'
+   
+    e.g. canonical_string = 'POST,application/json,,request_path,Tue, 30 May 2017 03:51:43 GMT'
+    
 2. This string is then used to create the signature which is a Base64 encoded
 SHA1 HMAC, using the client's private secret key.
 
 3. This signature is then added as the `Authorization` HTTP header in the form:
 
-    Authorization = APIAuth 'client access id':'signature from step 2'
+    AUTHORIZATION = APIAuth 'client access id':'signature from step 2'
+
+    Used in a request this would look like:
+    
+    curl -X POST --header 'Content-Type: application/json' --header "Date: Tue, 30 May 2017 03:51:43 GMT" --header "Authorization: ${AUTHORIZATION}"  http://my-app.com/request_path`
 
 5. On the server side, the SHA1 HMAC is computed in the same way using the
 request headers and the client's secret key, which is known to only
