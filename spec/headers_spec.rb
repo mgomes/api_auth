@@ -8,7 +8,7 @@ describe ApiAuth::Headers do
       let(:uri) { '' }
 
       context 'empty uri' do
-        let(:uri) { ''.freeze }
+        let(:uri) { 'foo.com'.freeze }
 
         it 'adds / to canonical string' do
           expect(subject.canonical_string).to eq('GET,,,/,')
