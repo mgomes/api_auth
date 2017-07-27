@@ -21,13 +21,13 @@ module ApiAuth
       end
 
       def populate_content_md5
-        return unless @request.put? || @request.post?
+        return unless @request.put? || @request.post? || @request.patch?
         @request.env['Content-MD5'] = calculated_md5
         fetch_headers
       end
 
       def md5_mismatch?
-        if @request.put? || @request.post?
+        if @request.put? || @request.post? || @request.patch?
           calculated_md5 != content_md5
         else
           false

@@ -124,6 +124,19 @@ if defined?(ActionController::Request)
           end
         end
 
+        context 'when patching' do
+          it 'populates content-md5' do
+            request.env['REQUEST_METHOD'] = 'PATCH'
+            driven_request.populate_content_md5
+            expect(request.env['Content-MD5']).to eq('kZXQvrKoieG+Be1rsZVINw==')
+          end
+
+          it 'refreshes the cached headers' do
+            driven_request.populate_content_md5
+            expect(driven_request.content_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+          end
+        end
+
         context 'when deleting' do
           it "doesn't populate content-md5" do
             request.env['REQUEST_METHOD'] = 'DELETE'
@@ -197,6 +210,32 @@ if defined?(ActionController::Request)
       context 'when putting' do
         before do
           request.env['REQUEST_METHOD'] = 'PUT'
+        end
+
+        context 'when calculated matches sent' do
+          before do
+            request.env['CONTENT_MD5'] = 'kZXQvrKoieG+Be1rsZVINw=='
+          end
+
+          it 'is false' do
+            expect(driven_request.md5_mismatch?).to be false
+          end
+        end
+
+        context "when calculated doesn't match sent" do
+          before do
+            request.env['CONTENT_MD5'] = '3'
+          end
+
+          it 'is true' do
+            expect(driven_request.md5_mismatch?).to be true
+          end
+        end
+      end
+
+      context 'when patching' do
+        before do
+          request.env['REQUEST_METHOD'] = 'PATCH'
         end
 
         context 'when calculated matches sent' do

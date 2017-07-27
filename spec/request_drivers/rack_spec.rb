@@ -165,6 +165,28 @@ describe ApiAuth::RequestDrivers::RackRequest do
         end
       end
 
+      context 'when patching' do
+        let(:request) do
+          Rack::Request.new(
+            Rack::MockRequest.env_for(
+              request_path,
+              method: :patch,
+              input: "hello\nworld"
+            ).merge!(request_headers)
+          )
+        end
+
+        it 'populates content-md5' do
+          driven_request.populate_content_md5
+          expect(request.env['Content-MD5']).to eq('kZXQvrKoieG+Be1rsZVINw==')
+        end
+
+        it 'refreshes the cached headers' do
+          driven_request.populate_content_md5
+          expect(driven_request.content_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+        end
+      end
+
       context 'when deleting' do
         let(:request) do
           Rack::Request.new(
@@ -260,6 +282,38 @@ describe ApiAuth::RequestDrivers::RackRequest do
           Rack::MockRequest.env_for(
             request_path,
             method: :put,
+            input: "hello\nworld"
+          ).merge!(request_headers)
+        )
+      end
+
+      context 'when calculated matches sent' do
+        before do
+          request.env['Content-MD5'] = 'kZXQvrKoieG+Be1rsZVINw=='
+        end
+
+        it 'is false' do
+          expect(driven_request.md5_mismatch?).to be false
+        end
+      end
+
+      context "when calculated doesn't match sent" do
+        before do
+          request.env['Content-MD5'] = '3'
+        end
+
+        it 'is true' do
+          expect(driven_request.md5_mismatch?).to be true
+        end
+      end
+    end
+
+    context 'when patching' do
+      let(:request) do
+        Rack::Request.new(
+          Rack::MockRequest.env_for(
+            request_path,
+            method: :patch,
             input: "hello\nworld"
           ).merge!(request_headers)
         )
