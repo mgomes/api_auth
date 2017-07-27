@@ -15,13 +15,13 @@ describe 'Rails integration' do
         respond_to do |format|
           format.xml { render xml: 'You are unauthorized to perform this action.', status: 401 }
           format.json { render json: 'You are unauthorized to perform this action.', status: 401 }
-          format.html { render text: 'You are unauthorized to perform this action', status: 401 }
+          format.html { render plain: 'You are unauthorized to perform this action', status: 401 }
         end
       end
     end
 
     class TestController < ApplicationController
-      before_filter :require_api_auth, only: [:index]
+      before_action :require_api_auth, only: [:index]
 
       if defined?(ActionDispatch)
         def self._routes
@@ -30,11 +30,11 @@ describe 'Rails integration' do
       end
 
       def index
-        render text: 'OK'
+        render plain: 'OK'
       end
 
       def public
-        render text: 'OK'
+        render plain: 'OK'
       end
 
       def rescue_action(e)
@@ -63,7 +63,7 @@ describe 'Rails integration' do
 
     it 'should permit a request with properly signed headers' do
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  ActionController::TestRequest.create(ApplicationController)
                 else
                   ActionController::TestRequest.new
                 end
@@ -75,7 +75,7 @@ describe 'Rails integration' do
 
     it 'should forbid a request with properly signed headers but timestamp > 15 minutes ago' do
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  ActionController::TestRequest.create(ApplicationController)
                 else
                   ActionController::TestRequest.new
                 end
@@ -87,7 +87,7 @@ describe 'Rails integration' do
 
     it 'should forbid a request with properly signed headers but timestamp > 15 minutes in the future' do
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  ActionController::TestRequest.create(ApplicationController)
                 else
                   ActionController::TestRequest.new
                 end
@@ -99,7 +99,7 @@ describe 'Rails integration' do
 
     it "should insert a DATE header in the request when one hasn't been specified" do
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  ActionController::TestRequest.create(ApplicationController)
                 else
                   ActionController::TestRequest.new
                 end
@@ -109,7 +109,7 @@ describe 'Rails integration' do
 
     it 'should forbid an unsigned request to a protected controller action' do
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  ActionController::TestRequest.create(ApplicationController)
                 else
                   ActionController::TestRequest.new
                 end
@@ -119,7 +119,7 @@ describe 'Rails integration' do
 
     it 'should forbid a request with a bogus signature' do
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  ActionController::TestRequest.create(ApplicationController)
                 else
                   ActionController::TestRequest.new
                 end
@@ -130,7 +130,7 @@ describe 'Rails integration' do
 
     it 'should allow non-protected controller actions to function as before' do
       request = if ActionController::TestRequest.respond_to?(:create)
-                  ActionController::TestRequest.create
+                  ActionController::TestRequest.create(ApplicationController)
                 else
                   ActionController::TestRequest.new
                 end
