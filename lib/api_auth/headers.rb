@@ -93,12 +93,12 @@ module ApiAuth
 
     private
 
-    URI_WITHOUT_HOST_REGEXP = %r{https?://[^,?/]*}
-
     def parse_uri(uri)
-      uri_without_host = uri.gsub(URI_WITHOUT_HOST_REGEXP, '')
-      return '/' if uri_without_host.empty?
-      uri_without_host
+      parsed_uri = URI.parse(uri)
+
+      return parsed_uri.request_uri if parsed_uri.respond_to?(:request_uri)
+
+      uri.empty? ? '/' : uri
     end
   end
 end
