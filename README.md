@@ -234,7 +234,13 @@ take care of all that for you.
 
 To run the tests:
 
-    rake spec
+Install the dependencies for a particular Rails version by specifying a gemfile in `gemfiles` directory:
+
+    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle install
+
+Run the tests with those dependencies:
+
+    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle exec rake
 
 If you'd like to add support for additional HTTP clients, check out the already
 implemented drivers in `lib/api_auth/request_drivers` for reference. All of
