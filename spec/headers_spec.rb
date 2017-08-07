@@ -38,6 +38,18 @@ describe ApiAuth::Headers do
           expect(request.url).to eq(uri)
         end
       end
+
+      context 'uri has a string matching http:// in it' do
+        let(:uri) { 'http://google.com/?redirect_to=https://www.example.com'.freeze }
+
+        it 'return /?redirect_to=https://www.example.com as canonical string path' do
+          expect(subject.canonical_string).to eq('GET,,,/?redirect_to=https://www.example.com,')
+        end
+
+        it 'does not change request url (by removing host)' do
+          expect(request.url).to eq(uri)
+        end
+      end
     end
 
     context 'string construction' do
