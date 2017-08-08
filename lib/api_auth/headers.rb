@@ -67,15 +67,15 @@ module ApiAuth
     end
 
     def set_date
-      @request.set_date if @request.timestamp.empty?
+      @request.set_date if @request.timestamp.nil?
     end
 
     def calculate_md5
-      @request.populate_content_md5 if @request.content_md5.empty?
+      @request.populate_content_md5 if @request.content_md5.nil?
     end
 
     def md5_mismatch?
-      if @request.content_md5.empty?
+      if @request.content_md5.nil?
         false
       else
         @request.md5_mismatch?
