@@ -3,14 +3,7 @@ module RestClient; class Request; attr_accessor :processed_headers; end; end
 
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class RestClientRequest # :nodoc:
-      include ApiAuth::Helpers
-
-      def initialize(request)
-        @request = request
-        @headers = fetch_headers
-        true
-      end
+    class RestClientRequest < Base # :nodoc:
 
       def set_auth_header(header)
         @request.headers['Authorization'] = header
@@ -43,7 +36,7 @@ module ApiAuth
       end
 
       def fetch_headers
-        capitalize_keys @request.processed_headers
+        @headers = capitalize_keys @request.processed_headers
       end
 
       def http_method
@@ -67,27 +60,20 @@ module ApiAuth
       end
 
       def set_date
-        @request.headers['DATE'] = Time.now.utc.httpdate
+        @request.headers[ApiAuth.configuration.date_header] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
         save_headers
       end
 
       def timestamp
-        find_header(%w[DATE HTTP_DATE])
-      end
-
-      def authorization_header
-        find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
+        value = find_header([ApiAuth.configuration.date_header, "HTTP_#{ApiAuth.configuration.date_header}"])
+        value.nil? ? '' : value
       end
 
       private
 
-      def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
-      end
-
       def save_headers
         @request.processed_headers = @request.make_headers(@request.headers)
-        @headers = fetch_headers
+        fetch_headers
       end
     end
   end

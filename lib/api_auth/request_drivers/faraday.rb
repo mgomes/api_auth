@@ -1,13 +1,6 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class FaradayRequest # :nodoc:
-      include ApiAuth::Helpers
-
-      def initialize(request)
-        @request = request
-        fetch_headers
-        true
-      end
+    class FaradayRequest < Base # :nodoc:
 
       def set_auth_header(header)
         @request.headers['Authorization'] = header
@@ -62,22 +55,13 @@ module ApiAuth
       end
 
       def set_date
-        @request.headers['DATE'] = Time.now.utc.httpdate
+        @request.headers[ApiAuth.configuration.date_header] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
         fetch_headers
       end
 
       def timestamp
-        find_header(%w[DATE HTTP_DATE])
-      end
-
-      def authorization_header
-        find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
-      end
-
-      private
-
-      def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
+        value = find_header([ApiAuth.configuration.date_header, "HTTP_#{ApiAuth.configuration.date_header}"])
+        value.nil? ? '' : value
       end
     end
   end

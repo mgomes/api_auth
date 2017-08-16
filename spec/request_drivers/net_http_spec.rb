@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::NetHttpRequest do
-  let(:timestamp) { Time.now.utc.httpdate }
+  let(:timestamp) { Time.now.utc.strftime(ApiAuth.configuration.date_format) }
 
   let(:request_path) { '/resource.xml?foo=bar&bar=foo' }
 
   let(:request_headers) do
     {
-      'Authorization' => 'APIAuth 1044:12345',
+      'Authorization' => "#{ApiAuth.configuration.algorithm} 1044:12345",
       'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'content-type' => 'text/plain',
-      'date' => timestamp
+      ApiAuth.configuration.date_header => timestamp
     }
   end
 
@@ -49,7 +49,7 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
     end
 
     it 'gets the authorization_header' do
-      expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
+      expect(driven_request.authorization_header).to eq("#{ApiAuth.configuration.algorithm} 1044:12345")
     end
 
     describe '#calculated_md5' do
@@ -132,12 +132,12 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
 
     describe '#set_date' do
       before do
-        allow(Time).to receive_message_chain(:now, :utc, :httpdate).and_return(timestamp)
+        allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return(timestamp)
       end
 
       it 'sets the date header of the request' do
         driven_request.set_date
-        expect(request['DATE']).to eq(timestamp)
+        expect(request[ApiAuth.configuration.date_header]).to eq(timestamp)
       end
 
       it 'refreshes the cached headers' do
@@ -148,8 +148,8 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
 
     describe '#set_auth_header' do
       it 'sets the auth header' do
-        driven_request.set_auth_header('APIAuth 1044:54321')
-        expect(request['Authorization']).to eq('APIAuth 1044:54321')
+        driven_request.set_auth_header("#{ApiAuth.configuration.algorithm} 1044:54321")
+        expect(request['Authorization']).to eq("#{ApiAuth.configuration.algorithm} 1044:54321")
       end
     end
   end

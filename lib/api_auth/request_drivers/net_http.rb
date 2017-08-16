@@ -1,18 +1,11 @@
 require 'time'
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class NetHttpRequest # :nodoc:
-      include ApiAuth::Helpers
-
-      def initialize(request)
-        @request = request
-        @headers = fetch_headers
-        true
-      end
+    class NetHttpRequest < Base # :nodoc:
 
       def set_auth_header(header)
         @request['Authorization'] = header
-        @headers = fetch_headers
+        fetch_headers
         @request
       end
 
@@ -30,6 +23,7 @@ module ApiAuth
       def populate_content_md5
         return unless @request.class::REQUEST_HAS_BODY
         @request['Content-MD5'] = calculated_md5
+        fetch_headers
       end
 
       def md5_mismatch?
@@ -41,7 +35,8 @@ module ApiAuth
       end
 
       def fetch_headers
-        @request
+        @headers = {}
+        @request.to_hash.map { |key, value| @headers[key] = value[0] }
       end
 
       def http_method
@@ -65,21 +60,13 @@ module ApiAuth
       end
 
       def set_date
-        @request['DATE'] = Time.now.utc.httpdate
+        @request[ApiAuth.configuration.date_header] = Time.now.utc.strftime(ApiAuth.configuration.date_format)
+        fetch_headers
       end
 
       def timestamp
-        find_header(%w[DATE HTTP_DATE])
-      end
-
-      def authorization_header
-        find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
-      end
-
-      private
-
-      def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
+        value = find_header([ApiAuth.configuration.date_header, "HTTP_#{ApiAuth.configuration.date_header}"])
+        value.nil? ? '' : value
       end
     end
   end

@@ -66,6 +66,56 @@ configuration for your Ruby VM. To install:
 
 Please note the dash in the name versus the underscore.
 
+## Configuration
+
+The gem accepts some configuration options, if you would like more fine-grained control of how your requests are signed.
+
+``` ruby
+ApiAuth.configure do |config|
+  # Name of the header containing the request timestamp  
+  config.date_header = 'DATE'
+  # Format of the datetime string in the request timestamp header
+  config.date_format = '%a, %d %b %Y %T GMT'
+  # The name of the algorithm to pass at the beginning of the Authorization header
+  config.algorithm = 'APIAuth'
+  # A custom class to use to generate the Authorization header
+  config.auth_header_factory = ApiAuth::AuthHeaderFactories::Standard
+  # If using a custom auth header factory, you must redefined the auth_header_pattern so that 
+  # the auth header can be parsed properly
+  config.auth_header_pattern = /#{@algorithm}(?:-HMAC-(MD[245]|SHA(?:1|224|256|384|512)*))? ([^:]+):(.+)$/
+  # A custom class to use to generate the canonical string
+  config.canonical_string_factory = ApiAuth::CanonicalStringFactories::Standard
+  # A custom class to use to generate the signature
+  config.signer = ApiAuth::Signers::Standard
+end
+```
+
+### Auth Header Factory
+
+An Auth Header Factory must implement the class method `auth_header`. See [AuthHeaderFactories::Standard](lib/api_auth/auth_header_factories/standard.rb) for an example.
+
+When using a custom Auth Header Factory, you must also set the `auth_header_pattern` configuration variable. It requires three capture groups:
+
+1. The hash function used to generate the signature
+2. The Access ID
+3. The Generated Signature
+
+For example, if your Auth Header Factory returns the following auth header:
+
+`CoolAuth-SHA1 ID:1234,Signature=foobar`
+
+Then your `auth_header_pattern` should be set to
+
+`/CoolAuth(?:-(MD[245]|SHA(?:1|224|256|384|512)*))? ID:([^:]+),Signature=(.+)$/`
+
+### Canonical String Factory
+
+A Canonical String Factory must implement the class method `canonical_string`. See [CanonicalStringFactories::Standard](lib/api_auth/canonical_string_factories/standard.rb) for an example.
+
+### Signer
+
+A Signer must implement the class method `sign`. See [Signers::Standard](lib/api_auth/signers/standard.rb) for an example.
+
 ## Clients
 
 ApiAuth supports many popular HTTP clients. Support for other clients can be

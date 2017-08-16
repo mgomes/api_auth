@@ -71,11 +71,11 @@ module ApiAuth
 
     private
 
-    AUTH_HEADER_PATTERN = /APIAuth(?:-HMAC-(MD5|SHA(?:1|224|256|384|512)?))? ([^:]+):(.+)$/
-
     def request_within_time_window?(headers, clock_skew)
-      Time.httpdate(headers.timestamp).utc > (Time.now.utc - clock_skew) &&
-        Time.httpdate(headers.timestamp).utc < (Time.now.utc + clock_skew)
+      timestamp = DateTime.strptime(headers.timestamp, ApiAuth.configuration.date_format)
+      Time.local(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec)
+      time.utc > (Time.now.utc - clock_skew) &&
+        time.utc < (Time.now.utc + clock_skew)
     rescue ArgumentError
       false
     end
@@ -105,18 +105,15 @@ module ApiAuth
     end
 
     def hmac_signature(headers, secret_key, options)
-      canonical_string = headers.canonical_string(options[:override_http_method])
-      digest = OpenSSL::Digest.new(options[:digest])
-      b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
+      ApiAuth.configuration.signer.sign(headers, secret_key, options)
     end
 
     def auth_header(headers, access_id, secret_key, options)
-      hmac_string = "-HMAC-#{options[:digest].upcase}" unless options[:digest] == 'sha1'
-      "APIAuth#{hmac_string} #{access_id}:#{hmac_signature(headers, secret_key, options)}"
+      ApiAuth.configuration.auth_header_factory.auth_header(headers, access_id, options, hmac_signature(headers, secret_key, options))
     end
 
     def parse_auth_header(auth_header)
-      AUTH_HEADER_PATTERN.match(auth_header)
+      ApiAuth.configuration.auth_header_pattern.match(auth_header)
     end
   end # class methods
 end # ApiAuth
