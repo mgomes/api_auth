@@ -18,8 +18,8 @@ describe ApiAuth::RequestDrivers::RackRequest do
     Rack::Request.new(
       Rack::MockRequest.env_for(
         request_path,
-        :method => :put,
-        :input => "hello\nworld"
+        method: :put,
+        input: "hello\nworld"
       ).merge!(request_headers)
     )
   end
@@ -56,7 +56,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
         request = Rack::Request.new(
           Rack::MockRequest.env_for(
             request_path,
-            :method => :put
+            method: :put
           ).merge!(request_headers)
         )
         driven_request = ApiAuth::RequestDrivers::RackRequest.new(request)
@@ -70,7 +70,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
           Rack::Request.new(
             Rack::MockRequest.env_for(
               request_path,
-              :method => :put
+              method: :put
             ).merge!(request_headers)
           )
         end
@@ -85,7 +85,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
           Rack::Request.new(
             Rack::MockRequest.env_for(
               request_path,
-              :method => :get
+              method: :get
             ).merge!(request_headers)
           )
         end
@@ -110,7 +110,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
           Rack::Request.new(
             Rack::MockRequest.env_for(
               request_path,
-              :method => :get
+              method: :get
             ).merge!(request_headers)
           )
         end
@@ -126,8 +126,8 @@ describe ApiAuth::RequestDrivers::RackRequest do
           Rack::Request.new(
             Rack::MockRequest.env_for(
               request_path,
-              :method => :post,
-              :input => "hello\nworld"
+              method: :post,
+              input: "hello\nworld"
             ).merge!(request_headers)
           )
         end
@@ -148,8 +148,8 @@ describe ApiAuth::RequestDrivers::RackRequest do
           Rack::Request.new(
             Rack::MockRequest.env_for(
               request_path,
-              :method => :put,
-              :input => "hello\nworld"
+              method: :put,
+              input: "hello\nworld"
             ).merge!(request_headers)
           )
         end
@@ -170,7 +170,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
           Rack::Request.new(
             Rack::MockRequest.env_for(
               request_path,
-              :method => :delete
+              method: :delete
             ).merge!(request_headers)
           )
         end
@@ -212,7 +212,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
         Rack::Request.new(
           Rack::MockRequest.env_for(
             request_path,
-            :method => :get
+            method: :get
           ).merge!(request_headers)
         )
       end
@@ -227,8 +227,8 @@ describe ApiAuth::RequestDrivers::RackRequest do
         Rack::Request.new(
           Rack::MockRequest.env_for(
             request_path,
-            :method => :post,
-            :input => "hello\nworld"
+            method: :post,
+            input: "hello\nworld"
           ).merge!(request_headers)
         )
       end
@@ -259,8 +259,8 @@ describe ApiAuth::RequestDrivers::RackRequest do
         Rack::Request.new(
           Rack::MockRequest.env_for(
             request_path,
-            :method => :put,
-            :input => "hello\nworld"
+            method: :put,
+            input: "hello\nworld"
           ).merge!(request_headers)
         )
       end
@@ -291,7 +291,7 @@ describe ApiAuth::RequestDrivers::RackRequest do
         Rack::Request.new(
           Rack::MockRequest.env_for(
             request_path,
-            :method => :delete
+            method: :delete
           ).merge!(request_headers)
         )
       end

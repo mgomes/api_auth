@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe ApiAuth::Headers do
   describe '#canonical_string' do
     context 'uri edge cases' do
-      let(:request) { RestClient::Request.new(:url => uri, :method => :get) }
+      let(:request) { RestClient::Request.new(url: uri, method: :get) }
       subject(:headers) { described_class.new(request) }
       let(:uri) { '' }
 
@@ -38,11 +38,23 @@ describe ApiAuth::Headers do
           expect(request.url).to eq(uri)
         end
       end
+
+      context 'uri has a string matching http:// in it' do
+        let(:uri) { 'http://google.com/?redirect_to=https://www.example.com'.freeze }
+
+        it 'return /?redirect_to=https://www.example.com as canonical string path' do
+          expect(subject.canonical_string).to eq('GET,,,/?redirect_to=https://www.example.com,')
+        end
+
+        it 'does not change request url (by removing host)' do
+          expect(request.url).to eq(uri)
+        end
+      end
     end
 
     context 'string construction' do
       context 'with a driver that supplies http_method' do
-        let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+        let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
         subject(:headers) { described_class.new(request) }
         let(:driver) { headers.instance_variable_get('@request') }
 
@@ -97,6 +109,31 @@ describe ApiAuth::Headers do
         end
       end
 
+      context "when there's a proxy server (e.g. Nginx) with rewrite rules" do
+        let(:request) do
+          Faraday::Request.create('GET') do |req|
+            req.options = Faraday::RequestOptions.new(Faraday::FlatParamsEncoder)
+            req.params = Faraday::Utils::ParamsHash.new
+            req.url('/resource.xml?foo=bar&bar=foo')
+            req.headers = { 'X-Original-URI' => '/api/resource.xml?foo=bar&bar=foo' }
+          end
+        end
+        subject(:headers) { described_class.new(request) }
+        let(:driver) { headers.instance_variable_get('@request') }
+
+        before do
+          allow(driver).to receive(:content_type).and_return 'text/html'
+          allow(driver).to receive(:content_md5).and_return '12345'
+          allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
+        end
+
+        context 'the driver uses the original_uri' do
+          it 'constructs the canonical_string with the original_uri' do
+            expect(headers.canonical_string).to eq 'GET,text/html,12345,/api/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT'
+          end
+        end
+      end
+
       context 'with a custom canonical string factory' do
         let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
         subject(:headers) { described_class.new(request) }
@@ -131,9 +168,9 @@ describe ApiAuth::Headers do
     context 'no md5 already calculated' do
       let(:request) do
         RestClient::Request.new(
-          :url => 'http://google.com',
-          :method => :post,
-          :payload => "hello\nworld"
+          url: 'http://google.com',
+          method: :post,
+          payload: "hello\nworld"
         )
       end
 
@@ -146,10 +183,10 @@ describe ApiAuth::Headers do
     context 'md5 already calculated' do
       let(:request) do
         RestClient::Request.new(
-          :url => 'http://google.com',
-          :method => :post,
-          :payload => "hello\nworld",
-          :headers => { :content_md5 => 'abcd' }
+          url: 'http://google.com',
+          method: :post,
+          payload: "hello\nworld",
+          headers: { content_md5: 'abcd' }
         )
       end
 
@@ -161,7 +198,7 @@ describe ApiAuth::Headers do
   end
 
   describe '#md5_mismatch?' do
-    let(:request) { RestClient::Request.new(:url => 'http://google.com', :method => :get) }
+    let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
     subject(:headers) { described_class.new(request) }
     let(:driver) { headers.instance_variable_get('@request') }
 
@@ -176,14 +213,14 @@ describe ApiAuth::Headers do
 
     context 'when request has no md5' do
       it "doesn't ask the driver" do
-        allow(driver).to receive(:content_md5).and_return ''
+        allow(driver).to receive(:content_md5).and_return nil
 
         expect(driver).not_to receive(:md5_mismatch?).and_call_original
         headers.md5_mismatch?
       end
 
       it 'returns false' do
-        allow(driver).to receive(:content_md5).and_return ''
+        allow(driver).to receive(:content_md5).and_return nil
 
         expect(headers.md5_mismatch?).to be false
       end

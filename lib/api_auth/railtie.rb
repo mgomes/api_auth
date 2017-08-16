@@ -18,22 +18,14 @@ module ApiAuth
       end
     end # ControllerMethods
 
-    module ActiveResourceExtension  # :nodoc:
+    module ActiveResourceExtension # :nodoc:
       module ActiveResourceApiAuth # :nodoc:
         def self.included(base)
           base.extend(ClassMethods)
-
-          if base.respond_to?('class_attribute')
-            base.class_attribute :hmac_access_id
-            base.class_attribute :hmac_secret_key
-            base.class_attribute :use_hmac
-            base.class_attribute :api_auth_options
-          else
-            base.class_inheritable_accessor :hmac_access_id
-            base.class_inheritable_accessor :hmac_secret_key
-            base.class_inheritable_accessor :use_hmac
-            base.class_inheritable_accessor :api_auth_options
-          end
+          base.class_attribute :hmac_access_id
+          base.class_attribute :hmac_secret_key
+          base.class_attribute :use_hmac
+          base.class_attribute :api_auth_options
         end
 
         module ClassMethods
@@ -44,7 +36,8 @@ module ApiAuth
             self.api_auth_options = options
 
             class << self
-              alias_method_chain :connection, :auth
+              alias_method :connection_without_auth, :connection
+              alias_method :connection,              :connection_with_auth
             end
           end
 
@@ -64,7 +57,9 @@ module ApiAuth
 
       module Connection
         def self.included(base)
-          base.send :alias_method_chain, :request, :auth
+          base.send :alias_method, :request_without_auth, :request
+          base.send :alias_method, :request,              :request_with_auth
+
           base.class_eval do
             attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac, :api_auth_options
           end

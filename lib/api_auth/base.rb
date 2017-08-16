@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # api-auth is a Ruby gem designed to be used both in your client and server
 # HTTP-based applications. It implements the same authentication methods (HMAC)
 # used by Amazon Web Services.
@@ -21,7 +20,7 @@ module ApiAuth
     #
     # secret_key: assigned secret key that is known to both parties
     def sign!(request, access_id, secret_key, options = {})
-      options = { :override_http_method => nil, :digest => 'sha1' }.merge(options)
+      options = { override_http_method: nil, digest: 'sha1' }.merge(options)
       headers = Headers.new(request)
       headers.calculate_md5
       headers.set_date
@@ -33,15 +32,18 @@ module ApiAuth
     def authentic?(request, secret_key, options = {})
       return false if secret_key.nil?
 
-      options = { :override_http_method => nil }.merge(options)
+      options = { override_http_method: nil }.merge(options)
 
       headers = Headers.new(request)
+
+      # 900 seconds is 15 minutes
+      clock_skew = options.fetch(:clock_skew, 900)
 
       if headers.md5_mismatch?
         false
       elsif !signatures_match?(headers, secret_key, options)
         false
-      elsif request_too_old?(headers)
+      elsif !request_within_time_window?(headers, clock_skew)
         false
       else
         true
@@ -69,29 +71,37 @@ module ApiAuth
 
     private
 
-    def request_too_old?(headers)
-      # 900 seconds is 15 minutes
-
+    def request_within_time_window?(headers, clock_skew)
       timestamp = DateTime.strptime(headers.timestamp, ApiAuth.configuration.date_format)
-      time = Time.local(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec)
-      time.utc < (Time.now.utc - 900)
+      Time.local(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec)
+      time.utc > (Time.now.utc - clock_skew) &&
+        time.utc < (Time.now.utc + clock_skew)
     rescue ArgumentError
-      true
+      false
     end
 
     def signatures_match?(headers, secret_key, options)
       match_data = parse_auth_header(headers.authorization_header)
       return false unless match_data
 
-      digest = match_data[1].blank? ? 'SHA1' : match_data[1].upcase
+      digest = match_data[1].nil? ? 'SHA1' : match_data[1].upcase
       raise InvalidRequestDigest if !options[:digest].nil? && !options[:digest].casecmp(digest).zero?
 
-      options = { :digest => digest }.merge(options)
+      options = { digest: digest }.merge(options)
 
       header_sig = match_data[3]
       calculated_sig = hmac_signature(headers, secret_key, options)
 
-      secure_compare(header_sig, calculated_sig)
+      secure_equals?(header_sig, calculated_sig, secret_key)
+    end
+
+    def secure_equals?(m1, m2, key)
+      sha1_hmac(key, m1) == sha1_hmac(key, m2)
+    end
+
+    def sha1_hmac(key, message)
+      digest = OpenSSL::Digest.new('sha1')
+      OpenSSL::HMAC.digest(digest, key, message)
     end
 
     def hmac_signature(headers, secret_key, options)
@@ -104,17 +114,6 @@ module ApiAuth
 
     def parse_auth_header(auth_header)
       ApiAuth.configuration.auth_header_pattern.match(auth_header)
-    end
-
-    # Copy of ActiveSupport::SecurityUtils.secure_compare from Rails 4.2.0
-    def secure_compare(a, b)
-      return false unless a.bytesize == b.bytesize
-
-      l = a.unpack "C#{a.bytesize}"
-
-      res = 0
-      b.each_byte { |byte| res |= byte ^ l.shift }
-      res == 0
     end
   end # class methods
 end # ApiAuth

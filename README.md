@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/mgomes/api_auth.png?branch=master)](https://travis-ci.org/mgomes/api_auth)
 
-## IMPORTANT: v2.0.0 is backwards incompatible with the default settings of v1.x to address a security vulnerability. See [CHANGELOG.md](/CHANGELOG.md) for security update information.
-
 Logins and passwords are for humans. Communication between applications need to
 be protected through different means.
 
@@ -50,6 +48,14 @@ minutes in order to avoid replay attacks.
 * [SHA-1 Hash function](http://en.wikipedia.org/wiki/SHA-1)
 * [HMAC algorithm](http://en.wikipedia.org/wiki/HMAC)
 * [RFC 2104 (HMAC)](http://tools.ietf.org/html/rfc2104)
+
+## Requirement
+
+v3.X require Ruby 2.X and if you use Rails at least Rails 4.0.
+
+For older version of Ruby or Rails, please use ApiAuth v2.X.
+
+**IMPORTANT: v2.0.0 is backwards incompatible with the default settings of v1.x to address a security vulnerability. See [CHANGELOG.md](/CHANGELOG.md) for security update information.**
 
 ## Install
 
@@ -122,6 +128,7 @@ Here is the current list of supported request objects:
 * Curb (Curl::Easy)
 * RestClient
 * Faraday
+* Httpi
 
 ### HTTP Client Objects
 
@@ -220,7 +227,7 @@ To validate whether or not a request is authentic:
 ```
 
 The `authentic?` method uses the digest specified in the `Authorization` header.
-For exemple SHA256 for:
+For example SHA256 for:
 
     Authorization = APIAuth-HMAC-SHA256 'client access id':'signature'
 
@@ -230,6 +237,17 @@ If you want to force the usage of another digest method, you should pass it as a
 
 ``` ruby
     ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')
+```
+
+For security, requests dated older or newer than a certain timespan are considered inauthentic.
+
+This prevents old requests from being reused in replay attacks, and also ensures requests
+can't be dated into the far future.
+
+The default span is 15 minutes, but you can override this:
+
+```ruby
+    ApiAuth.authentic?(signed_request, secret_key, :clock_skew => 60) # or 1.minute in ActiveSupport
 ```
 
 If your server is a Rails app, the signed request will be the `request` object.
@@ -266,7 +284,13 @@ take care of all that for you.
 
 To run the tests:
 
-    rake spec
+Install the dependencies for a particular Rails version by specifying a gemfile in `gemfiles` directory:
+
+    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle install
+
+Run the tests with those dependencies:
+
+    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle exec rake
 
 If you'd like to add support for additional HTTP clients, check out the already
 implemented drivers in `lib/api_auth/request_drivers` for reference. All of

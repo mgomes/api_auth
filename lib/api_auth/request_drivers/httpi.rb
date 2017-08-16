@@ -13,10 +13,9 @@ module ApiAuth
       end
 
       def populate_content_md5
-        if @request.body
-          @request.headers['Content-MD5'] = calculated_md5
-          fetch_headers
-        end
+        return unless @request.body
+        @request.headers['Content-MD5'] = calculated_md5
+        fetch_headers
       end
 
       def md5_mismatch?
@@ -36,13 +35,15 @@ module ApiAuth
       end
 
       def content_type
-        value = find_header(%w(CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? '' : value
+        find_header(%w[CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE])
       end
 
       def content_md5
-        value = find_header(%w(CONTENT-MD5 CONTENT_MD5))
-        value.nil? ? '' : value
+        find_header(%w[CONTENT-MD5 CONTENT_MD5])
+      end
+
+      def original_uri
+        find_header(%w[X-ORIGINAL-URI X_ORIGINAL_URI HTTP_X_ORIGINAL_URI])
       end
 
       def request_uri
