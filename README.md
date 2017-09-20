@@ -159,6 +159,18 @@ Simply add this configuration to your Flexirest initializer in your app and it w
 Flexirest::Base.api_auth_credentials(@access_id, @secret_key)
 ```
 
+### Excon
+
+ApiAuth can also sign all requests made with [Excon](https://github.com/excon/excon).
+
+``` ruby
+require 'api_auth/middleware/excon'
+
+Excon.defaults[:api_auth_access_id] = <access_id>
+Excon.defaults[:api_auth_secret_key] = <secret_key>
+Excon.defaults[:middlewares] << ApiAuth::Middleware::Excon
+```
+
 ## Server
 
 ApiAuth provides some built in methods to help you generate API keys for your
