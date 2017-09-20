@@ -12,6 +12,7 @@ require 'api_auth/request_drivers/action_dispatch'
 require 'api_auth/request_drivers/rack'
 require 'api_auth/request_drivers/httpi'
 require 'api_auth/request_drivers/faraday'
+require 'api_auth/request_drivers/excon'
 
 require 'api_auth/headers'
 require 'api_auth/base'
