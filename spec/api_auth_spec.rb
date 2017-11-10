@@ -199,10 +199,9 @@ describe 'ApiAuth' do
         new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                          'contenttype' => 'text/plain',
                                          'contentmd5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format)
-        )
+                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format))
 
-        signature = default_configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')
+        signature = default_configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', digest: 'sha1')
         new_request['Authorization'] = "#{default_configuration.algorithm} 1044:#{signature}"
         new_request
       end
