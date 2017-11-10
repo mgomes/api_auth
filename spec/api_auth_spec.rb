@@ -72,6 +72,22 @@ describe 'ApiAuth' do
         expect(request['Authorization']).to eq("#{default_configuration.algorithm}-HMAC-SHA256 1044:#{signature}")
       end
     end
+
+    context 'when there is a custom auth header factory' do
+      before do
+        class CustomAuthHeaderFactory
+          def self.auth_header(_headers, _access_id, _options, _signature)
+            'FOOBAR'
+          end
+        end
+        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_factory) {CustomAuthHeaderFactory}
+      end
+
+      it 'calculates the signature as expected' do
+        ApiAuth.sign!(request, '1044', '123', :digest => 'sha1')
+        expect(request.headers['Authorization']).to eq('FOOBAR')
+      end
+    end
   end
 
   describe '.authentic?' do
@@ -179,6 +195,24 @@ describe 'ApiAuth' do
         expect(ApiAuth.authentic?(signed_request, '123')).to eq false
       end
     end
+
+    context 'when there is a custom auth header pattern' do
+      before do
+        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_pattern) {/FOO(.*)BAR(.*)BAZ(.*)/}
+      end
+
+      let(:request) do
+        new_request = Net::HTTP::Put.new('http://google.com',
+                                         'content-type' => 'text/plain',
+                                         'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format)
+        )
+
+        signature = default_configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')
+        new_request['Authorization'] = "FOOSHA1BAR1044BAZ#{signature}"
+        new_request
+      end
+    end
   end
 
   describe '.access_id' do
@@ -206,6 +240,24 @@ describe 'ApiAuth' do
       end
 
       it 'parses it from the Auth Header' do
+        expect(ApiAuth.access_id(request)).to eq('1044')
+      end
+    end
+
+    context 'Custom Auth Header pattern' do
+      let(:request) do
+        RestClient::Request.new(
+          url: 'http://google.com',
+          method: :get,
+          headers: {authorization: 'FOOBUZZBAR1044BAZ:aGVsbG8gd29ybGQ='}
+        )
+      end
+
+      before do
+        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_pattern) {/FOO(.*)BAR(.*)BAZ(.*)/}
+      end
+
+      it 'parses it from the Auth header' do
         expect(ApiAuth.access_id(request)).to eq('1044')
       end
     end

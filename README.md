@@ -78,6 +78,11 @@ custom_config = ApiAuth::Configuration.new do |config|
                   config.date_format = '%a, %d %b %Y %T GMT'
                   # The name of the algorithm to pass at the beginning of the Authorization header
                   config.algorithm = 'APIAuth'
+                  # A custom class to use to generate the Authorization header
+                  config.auth_header_factory = ApiAuth::AuthHeaderFactories::Standard
+                  # If using a custom auth header factory, you must redefine the auth_header_pattern so that
+                  # the auth header can be parsed properly
+                  config.auth_header_pattern = /#{@algorithm}(?:-HMAC-(MD[245]|SHA(?:1|224|256|384|512)*))? ([^:]+):(.+)$/
                   # For security, requests dated older or newer than this timespan are considered inauthentic.
                   config.clock_skew = 60
                 end
@@ -90,6 +95,25 @@ ApiAuth.sign!(@request, @access_id, @secret_key configuration: custom_config)
 ApiAuth.authentic?(signed_request, secret_key, configuration: custom_config)
 ApiAuth.access_id(signed_request, configuration: custom_config)
 ```
+
+### Auth Header Factory
+
+An Auth Header Factory must implement the class method `auth_header`. See [AuthHeaderFactories::Standard](lib/api_auth/auth_header_factories/standard.rb) for an example.
+
+When using a custom Auth Header Factory, you must also set the `auth_header_pattern` configuration variable. It requires three capture groups:
+
+1. The hash function used to generate the signature
+2. The Access ID
+3. The Generated Signature
+
+For example, if your Auth Header Factory returns the following auth header:
+
+`CoolAuth-SHA1 ID:1234,Signature=foobar`
+
+Then your `auth_header_pattern` should be set to
+
+`/CoolAuth(?:-(MD[245]|SHA(?:1|224|256|384|512)*))? ID:([^:]+),Signature=(.+)$/`
+
 
 ## Clients
 
