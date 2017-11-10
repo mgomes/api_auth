@@ -80,11 +80,11 @@ describe 'ApiAuth' do
             'FOOBAR'
           end
         end
-        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_factory) {CustomAuthHeaderFactory}
+        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_factory) { CustomAuthHeaderFactory }
       end
 
       it 'calculates the signature as expected' do
-        ApiAuth.sign!(request, '1044', '123', :digest => 'sha1')
+        ApiAuth.sign!(request, '1044', '123', digest: 'sha1')
         expect(request.headers['Authorization']).to eq('FOOBAR')
       end
     end
@@ -198,17 +198,16 @@ describe 'ApiAuth' do
 
     context 'when there is a custom auth header pattern' do
       before do
-        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_pattern) {/FOO(.*)BAR(.*)BAZ(.*)/}
+        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_pattern) { /FOO(.*)BAR(.*)BAZ(.*)/ }
       end
 
       let(:request) do
         new_request = Net::HTTP::Put.new('http://google.com',
                                          'content-type' => 'text/plain',
                                          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format)
-        )
+                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format))
 
-        signature = default_configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')
+        signature = default_configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', digest: 'sha1')
         new_request['Authorization'] = "FOOSHA1BAR1044BAZ#{signature}"
         new_request
       end
@@ -249,12 +248,12 @@ describe 'ApiAuth' do
         RestClient::Request.new(
           url: 'http://google.com',
           method: :get,
-          headers: {authorization: 'FOOBUZZBAR1044BAZ:aGVsbG8gd29ybGQ='}
+          headers: { authorization: 'FOOBUZZBAR1044BAZ:aGVsbG8gd29ybGQ=' }
         )
       end
 
       before do
-        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_pattern) {/FOO(.*)BAR(.*)BAZ(.*)/}
+        allow_any_instance_of(ApiAuth::Configuration).to receive(:auth_header_pattern) { /FOO(.*)BAR(.*)BAZ(.*)/ }
       end
 
       it 'parses it from the Auth header' do
