@@ -52,7 +52,6 @@ module ApiAuth
 
     # Returns the access id from the request's authorization header
     def access_id(request, options = {})
-
       options = { configuration: Configuration.new }.merge(options)
 
       headers = Headers.new(request, options[:configuration])
@@ -77,7 +76,7 @@ module ApiAuth
     AUTH_HEADER_PATTERN = /APIAuth(?:-HMAC-(MD5|SHA(?:1|224|256|384|512)?))? ([^:]+):(.+)$/
 
     def request_within_time_window?(headers, clock_skew, date_format)
-      timestamp = DateTime.strptime(headers.timestamp, date_format)
+      timestamp = Time.strptime(headers.timestamp, date_format)
       time = Time.utc(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec)
       time.utc > (Time.now.utc - clock_skew) &&
         time.utc < (Time.now.utc + clock_skew)
@@ -123,5 +122,5 @@ module ApiAuth
     def parse_auth_header(auth_header)
       AUTH_HEADER_PATTERN.match(auth_header)
     end
-  end # class methods
-end # ApiAuth
+  end
+end

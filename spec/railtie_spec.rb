@@ -134,7 +134,9 @@ describe 'Rails integration' do
                  },
                  { id: '1' }.to_xml(root: 'test_resource')
       end
-      expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], configuration: instance_of(ApiAuth::Configuration)).and_call_original
+      expect(ApiAuth).to receive(:sign!)
+        .with(anything, '1044', API_KEY_STORE['1044'], configuration: instance_of(ApiAuth::Configuration))
+        .and_call_original
       TestResource.find(1)
     end
   end

@@ -1,7 +1,6 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
     class RackRequest < Base # :nodoc:
-
       def set_auth_header(header)
         @request.env['Authorization'] = header
         fetch_headers

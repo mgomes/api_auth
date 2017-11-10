@@ -1,7 +1,6 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
     class HttpiRequest < Base # :nodoc:
-
       def set_auth_header(header)
         @request.headers['Authorization'] = header
         fetch_headers

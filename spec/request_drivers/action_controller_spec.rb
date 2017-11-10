@@ -3,7 +3,6 @@ require 'spec_helper'
 if defined?(ActionController::Request)
 
   describe ApiAuth::RequestDrivers::ActionControllerRequest do
-
     let(:default_configuration) { ApiAuth::Configuration.new }
     let(:timestamp) { Time.now.utc.strftime(default_configuration.date_format) }
 
@@ -20,7 +19,6 @@ if defined?(ActionController::Request)
         'rack.input' => StringIO.new("hello\nworld")
       )
     end
-
 
     subject(:driven_request) { ApiAuth::RequestDrivers::ActionControllerRequest.new(request) }
 

@@ -1,7 +1,6 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
     class ActionControllerRequest < Base # :nodoc:
-
       def set_auth_header(header)
         @request.env['Authorization'] = header
         fetch_headers

@@ -61,8 +61,7 @@ describe 'ApiAuth' do
         Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                            'content-type' => 'text/plain',
                            'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                           default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format)
-                          )
+                           default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format))
       end
 
       let(:canonical_string) { ApiAuth::Headers.new(request).canonical_string }
@@ -117,7 +116,7 @@ describe 'ApiAuth' do
     end
 
     it 'fails to validate if the date is invalid' do
-      request[default_configuration.date_header] = "٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠"
+      request[default_configuration.date_header] = '٢٠١٤-٠٩-٠٨ ١٦:٣١:١٤ +٠٣٠٠'
       expect(ApiAuth.authentic?(signed_request, '123')).to eq false
     end
 
@@ -133,8 +132,7 @@ describe 'ApiAuth' do
         new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                          'content-type' => 'text/plain',
                                          'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
-                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format)
-                                        )
+                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format))
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string
         signature = hmac('123', new_request, canonical_string, 'sha256')
         new_request['Authorization'] = "#{default_configuration.algorithm}-HMAC-#{digest} 1044:#{signature}"

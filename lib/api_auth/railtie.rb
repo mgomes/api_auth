@@ -16,7 +16,7 @@ module ApiAuth
       if defined?(ActionController::Base)
         ActionController::Base.send(:include, ControllerMethods::InstanceMethods)
       end
-    end # ControllerMethods
+    end
 
     module ActiveResourceExtension # :nodoc:
       module ActiveResourceApiAuth # :nodoc:
@@ -26,6 +26,7 @@ module ApiAuth
           base.class_attribute :hmac_secret_key
           base.class_attribute :use_hmac
           base.class_attribute :api_auth_options
+          base.class_attribute :date_header
         end
 
         module ClassMethods
@@ -34,6 +35,7 @@ module ApiAuth
             self.hmac_secret_key = secret_key
             self.use_hmac = true
             self.api_auth_options = { configuration: ApiAuth::Configuration.new }.merge(options)
+            self.date_header = api_auth_options[:configuration].date_header
 
             class << self
               alias_method :connection_without_auth, :connection
@@ -47,13 +49,14 @@ module ApiAuth
             c.hmac_secret_key = hmac_secret_key
             c.use_hmac = use_hmac
             c.api_auth_options = api_auth_options
+            c.date_header = date_header
             c
           end
-        end # class methods
+        end
 
         module InstanceMethods
         end
-      end # BaseApiAuth
+      end
 
       module Connection
         def self.included(base)
@@ -61,7 +64,7 @@ module ApiAuth
           base.send :alias_method, :request,              :request_with_auth
 
           base.class_eval do
-            attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac, :api_auth_options
+            attr_accessor :hmac_secret_key, :hmac_access_id, :use_hmac, :api_auth_options, :date_header
           end
         end
 
@@ -72,18 +75,17 @@ module ApiAuth
             tmp.body = arguments[0] if arguments.length > 1
             ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, api_auth_options)
             arguments.last['Content-MD5'] = tmp['Content-MD5'] if tmp['Content-MD5']
-            arguments.last[api_auth_options[:configuration].date_header] = tmp[api_auth_options[:configuration].date_header]
-            arguments.last['Authorization'] = tmp['Authorization']
+            [date_header, 'Authorization'].each { |header| arguments.last[header] = tmp[header] }
           end
 
           request_without_auth(method, path, *arguments)
         end
-      end # Connection
+      end
 
       if defined?(ActiveResource)
         ActiveResource::Base.send(:include, ActiveResourceApiAuth)
         ActiveResource::Connection.send(:include, Connection)
       end
-    end # ActiveResourceExtension
-  end # Rails
-end # ApiAuth
+    end
+  end
+end

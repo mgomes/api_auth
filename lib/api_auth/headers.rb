@@ -7,7 +7,6 @@ module ApiAuth
       @original_request = request
       @configuration = configuration
       @request = initialize_request_driver(request)
-      true
     end
 
     def initialize_request_driver(request)
@@ -49,7 +48,7 @@ module ApiAuth
     end
 
     def parsed_timestamp
-      DateTime.strptime(timestamp, @configuration.date_format)
+      Time.strptime(timestamp, @configuration.date_format)
     end
 
     def canonical_string(override_method = nil)

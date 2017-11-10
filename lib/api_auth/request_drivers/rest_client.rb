@@ -4,7 +4,6 @@ module RestClient; class Request; attr_accessor :processed_headers; end; end
 module ApiAuth
   module RequestDrivers # :nodoc:
     class RestClientRequest < Base # :nodoc:
-
       def set_auth_header(header)
         @request.headers['Authorization'] = header
         save_headers # enforce update of processed_headers based on last updated headers
