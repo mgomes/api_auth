@@ -56,11 +56,7 @@ module ApiAuth
 
       raise ArgumentError, 'unable to determine the http method from the request, please supply an override' if request_method.nil?
 
-      [request_method.upcase,
-       @request.content_type,
-       @request.content_md5,
-       parse_uri(@request.original_uri || @request.request_uri),
-       @request.timestamp].join(',')
+      @configuration.canonical_string_factory.canonical_string(@request, request_method)
     end
 
     # Returns the authorization header from the request's headers

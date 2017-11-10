@@ -78,6 +78,8 @@ custom_config = ApiAuth::Configuration.new do |config|
                   config.date_format = '%a, %d %b %Y %T GMT'
                   # The name of the algorithm to pass at the beginning of the Authorization header
                   config.algorithm = 'APIAuth'
+                  # A custom class to use to generate the canonical string
+                  config.canonical_string_factory = ApiAuth::CanonicalStringFactories::Standard
                   # For security, requests dated older or newer than this timespan are considered inauthentic.
                   config.clock_skew = 60
                 end
@@ -90,6 +92,10 @@ ApiAuth.sign!(@request, @access_id, @secret_key configuration: custom_config)
 ApiAuth.authentic?(signed_request, secret_key, configuration: custom_config)
 ApiAuth.access_id(signed_request, configuration: custom_config)
 ```
+
+### Canonical String Factory
+
+A Canonical String Factory must implement the class method `canonical_string`. See [CanonicalStringFactories::Standard](lib/api_auth/canonical_string_factories/standard.rb) for an example.
 
 ## Clients
 
