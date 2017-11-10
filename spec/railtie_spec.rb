@@ -3,6 +3,8 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe 'Rails integration' do
   API_KEY_STORE = { '1044' => 'l16imAXie1sRMcJODpOG7UwC1VyoqvO13jejkfpKWX4Z09W8DC9IrU23DvCwMry7pgSFW6c5S1GIfV0OY6F/vUA==' }.freeze
 
+  let(:default_configuration) { ApiAuth::Configuration.new }
+
   describe 'Rails controller integration' do
     class ApplicationController < ActionController::Base
       private
@@ -65,7 +67,7 @@ describe 'Rails integration' do
 
     it 'should permit a request with properly signed headers' do
       request = generated_request
-      request.env['DATE'] = Time.now.utc.httpdate
+      request.env[default_configuration.date_header] = Time.now.utc.strftime(default_configuration.date_format)
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
       expect(response.code).to eq('200')
@@ -73,7 +75,7 @@ describe 'Rails integration' do
 
     it 'should forbid a request with properly signed headers but timestamp > 15 minutes ago' do
       request = generated_request
-      request.env['DATE'] = 'Mon, 23 Jan 1984 03:29:56 GMT'
+      request.env[default_configuration.date_header] = 'Mon, 23 Jan 1984 03:29:56 GMT'
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
@@ -90,7 +92,7 @@ describe 'Rails integration' do
     it "should insert a DATE header in the request when one hasn't been specified" do
       request = generated_request
       ApiAuth.sign!(request, '1044', API_KEY_STORE['1044'])
-      expect(request.headers['DATE']).not_to be_nil
+      expect(request.headers[default_configuration.date_header]).not_to be_nil
     end
 
     it 'should forbid an unsigned request to a protected controller action' do
@@ -101,7 +103,7 @@ describe 'Rails integration' do
 
     it 'should forbid a request with a bogus signature' do
       request = generated_request
-      request.env['Authorization'] = 'APIAuth bogus:bogus'
+      request.env['Authorization'] = "#{default_configuration.algorithm} bogus:bogus"
       response = generated_response(request, :index)
       expect(response.code).to eq('401')
     end
@@ -126,13 +128,13 @@ describe 'Rails integration' do
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get '/test_resources/1.xml',
                  {
-                   'Authorization' => 'APIAuth 1044:LZ1jujf3x1nnGR70/208WPXdUHw=',
+                   'Authorization' => "#{default_configuration.algorithm} 1044:LZ1jujf3x1nnGR70/208WPXdUHw=",
                    'Accept' => 'application/xml',
-                   'DATE' => 'Mon, 23 Jan 1984 03:29:56 GMT'
+                   default_configuration.date_header => timestamp.strftime(default_configuration.date_format)
                  },
                  { id: '1' }.to_xml(root: 'test_resource')
       end
-      expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], {}).and_call_original
+      expect(ApiAuth).to receive(:sign!).with(anything, '1044', API_KEY_STORE['1044'], configuration: instance_of(ApiAuth::Configuration)).and_call_original
       TestResource.find(1)
     end
   end

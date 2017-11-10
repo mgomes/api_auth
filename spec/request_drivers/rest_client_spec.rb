@@ -1,16 +1,17 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::RestClientRequest do
-  let(:timestamp) { Time.now.utc.httpdate }
+  let(:default_configuration) { ApiAuth::Configuration.new }
+  let(:timestamp) { Time.now.utc.strftime(default_configuration.date_format) }
 
   let(:request_path) { '/resource.xml?foo=bar&bar=foo' }
 
   let(:request_headers) do
     {
-      'Authorization' => 'APIAuth 1044:12345',
+      'Authorization' => "#{default_configuration.algorithm} 1044:12345",
       'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'Content-Type' => 'text/plain',
-      'Date' => timestamp
+      default_configuration.date_header => timestamp
     }
   end
 
@@ -43,7 +44,7 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
     end
 
     it 'gets the authorization_header' do
-      expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
+      expect(driven_request.authorization_header).to eq("#{default_configuration.algorithm} 1044:12345")
     end
 
     describe '#calculated_md5' do
@@ -176,13 +177,13 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
 
     describe '#set_date' do
       before do
-        allow(Time).to receive_message_chain(:now, :utc, :httpdate).and_return(timestamp)
+        allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return(timestamp)
       end
 
       it 'sets the date header of the request' do
-        allow(Time).to receive_message_chain(:now, :utc, :httpdate).and_return(timestamp)
+        allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return(timestamp)
         driven_request.set_date
-        expect(request.headers['DATE']).to eq(timestamp)
+        expect(request.headers[default_configuration.date_header]).to eq(timestamp)
       end
 
       it 'refreshes the cached headers' do
@@ -193,8 +194,8 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
 
     describe '#set_auth_header' do
       it 'sets the auth header' do
-        driven_request.set_auth_header('APIAuth 1044:54321')
-        expect(request.headers['Authorization']).to eq('APIAuth 1044:54321')
+        driven_request.set_auth_header("#{default_configuration.algorithm} 1044:54321")
+        expect(request.headers['Authorization']).to eq("#{default_configuration.algorithm} 1044:54321")
       end
     end
   end
@@ -227,10 +228,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when calculated matches sent' do
         let(:request_headers) do
           {
-            'Authorization' => 'APIAuth 1044:12345',
+            'Authorization' => "#{default_configuration.algorithm} 1044:12345",
             'Content-MD5' => 'kZXQvrKoieG+Be1rsZVINw==',
             'Content-Type' => 'text/plain',
-            'Date' => timestamp
+            default_configuration.date_header => timestamp
           }
         end
 
@@ -242,10 +243,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context "when calculated doesn't match sent" do
         let(:request_headers) do
           {
-            'Authorization' => 'APIAuth 1044:12345',
+            'Authorization' => "#{default_configuration.algorithm} 1044:12345",
             'Content-MD5' => '3',
             'Content-Type' => 'text/plain',
-            'Date' => timestamp
+            default_configuration.date_header => timestamp
           }
         end
 
@@ -268,10 +269,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context 'when calculated matches sent' do
         let(:request_headers) do
           {
-            'Authorization' => 'APIAuth 1044:12345',
+            'Authorization' => "#{default_configuration.algorithm} 1044:12345",
             'Content-MD5' => 'kZXQvrKoieG+Be1rsZVINw==',
             'Content-Type' => 'text/plain',
-            'Date' => timestamp
+            default_configuration.date_header => timestamp
           }
         end
 
@@ -283,10 +284,10 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
       context "when calculated doesn't match sent" do
         let(:request_headers) do
           {
-            'Authorization' => 'APIAuth 1044:12345',
+            'Authorization' => "#{default_configuration.algorithm} 1044:12345",
             'Content-MD5' => '3',
             'Content-Type' => 'text/plain',
-            'Date' => timestamp
+            default_configuration.date_header => timestamp
           }
         end
 
@@ -315,7 +316,7 @@ describe ApiAuth::RequestDrivers::RestClientRequest do
     it "doesn't mess up symbol based headers" do
       headers = { 'Content-MD5' => 'e59ff97941044f85df5297e1c302d260',
                   :content_type => 'text/plain',
-                  'Date' => 'Mon, 23 Jan 1984 03:29:56 GMT' }
+                  default_configuration.date_header => 'Mon, 23 Jan 1984 03:29:56 GMT' }
       request = RestClient::Request.new(url: '/resource.xml?foo=bar&bar=foo',
                                         headers: headers,
                                         method: :put)

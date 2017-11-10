@@ -66,6 +66,31 @@ configuration for your Ruby VM. To install:
 
 Please note the dash in the name versus the underscore.
 
+## Configuration
+
+The gem accepts some configuration options, if you would like more fine-grained control of how your requests are signed.
+
+``` ruby
+custom_config = ApiAuth::Configuration.new do |config|
+                  # Name of the header containing the request timestamp
+                  config.date_header = 'DATE'
+                  # Format of the datetime string in the request timestamp header
+                  config.date_format = '%a, %d %b %Y %T GMT'
+                  # The name of the algorithm to pass at the beginning of the Authorization header
+                  config.algorithm = 'APIAuth'
+                  # For security, requests dated older or newer than this timespan are considered inauthentic.
+                  config.clock_skew = 60
+                end
+```
+
+You than then pass this configuration object to any `ApiAuth` method
+
+``` ruby
+ApiAuth.sign!(@request, @access_id, @secret_key configuration: custom_config)
+ApiAuth.authentic?(signed_request, secret_key, configuration: custom_config)
+ApiAuth.access_id(signed_request, configuration: custom_config)
+```
+
 ## Clients
 
 ApiAuth supports many popular HTTP clients. Support for other clients can be
@@ -194,10 +219,12 @@ For security, requests dated older or newer than a certain timespan are consider
 This prevents old requests from being reused in replay attacks, and also ensures requests
 can't be dated into the far future.
 
-The default span is 15 minutes, but you can override this:
+The default span is 15 minutes, but you can override this in the configuration
 
-```ruby
-    ApiAuth.authentic?(signed_request, secret_key, :clock_skew => 60) # or 1.minute in ActiveSupport
+``` ruby
+    ApiAuth.configure do |config|
+      config.clock_skew = 60 # Or 1.minute in ActiveSupport
+    end
 ```
 
 If your server is a Rails app, the signed request will be the `request` object.

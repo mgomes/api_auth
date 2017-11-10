@@ -3,19 +3,20 @@ require 'spec_helper'
 if defined?(ActionDispatch::Request)
 
   describe ApiAuth::RequestDrivers::ActionDispatchRequest do
-    let(:timestamp) { Time.now.utc.httpdate }
+    let(:default_configuration) { ApiAuth::Configuration.new }
+    let(:timestamp) { Time.now.utc.strftime(default_configuration.date_format) }
 
     let(:request) do
       ActionDispatch::Request.new(
-        'AUTHORIZATION'  => 'APIAuth 1044:12345',
-        'PATH_INFO'      => '/resource.xml',
-        'QUERY_STRING'   => 'foo=bar&bar=foo',
+        'AUTHORIZATION' => "#{default_configuration.algorithm} 1044:12345",
+        'PATH_INFO' => '/resource.xml',
+        'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
-        'CONTENT_MD5'    => '1B2M2Y8AsgTpgAmY7PhCfg==',
-        'CONTENT_TYPE'   => 'text/plain',
+        'CONTENT_MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+        'CONTENT_TYPE' => 'text/plain',
         'CONTENT_LENGTH' => '11',
-        'HTTP_DATE'      => timestamp,
-        'rack.input'     => StringIO.new("hello\nworld")
+        "HTTP_#{default_configuration.date_header}" => timestamp,
+        'rack.input' => StringIO.new("hello\nworld")
       )
     end
 
@@ -39,7 +40,7 @@ if defined?(ActionDispatch::Request)
       end
 
       it 'gets the authorization_header' do
-        expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
+        expect(driven_request.authorization_header).to eq("#{default_configuration.algorithm} 1044:12345")
       end
 
       describe '#calculated_md5' do
@@ -135,12 +136,12 @@ if defined?(ActionDispatch::Request)
 
       describe '#set_date' do
         before do
-          allow(Time).to receive_message_chain(:now, :utc, :httpdate).and_return(timestamp)
+          allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return(timestamp)
         end
 
         it 'sets the date header of the request' do
           driven_request.set_date
-          expect(request.env['HTTP_DATE']).to eq(timestamp)
+          expect(request.env["HTTP_#{default_configuration.date_header}"]).to eq(timestamp)
         end
 
         it 'refreshes the cached headers' do
@@ -151,8 +152,8 @@ if defined?(ActionDispatch::Request)
 
       describe '#set_auth_header' do
         it 'sets the auth header' do
-          driven_request.set_auth_header('APIAuth 1044:54321')
-          expect(request.env['Authorization']).to eq('APIAuth 1044:54321')
+          driven_request.set_auth_header("#{default_configuration.algorithm} 1044:54321")
+          expect(request.env['Authorization']).to eq("#{default_configuration.algorithm} 1044:54321")
         end
       end
     end

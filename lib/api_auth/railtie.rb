@@ -33,7 +33,7 @@ module ApiAuth
             self.hmac_access_id = access_id
             self.hmac_secret_key = secret_key
             self.use_hmac = true
-            self.api_auth_options = options
+            self.api_auth_options = { configuration: ApiAuth::Configuration.new }.merge(options)
 
             class << self
               alias_method :connection_without_auth, :connection
@@ -72,7 +72,7 @@ module ApiAuth
             tmp.body = arguments[0] if arguments.length > 1
             ApiAuth.sign!(tmp, hmac_access_id, hmac_secret_key, api_auth_options)
             arguments.last['Content-MD5'] = tmp['Content-MD5'] if tmp['Content-MD5']
-            arguments.last['DATE'] = tmp['DATE']
+            arguments.last[api_auth_options[:configuration].date_header] = tmp[api_auth_options[:configuration].date_header]
             arguments.last['Authorization'] = tmp['Authorization']
           end
 

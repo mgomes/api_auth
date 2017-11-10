@@ -1,13 +1,6 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class RackRequest # :nodoc:
-      include ApiAuth::Helpers
-
-      def initialize(request)
-        @request = request
-        fetch_headers
-        true
-      end
+    class RackRequest < Base # :nodoc:
 
       def set_auth_header(header)
         @request.env['Authorization'] = header
@@ -15,13 +8,17 @@ module ApiAuth
         @request
       end
 
-      def calculated_md5
+      def body
         if @request.body
           body = @request.body.read
           @request.body.rewind
         else
           body = ''
         end
+        body
+      end
+
+      def calculated_md5
         md5_base64digest(body)
       end
 
@@ -64,22 +61,12 @@ module ApiAuth
       end
 
       def set_date
-        @request.env['DATE'] = Time.now.utc.httpdate
+        @request.env[@configuration.date_header] = Time.now.utc.strftime(@configuration.date_format)
         fetch_headers
       end
 
       def timestamp
-        find_header(%w[DATE HTTP_DATE])
-      end
-
-      def authorization_header
-        find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
-      end
-
-      private
-
-      def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
+        find_header([@configuration.date_header, "HTTP_#{@configuration.date_header}"])
       end
     end
   end

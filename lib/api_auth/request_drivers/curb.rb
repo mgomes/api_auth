@@ -1,18 +1,15 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class CurbRequest # :nodoc:
-      include ApiAuth::Helpers
-
-      def initialize(request)
-        @request = request
-        fetch_headers
-        true
-      end
+    class CurbRequest < Base # :nodoc:
 
       def set_auth_header(header)
         @request.headers['Authorization'] = header
         fetch_headers
         @request
+      end
+
+      def body
+        nil
       end
 
       def populate_content_md5
@@ -48,22 +45,18 @@ module ApiAuth
       end
 
       def set_date
-        @request.headers['DATE'] = Time.now.utc.httpdate
+        @request.headers[@configuration.date_header] = Time.now.utc.strftime(@configuration.date_format)
         fetch_headers
       end
 
       def timestamp
-        find_header(%w[DATE HTTP_DATE])
+        find_header([@configuration.date_header, "HTTP_#{@configuration.date_header}"])
       end
 
-      def authorization_header
-        find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
-      end
-
-      private
+      protected
 
       def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
+        keys.map { |key| @headers[key] || @headers[key.upcase] }.compact.first
       end
     end
   end

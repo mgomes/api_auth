@@ -20,8 +20,8 @@ module ApiAuth
     #
     # secret_key: assigned secret key that is known to both parties
     def sign!(request, access_id, secret_key, options = {})
-      options = { override_http_method: nil, digest: 'sha1' }.merge(options)
-      headers = Headers.new(request)
+      options = { override_http_method: nil, digest: 'sha1', configuration: Configuration.new }.merge(options)
+      headers = Headers.new(request, options[:configuration])
       headers.calculate_md5
       headers.set_date
       headers.sign_header auth_header(headers, access_id, secret_key, options)
@@ -32,18 +32,18 @@ module ApiAuth
     def authentic?(request, secret_key, options = {})
       return false if secret_key.nil?
 
-      options = { override_http_method: nil }.merge(options)
+      options = { override_http_method: nil, configuration: Configuration.new }.merge(options)
 
-      headers = Headers.new(request)
+      headers = Headers.new(request, options[:configuration])
 
       # 900 seconds is 15 minutes
-      clock_skew = options.fetch(:clock_skew, 900)
+      clock_skew = options[:configuration].clock_skew
 
       if headers.md5_mismatch?
         false
       elsif !signatures_match?(headers, secret_key, options)
         false
-      elsif !request_within_time_window?(headers, clock_skew)
+      elsif !request_within_time_window?(headers, clock_skew, options[:configuration].date_format)
         false
       else
         true
@@ -51,8 +51,11 @@ module ApiAuth
     end
 
     # Returns the access id from the request's authorization header
-    def access_id(request)
-      headers = Headers.new(request)
+    def access_id(request, options = {})
+
+      options = { configuration: Configuration.new }.merge(options)
+
+      headers = Headers.new(request, options[:configuration])
       if match_data = parse_auth_header(headers.authorization_header)
         return match_data[2]
       end
@@ -73,9 +76,11 @@ module ApiAuth
 
     AUTH_HEADER_PATTERN = /APIAuth(?:-HMAC-(MD5|SHA(?:1|224|256|384|512)?))? ([^:]+):(.+)$/
 
-    def request_within_time_window?(headers, clock_skew)
-      Time.httpdate(headers.timestamp).utc > (Time.now.utc - clock_skew) &&
-        Time.httpdate(headers.timestamp).utc < (Time.now.utc + clock_skew)
+    def request_within_time_window?(headers, clock_skew, date_format)
+      timestamp = DateTime.strptime(headers.timestamp, date_format)
+      time = Time.utc(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec)
+      time.utc > (Time.now.utc - clock_skew) &&
+        time.utc < (Time.now.utc + clock_skew)
     rescue ArgumentError
       false
     end
