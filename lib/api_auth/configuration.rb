@@ -1,6 +1,6 @@
 module ApiAuth # :nodoc:
   class Configuration # :nodoc:
-    attr_accessor :date_header, :date_format, :algorithm,  :canonical_string_factory,
+    attr_accessor :date_header, :date_format, :algorithm, :canonical_string_factory,
                   :clock_skew
 
     def initialize

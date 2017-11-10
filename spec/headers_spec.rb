@@ -127,9 +127,9 @@ describe ApiAuth::Headers do
       end
 
       context 'with a custom canonical string factory' do
-        let(:request) {RestClient::Request.new(:url => 'http://google.com', :method => :get)}
-        subject(:headers) {described_class.new(request)}
-        let(:driver) {headers.instance_variable_get('@request')}
+        let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
+        subject(:headers) { described_class.new(request) }
+        let(:driver) { headers.instance_variable_get('@request') }
 
         before do
           allow(driver).to receive(:http_method).and_return 'GET'
