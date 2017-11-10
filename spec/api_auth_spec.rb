@@ -179,6 +179,38 @@ describe 'ApiAuth' do
         expect(ApiAuth.authentic?(signed_request, '123')).to eq false
       end
     end
+
+    context 'when there is a custom signer' do
+      before do
+        class CustomSigner
+          class << self
+            include ApiAuth::Helpers
+
+            def sign(_, secret_key, options)
+              digest = OpenSSL::Digest.new(options[:digest])
+              b64_encode(OpenSSL::HMAC.digest(digest, secret_key, 'foobar'))
+            end
+          end
+        end
+        allow_any_instance_of(ApiAuth::Configuration).to receive(:signer) { CustomSigner }
+      end
+
+      let(:request) do
+        new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
+                                         'contenttype' => 'text/plain',
+                                         'contentmd5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                         default_configuration.date_header => Time.now.utc.strftime(default_configuration.date_format)
+        )
+
+        signature = default_configuration.signer.sign(ApiAuth::Headers.new(new_request), '123', :digest => 'sha1')
+        new_request['Authorization'] = "#{default_configuration.algorithm} 1044:#{signature}"
+        new_request
+      end
+
+      it 'validates that the signature in the request header matches the way we sign it' do
+        expect(ApiAuth.authentic?(request, '123')).to eq true
+      end
+    end
   end
 
   describe '.access_id' do

@@ -1,6 +1,8 @@
 require 'openssl'
 require 'base64'
 
+require 'api_auth/signers/standard'
+
 require 'api_auth/configuration'
 require 'api_auth/errors'
 require 'api_auth/helpers'
