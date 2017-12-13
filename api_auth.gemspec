@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'httpi'
   s.add_development_dependency 'multipart-post', '~> 2.0'
   s.add_development_dependency 'rake'
-  s.add_development_dependency 'rest-client', '~> 1.6.0'
+  s.add_development_dependency 'rest-client', '~> 2.0'
   s.add_development_dependency 'rspec', '~> 3.4'
 
   s.files         = `git ls-files`.split("\n")
