@@ -13,9 +13,7 @@ module ApiAuth
         end
       end
 
-      if defined?(ActionController::Base)
-        ActionController::Base.send(:include, ControllerMethods::InstanceMethods)
-      end
+      ActionController::Base.send(:include, ControllerMethods::InstanceMethods) if defined?(ActionController::Base)
     end # ControllerMethods
 
     module ActiveResourceExtension # :nodoc:
