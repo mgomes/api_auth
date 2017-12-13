@@ -51,7 +51,7 @@ minutes in order to avoid replay attacks.
 
 ## Requirement
 
-v3.X require Ruby 2.X and if you use Rails at least Rails 4.0.
+v3.X require Ruby >= 2.1 and Rails >= 4.0 if you use rails.
 
 For older version of Ruby or Rails, please use ApiAuth v2.X.
 
