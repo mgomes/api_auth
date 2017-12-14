@@ -50,9 +50,7 @@ module ApiAuth
     def canonical_string(override_method = nil)
       request_method = override_method || @request.http_method
 
-      if request_method.nil?
-        raise ArgumentError, 'unable to determine the http method from the request, please supply an override'
-      end
+      raise ArgumentError, 'unable to determine the http method from the request, please supply an override' if request_method.nil?
 
       [request_method.upcase,
        @request.content_type,
