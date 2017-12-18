@@ -43,15 +43,17 @@ describe ApiAuth::Headers do
         end
       end
 
-      context 'uri param values are not escaped' do
-        let(:uri) do
-          'http://www.google.com/search/advanced?redirect_to=https://www.example.com&account=a12dd334/3444\:23'.freeze
-        end
+      if RUBY_VERSION.to_f > 2.1
+        context 'uri param values are not escaped' do
+          let(:uri) do
+            'http://www.google.com/search/advanced?redirect_to=https://www.example.com&account=a12dd334/3444\:23'.freeze
+          end
 
-        it 'returns correct anonical string' do
-          expect(subject.canonical_string).to(
-            eq('GET,,,/search/advanced?redirect_to=https%3A%2F%2Fwww.example.com&account=a12dd334%2F3444%5C%3A23,')
-          )
+          it 'returns correct anonical string' do
+            expect(subject.canonical_string).to(
+              eq('GET,,,/search/advanced?redirect_to=https%3A%2F%2Fwww.example.com&account=a12dd334%2F3444%5C%3A23,')
+            )
+          end
         end
       end
 

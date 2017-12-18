@@ -114,7 +114,7 @@ module ApiAuth
       encoded_params = ''
       params.each do |param|
         next unless param.include?('=')
-        encoded_params += '&' if encoded_params.length > 0
+        encoded_params += '&' unless encoded_params.empty?
         split_param = param.split('=')
         encoded_params += split_param[0] + '=' + CGI.escape(split_param[1])
       end
