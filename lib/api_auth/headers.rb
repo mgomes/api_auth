@@ -101,18 +101,20 @@ module ApiAuth
 
     # Different versions of request parsers escape/unescape the param values
     # Examples:
-    # Rails 5.1.3 ApiAuth canonical_string:'GET,application/json,,/api/v1/employees?select=epulse_id%2Cfirst_name%2Clast_name,Thu, 14 Dec 2017 16:19:48 GMT'
-    # Rails 5.1.4 ApiAuth canonical_string:'GET,application/json,,/api/v1/employees?select=epulse_id,first_name,last_name,Thu, 14 Dec 2017 16:20:57 GMT'
+    # Rails 5.1.3 ApiAuth canonical_string:
+    #    'GET,application/json,,/api/v1/employees?select=epulse_id%2Cfirst_name%2Clast_name,Thu, 14 Dec 2017 16:19:48 GMT'
+    # Rails 5.1.4 ApiAuth canonical_string:
+    #    'GET,application/json,,/api/v1/employees?select=epulse_id,first_name,last_name,Thu, 14 Dec 2017 16:20:57 GMT'
     # This will force param values to escaped and fixes issue #123
     def escape_params(uri)
       unescaped_uri = CGI.unescape(uri)
       uri_array = unescaped_uri.split('?')
       return uri unless uri_array.length > 1
       params = uri_array[1].split('&')
-      encoded_params = ""
+      encoded_params = ''
       params.each do |param|
         next unless param.include?('=')
-        encoded_params += '&' if encoded_params.length.positive?
+        encoded_params += '&' if encoded_params.length > 0
         split_param = param.split('=')
         encoded_params += split_param[0] + '=' + CGI.escape(split_param[1])
       end
