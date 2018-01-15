@@ -30,6 +30,8 @@ module ApiAuth
           GrapeRequest.new(request)
         when /ActionDispatch::Request/
           ActionDispatchRequest.new(request)
+        when /ActionDispatch::Response/
+          ActionDispatchRequest.new(request)
         when /ActionController::CgiRequest/
           ActionControllerRequest.new(request)
         when /HTTPI::Request/

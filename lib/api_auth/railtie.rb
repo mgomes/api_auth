@@ -13,7 +13,40 @@ module ApiAuth
         end
       end
 
+      module ClassMethods
+        def validation_with_api_auth(api_auth_options = nil)
+          ActionController.add_renderer(:json) do |json, options|
+            api_auth_options ||= options[:api_auth]
+            options.delete(:api_auth)
+
+            json = json.to_json(options) unless json.is_a?(String)
+
+            if options[:callback].present?
+              self.content_type = Mime[:js] if content_type.nil? || content_type == Mime[:json]
+
+              "/**/#{options[:callback]}(#{json})"
+            else
+              self.content_type ||= Mime[:json]
+
+              # API AUTH addition headers
+              if api_auth_options
+                response.headers['CONTENT-MD5'] ||= Digest::MD5.base64digest(json)
+                response.headers['Authorization'] ||= ApiAuth.sign!(
+                  request,
+                  api_auth_options[:access_id],
+                  api_auth_options[:secret_key],
+                  api_auth_options[:options] || {}
+                ).env['Authorization']
+              end
+
+              json
+            end
+          end
+        end
+      end
+
       ActionController::Base.send(:include, ControllerMethods::InstanceMethods) if defined?(ActionController::Base)
+      ActionController::Base.send(:extend, ControllerMethods::ClassMethods) if defined?(ActionController::Base)
     end # ControllerMethods
 
     module ActiveResourceExtension # :nodoc:
