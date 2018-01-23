@@ -3,37 +3,37 @@ module ApiAuth
   class Headers
     include RequestDrivers
 
-    def initialize(request)
+    def initialize(request, configuration = Configuration.new)
       @original_request = request
+      @configuration = configuration
       @request = initialize_request_driver(request)
-      true
     end
 
     def initialize_request_driver(request)
       new_request =
         case request.class.to_s
         when /Net::HTTP/
-          NetHttpRequest.new(request)
+          NetHttpRequest.new(request, @configuration)
         when /RestClient/
-          RestClientRequest.new(request)
+          RestClientRequest.new(request, @configuration)
         when /Curl::Easy/
-          CurbRequest.new(request)
+          CurbRequest.new(request, @configuration)
         when /ActionController::Request/
-          ActionControllerRequest.new(request)
+          ActionControllerRequest.new(request, @configuration)
         when /ActionController::TestRequest/
           if defined?(ActionDispatch)
-            ActionDispatchRequest.new(request)
+            ActionDispatchRequest.new(request, @configuration)
           else
-            ActionControllerRequest.new(request)
+            ActionControllerRequest.new(request, @configuration)
           end
         when /ActionDispatch::Request/
-          ActionDispatchRequest.new(request)
+          ActionDispatchRequest.new(request, @configuration)
         when /ActionController::CgiRequest/
-          ActionControllerRequest.new(request)
+          ActionControllerRequest.new(request, @configuration)
         when /HTTPI::Request/
-          HttpiRequest.new(request)
+          HttpiRequest.new(request, @configuration)
         when /Faraday::Request/
-          FaradayRequest.new(request)
+          FaradayRequest.new(request, @configuration)
         end
 
       return new_request if new_request
@@ -47,16 +47,16 @@ module ApiAuth
       @request.timestamp
     end
 
+    def parsed_timestamp
+      Time.strptime(timestamp, @configuration.date_format)
+    end
+
     def canonical_string(override_method = nil)
       request_method = override_method || @request.http_method
 
       raise ArgumentError, 'unable to determine the http method from the request, please supply an override' if request_method.nil?
 
-      [request_method.upcase,
-       @request.content_type,
-       @request.content_md5,
-       parse_uri(@request.original_uri || @request.request_uri),
-       @request.timestamp].join(',')
+      @configuration.canonical_string_factory.canonical_string(@request, request_method)
     end
 
     # Returns the authorization header from the request's headers
@@ -87,6 +87,10 @@ module ApiAuth
     # header already in place.
     def sign_header(header)
       @request.set_auth_header header
+    end
+
+    def http_headers
+      @request.headers
     end
 
     private
