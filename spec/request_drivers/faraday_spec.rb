@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::FaradayRequest do
-  let(:timestamp) { Time.now.utc.httpdate }
+  let(:default_configuration) { ApiAuth::Configuration.new }
+  let(:timestamp) { Time.now.utc.strftime(default_configuration.date_format) }
 
   let(:faraday_stubs) do
     Faraday::Adapter::Test::Stubs.new do |stub|
@@ -19,10 +20,10 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
 
   let(:request_headers) do
     {
-      'Authorization' => 'APIAuth 1044:12345',
+      'Authorization' => "#{default_configuration.algorithm} 1044:12345",
       'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
       'content-type' => 'text/plain',
-      'DATE' => timestamp
+      default_configuration.date_header => timestamp
     }
   end
 
@@ -57,7 +58,7 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
     end
 
     it 'gets the authorization_header' do
-      expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
+      expect(driven_request.authorization_header).to eq("#{default_configuration.algorithm} 1044:12345")
     end
 
     describe '#calculated_md5' do
@@ -161,12 +162,12 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
 
     describe '#set_date' do
       before do
-        allow(Time).to receive_message_chain(:now, :utc, :httpdate).and_return(timestamp)
+        allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return(timestamp)
       end
 
       it 'sets the date header of the request' do
         driven_request.set_date
-        expect(request.headers['DATE']).to eq(timestamp)
+        expect(request.headers[default_configuration.date_header]).to eq(timestamp)
       end
 
       it 'refreshes the cached headers' do
@@ -177,8 +178,8 @@ describe ApiAuth::RequestDrivers::FaradayRequest do
 
     describe '#set_auth_header' do
       it 'sets the auth header' do
-        driven_request.set_auth_header('APIAuth 1044:54321')
-        expect(request.headers['Authorization']).to eq('APIAuth 1044:54321')
+        driven_request.set_auth_header("#{default_configuration.algorithm} 1044:54321")
+        expect(request.headers['Authorization']).to eq("#{default_configuration.algorithm} 1044:54321")
       end
     end
   end
