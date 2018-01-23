@@ -7,14 +7,6 @@ describe ApiAuth::Headers do
       subject(:headers) { described_class.new(request) }
       let(:uri) { '' }
 
-      context 'empty uri' do
-        let(:uri) { ''.freeze }
-
-        it 'adds / to canonical string' do
-          expect(subject.canonical_string).to eq('GET,,,/,')
-        end
-      end
-
       context 'uri with just host without /' do
         let(:uri) { 'http://google.com'.freeze }
 
