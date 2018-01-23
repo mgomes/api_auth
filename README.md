@@ -66,6 +66,55 @@ configuration for your Ruby VM. To install:
 
 Please note the dash in the name versus the underscore.
 
+## Configuration
+
+The gem accepts some configuration options, if you would like more fine-grained control of how your requests are signed.
+
+``` ruby
+custom_config = ApiAuth::Configuration.new do |config|
+                  # Name of the header containing the request timestamp
+                  config.date_header = 'DATE'
+                  # Format of the datetime string in the request timestamp header
+                  config.date_format = '%a, %d %b %Y %T GMT'
+                  # The name of the algorithm to pass at the beginning of the Authorization header
+                  config.algorithm = 'APIAuth'
+                  # A custom class to use to generate the Authorization header
+                  config.auth_header_factory = ApiAuth::AuthHeaderFactories::Standard
+                  # If using a custom auth header factory, you must redefine the auth_header_pattern so that
+                  # the auth header can be parsed properly
+                  config.auth_header_pattern = /#{@algorithm}(?:-HMAC-(MD[245]|SHA(?:1|224|256|384|512)*))? ([^:]+):(.+)$/
+                  # For security, requests dated older or newer than this timespan are considered inauthentic.
+                  config.clock_skew = 60
+                end
+```
+
+You than then pass this configuration object to any `ApiAuth` method
+
+``` ruby
+ApiAuth.sign!(@request, @access_id, @secret_key configuration: custom_config)
+ApiAuth.authentic?(signed_request, secret_key, configuration: custom_config)
+ApiAuth.access_id(signed_request, configuration: custom_config)
+```
+
+### Auth Header Factory
+
+An Auth Header Factory must implement the class method `auth_header`. See [AuthHeaderFactories::Standard](lib/api_auth/auth_header_factories/standard.rb) for an example.
+
+When using a custom Auth Header Factory, you must also set the `auth_header_pattern` configuration variable. It requires three capture groups:
+
+1. The hash function used to generate the signature
+2. The Access ID
+3. The Generated Signature
+
+For example, if your Auth Header Factory returns the following auth header:
+
+`CoolAuth-SHA1 ID:1234,Signature=foobar`
+
+Then your `auth_header_pattern` should be set to
+
+`/CoolAuth(?:-(MD[245]|SHA(?:1|224|256|384|512)*))? ID:([^:]+),Signature=(.+)$/`
+
+
 ## Clients
 
 ApiAuth supports many popular HTTP clients. Support for other clients can be
@@ -194,10 +243,12 @@ For security, requests dated older or newer than a certain timespan are consider
 This prevents old requests from being reused in replay attacks, and also ensures requests
 can't be dated into the far future.
 
-The default span is 15 minutes, but you can override this:
+The default span is 15 minutes, but you can override this in the configuration
 
-```ruby
-    ApiAuth.authentic?(signed_request, secret_key, :clock_skew => 60) # or 1.minute in ActiveSupport
+``` ruby
+    ApiAuth.configure do |config|
+      config.clock_skew = 60 # Or 1.minute in ActiveSupport
+    end
 ```
 
 If your server is a Rails app, the signed request will be the `request` object.
