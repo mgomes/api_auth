@@ -1,50 +1,38 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class NetHttpRequest # :nodoc:
+    class HttpRequest # :nodoc:
       include ApiAuth::Helpers
 
       def initialize(request)
         @request = request
-        @headers = fetch_headers
-        true
       end
 
       def set_auth_header(header)
         @request['Authorization'] = header
-        @headers = fetch_headers
         @request
       end
 
       def calculated_md5
-        if @request.respond_to?(:body_stream) && @request.body_stream
-          body = @request.body_stream.read
-          @request.body_stream.rewind
-        else
-          body = @request.body
-        end
-
-        md5_base64digest(body || '')
+        body = ''
+        @request.body.each { |chunk| body << chunk }
+        md5_base64digest(body)
       end
 
       def populate_content_md5
-        return unless @request.class::REQUEST_HAS_BODY
+        return unless %w[POST PUT].include?(http_method)
         @request['Content-MD5'] = calculated_md5
       end
 
       def md5_mismatch?
-        if @request.class::REQUEST_HAS_BODY
+        if %w[POST PUT].include?(http_method)
           calculated_md5 != content_md5
         else
           false
         end
       end
 
-      def fetch_headers
-        @request
-      end
-
       def http_method
-        @request.method.upcase
+        @request.verb.to_s.upcase
       end
 
       def content_type
@@ -60,11 +48,11 @@ module ApiAuth
       end
 
       def request_uri
-        @request.path
+        @request.uri.request_uri
       end
 
       def set_date
-        @request['DATE'] = Time.now.utc.httpdate
+        @request['Date'] = Time.now.utc.httpdate
       end
 
       def timestamp
@@ -78,7 +66,7 @@ module ApiAuth
       private
 
       def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
+        keys.map { |key| @request[key] }.compact.first
       end
     end
   end
