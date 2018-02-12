@@ -4,16 +4,16 @@ describe ApiAuth::RequestDrivers::HttpRequest do
   let(:timestamp) { Time.now.utc.httpdate }
 
   let(:request) do
-    req = HTTP::Request.new(
-      :verb     => verb,
-      :uri      => uri,
-      :headers  => headers,
-      :body     => body,
+    HTTP::Request.new(
+      verb: verb,
+      uri: uri,
+      headers: headers,
+      body: body
     )
   end
 
   let(:verb) { :put }
-  let(:uri) { "http://localhost/resource.xml?foo=bar&bar=foo" }
+  let(:uri) { 'http://localhost/resource.xml?foo=bar&bar=foo' }
   let(:body) { "hello\nworld" }
 
   let(:headers) do
