@@ -62,8 +62,7 @@ module ApiAuth
       end
 
       def body
-        case
-        when body_source.respond_to?(:read)
+        if body_source.respond_to?(:read)
           result = body_source.read
           body_source.rewind
           result

@@ -21,10 +21,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'http'
   s.add_development_dependency 'httpi'
   s.add_development_dependency 'multipart-post', '~> 2.0'
+  s.add_development_dependency 'pry'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rest-client', '~> 2.0'
   s.add_development_dependency 'rspec', '~> 3.4'
-  s.add_development_dependency 'pry'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
