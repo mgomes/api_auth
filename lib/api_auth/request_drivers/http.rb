@@ -13,9 +13,6 @@ module ApiAuth
       end
 
       def calculated_md5
-        body = ''
-        @request.body.each { |chunk| body << chunk }
-        @request.body.source.rewind if @request.body.source.respond_to?(:rewind)
         md5_base64digest(body)
       end
 
@@ -64,10 +61,32 @@ module ApiAuth
         find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
       end
 
+      def body
+        case
+        when body_source.respond_to?(:read)
+          result = body_source.read
+          body_source.rewind
+          result
+        else
+          body_source.to_s
+        end
+      end
+
       private
 
       def find_header(keys)
         keys.map { |key| @request[key] }.compact.first
+      end
+
+      def body_source
+        case HTTP::VERSION.to_i
+        when 2
+          @request.body
+        when 3
+          @request.body.instance_variable_get(:@body)
+        when 4
+          @request.body.source
+        end
       end
     end
   end

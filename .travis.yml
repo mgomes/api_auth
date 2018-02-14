@@ -12,6 +12,9 @@ gemfile:
   - gemfiles/rails_42.gemfile
   - gemfiles/rails_5.gemfile
   - gemfiles/rails_51.gemfile
+  - gemfiles/http2.gemfile
+  - gemfiles/http3.gemfile
+  - gemfiles/http4.gemfile
 env:
   - TEST_SUITE=rake
 

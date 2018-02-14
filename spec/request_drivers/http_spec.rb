@@ -51,6 +51,7 @@ describe ApiAuth::RequestDrivers::HttpRequest do
     describe '#calculated_md5' do
       it 'calculates md5 from the body' do
         expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+        expect(driven_request.body.bytesize).to eq(11)
       end
 
       context 'no body' do
@@ -58,6 +59,7 @@ describe ApiAuth::RequestDrivers::HttpRequest do
 
         it 'treats no body as empty string' do
           expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+          expect(driven_request.body.bytesize).to eq(0)
         end
       end
 
@@ -66,6 +68,7 @@ describe ApiAuth::RequestDrivers::HttpRequest do
 
         it 'calculates correctly for multipart content' do
           expect(driven_request.calculated_md5).to eq('k4U8MTA3RHDcewBzymVNEQ==')
+          expect(driven_request.body.bytesize).to eq(5112)
         end
       end
     end
