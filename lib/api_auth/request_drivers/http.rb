@@ -15,6 +15,7 @@ module ApiAuth
       def calculated_md5
         body = ''
         @request.body.each { |chunk| body << chunk }
+        @request.body.source.rewind if @request.body.source.respond_to?(:rewind)
         md5_base64digest(body)
       end
 
