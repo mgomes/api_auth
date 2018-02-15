@@ -78,13 +78,12 @@ module ApiAuth
       end
 
       def body_source
-        case HTTP::VERSION.to_i
-        when 2
-          @request.body
-        when 3
-          @request.body.instance_variable_get(:@body)
-        when 4
-          @request.body.source
+        body = @request.body
+
+        if defined?(::HTTP::Request::Body)
+          body.respond_to?(:source) ? body.source : body.instance_variable_get(:@body)
+        else
+          body
         end
       end
     end
