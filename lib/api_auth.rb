@@ -1,5 +1,6 @@
 require 'openssl'
 require 'base64'
+require 'time'
 
 require 'api_auth/errors'
 require 'api_auth/helpers'
@@ -12,6 +13,7 @@ require 'api_auth/request_drivers/action_dispatch'
 require 'api_auth/request_drivers/rack'
 require 'api_auth/request_drivers/httpi'
 require 'api_auth/request_drivers/faraday'
+require 'api_auth/request_drivers/http'
 
 require 'api_auth/headers'
 require 'api_auth/base'

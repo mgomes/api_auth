@@ -3,9 +3,6 @@ inherit_from: .rubocop_todo.yml
 Metrics/AbcSize:
   Max: 25
 
-Metrics/CyclomaticComplexity:
-  Max: 13
-
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:
