@@ -138,6 +138,14 @@ to:
 
     Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
 
+If you want to sign custom headers, you can pass them as an array of strings in the options like so:
+
+``` ruby
+    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, headers_to_sign: %w[HTTP_HEADER_NAME])
+```
+
+With the specified headers values being at the end of the canonical string in the same order.
+
 ### ActiveResource Clients
 
 ApiAuth can transparently protect your ActiveResource communications with a
