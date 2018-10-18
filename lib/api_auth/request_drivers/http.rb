@@ -1,50 +1,36 @@
 module ApiAuth
   module RequestDrivers # :nodoc:
-    class RackRequest # :nodoc:
+    class HttpRequest # :nodoc:
       include ApiAuth::Helpers
 
       def initialize(request)
         @request = request
-        fetch_headers
-        true
       end
 
       def set_auth_header(header)
-        @request.env['Authorization'] = header
-        fetch_headers
+        @request['Authorization'] = header
         @request
       end
 
       def calculated_md5
-        if @request.body
-          body = @request.body.read
-          @request.body.rewind
-        else
-          body = ''
-        end
         md5_base64digest(body)
       end
 
       def populate_content_md5
-        return unless %w[POST PUT].include?(@request.request_method)
-        @request.env['Content-MD5'] = calculated_md5
-        fetch_headers
+        return unless %w[POST PUT].include?(http_method)
+        @request['Content-MD5'] = calculated_md5
       end
 
       def md5_mismatch?
-        if %w[POST PUT].include?(@request.request_method)
+        if %w[POST PUT].include?(http_method)
           calculated_md5 != content_md5
         else
           false
         end
       end
 
-      def fetch_headers
-        @headers = capitalize_keys @request.env
-      end
-
       def http_method
-        @request.request_method.upcase
+        @request.verb.to_s.upcase
       end
 
       def content_type
@@ -52,7 +38,7 @@ module ApiAuth
       end
 
       def content_md5
-        find_header(%w[CONTENT-MD5 CONTENT_MD5 HTTP-CONTENT-MD5 HTTP_CONTENT_MD5])
+        find_header(%w[CONTENT-MD5 CONTENT_MD5])
       end
 
       def original_uri
@@ -60,12 +46,11 @@ module ApiAuth
       end
 
       def request_uri
-        @request.fullpath
+        @request.uri.request_uri
       end
 
       def set_date
-        @request.env['DATE'] = Time.now.utc.httpdate
-        fetch_headers
+        @request['Date'] = Time.now.utc.httpdate
       end
 
       def timestamp
@@ -76,10 +61,30 @@ module ApiAuth
         find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
       end
 
+      def body
+        if body_source.respond_to?(:read)
+          result = body_source.read
+          body_source.rewind
+          result
+        else
+          body_source.to_s
+        end
+      end
+
       private
 
       def find_header(keys)
-        keys.map { |key| @headers[key] }.compact.first
+        keys.map { |key| @request[key] }.compact.first
+      end
+
+      def body_source
+        body = @request.body
+
+        if defined?(::HTTP::Request::Body)
+          body.respond_to?(:source) ? body.source : body.instance_variable_get(:@body)
+        else
+          body
+        end
       end
     end
   end

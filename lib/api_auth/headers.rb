@@ -1,8 +1,6 @@
 module ApiAuth
-
   # Builds the canonical string given a request object.
   class Headers
-
     include RequestDrivers
 
     def initialize(request)
@@ -38,28 +36,31 @@ module ApiAuth
           HttpiRequest.new(request)
         when /Faraday::Request/
           FaradayRequest.new(request)
-        else
-          nil
+        when /HTTP::Request/
+          HttpRequest.new(request)
         end
 
       return new_request if new_request
-      return RackRequest.new(request) if request.kind_of?(Rack::Request)
-      raise UnknownHTTPRequest, "#{request.class.to_s} is not yet supported."
+      return RackRequest.new(request) if request.is_a?(Rack::Request)
+      raise UnknownHTTPRequest, "#{request.class} is not yet supported."
     end
     private :initialize_request_driver
 
     # Returns the request timestamp
     def timestamp
-       @request.timestamp
+      @request.timestamp
     end
 
-    # Returns the canonical string computed from the request's headers
-    def canonical_string
-      [ @request.content_type,
-        @request.content_md5,
-        @request.request_uri.gsub(/https?:\/\/[^(,|\?|\/)]*/,''), # remove host
-        @request.timestamp
-      ].join(",")
+    def canonical_string(override_method = nil)
+      request_method = override_method || @request.http_method
+
+      raise ArgumentError, 'unable to determine the http method from the request, please supply an override' if request_method.nil?
+
+      [request_method.upcase,
+       @request.content_type,
+       @request.content_md5,
+       parse_uri(@request.original_uri || @request.request_uri),
+       @request.timestamp].join(',')
     end
 
     # Returns the authorization header from the request's headers
@@ -68,15 +69,15 @@ module ApiAuth
     end
 
     def set_date
-      @request.set_date if @request.timestamp.empty?
+      @request.set_date if @request.timestamp.nil?
     end
 
     def calculate_md5
-      @request.populate_content_md5 if @request.content_md5.empty?
+      @request.populate_content_md5 if @request.content_md5.nil?
     end
 
     def md5_mismatch?
-      if @request.content_md5.empty?
+      if @request.content_md5.nil?
         false
       else
         @request.md5_mismatch?
@@ -92,6 +93,14 @@ module ApiAuth
       @request.set_auth_header header
     end
 
-  end
+    private
 
+    def parse_uri(uri)
+      parsed_uri = URI.parse(uri)
+
+      return parsed_uri.request_uri if parsed_uri.respond_to?(:request_uri)
+
+      uri.empty? ? '/' : uri
+    end
+  end
 end

@@ -25,7 +25,7 @@ content-MD5 are not present, then a blank string is used in their place. If the
 timestamp isn't present, a valid HTTP date is automatically added to the
 request. The canonical string is computed as follows:
 
-    canonical_string = 'content-type,content-MD5,request URI,timestamp'
+    canonical_string = 'http method,content-type,content-MD5,request URI,timestamp'
 
 2. This string is then used to create the signature which is a Base64 encoded
 SHA1 HMAC, using the client's private secret key.
@@ -49,6 +49,14 @@ minutes in order to avoid replay attacks.
 * [HMAC algorithm](http://en.wikipedia.org/wiki/HMAC)
 * [RFC 2104 (HMAC)](http://tools.ietf.org/html/rfc2104)
 
+## Requirement
+
+v3.X require Ruby >= 2.1 and Rails >= 4.0 if you use rails.
+
+For older version of Ruby or Rails, please use ApiAuth v2.X.
+
+**IMPORTANT: v2.0.0 is backwards incompatible with the default settings of v1.x to address a security vulnerability. See [CHANGELOG.md](/CHANGELOG.md) for security update information.**
+
 ## Install
 
 The gem doesn't have any dependencies outside of having a working OpenSSL
@@ -70,12 +78,12 @@ Here is the current list of supported request objects:
 * Curb (Curl::Easy)
 * RestClient
 * Faraday
+* HTTPI
+* HTTP
 
 ### HTTP Client Objects
 
-Here's a sample implementation of signing a request created with RestClient. For
-more examples, please check out the ApiAuth Spec where every supported HTTP
-client is tested.
+Here's a sample implementation of signing a request created with RestClient.
 
 Assuming you have a client access id and secret as follows:
 
@@ -107,6 +115,29 @@ request as one of the last steps in building the request to ensure the headers
 don't change after the signing process which would cause the authentication
 check to fail on the server side.
 
+If you are signing a request for a driver that doesn't support automatic http
+method detection (like Curb or httpi), you can pass the http method as an option
+into the sign! method like so:
+
+``` ruby
+    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :override_http_method => "PUT")
+```
+
+If you want to use another digest existing in `OpenSSL::Digest`,
+you can pass the http method as an option into the sign! method like so:
+
+``` ruby
+    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :digest => 'sha256')
+```
+
+With the `digest` option, the `Authorization` header will be change from:
+
+    Authorization = APIAuth 'client access id':'signature'
+
+to:
+
+    Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
+
 ### ActiveResource Clients
 
 ApiAuth can transparently protect your ActiveResource communications with a
@@ -119,6 +150,15 @@ single configuration line:
 ```
 
 This will automatically sign all outgoing ActiveResource requests from your app.
+
+### Flexirest
+
+ApiAuth also works with [Flexirest](https://github.com/andyjeffries/flexirest) (used to be ActiveRestClient, but that is now unsupported) in a very similar way.
+Simply add this configuration to your Flexirest initializer in your app and it will automatically sign all outgoing requests.
+
+``` ruby
+Flexirest::Base.api_auth_credentials(@access_id, @secret_key)
+```
 
 ## Server
 
@@ -137,6 +177,30 @@ To validate whether or not a request is authentic:
     ApiAuth.authentic?(signed_request, secret_key)
 ```
 
+The `authentic?` method uses the digest specified in the `Authorization` header.
+For example SHA256 for:
+
+    Authorization = APIAuth-HMAC-SHA256 'client access id':'signature'
+
+And by default SHA1 if the HMAC-DIGEST is not specified.
+
+If you want to force the usage of another digest method, you should pass it as an option parameter:
+
+``` ruby
+    ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')
+```
+
+For security, requests dated older or newer than a certain timespan are considered inauthentic.
+
+This prevents old requests from being reused in replay attacks, and also ensures requests
+can't be dated into the far future.
+
+The default span is 15 minutes, but you can override this:
+
+```ruby
+    ApiAuth.authentic?(signed_request, secret_key, :clock_skew => 60) # or 1.minute in ActiveSupport
+```
+
 If your server is a Rails app, the signed request will be the `request` object.
 
 In order to obtain the secret key for the client, you first need to look up the
@@ -151,16 +215,15 @@ whether or not the request is authentic. Typically, the access id for the client
 will be their record's primary key in the DB that stores the record or some other
 public unique identifier for the client.
 
-Here's a sample method that can be used in a `before_filter` if your server is a
+Here's a sample method that can be used in a `before_action` if your server is a
 Rails app:
 
 ``` ruby
-    before_filter :api_authenticate
+    before_action :api_authenticate
 
     def api_authenticate
       @current_account = Account.find_by_access_id(ApiAuth.access_id(request))
-      return ApiAuth.authentic?(request, @current_account.secret_key) unless @current_account.nil?
-      false
+      head(:unauthorized) unless @current_account && ApiAuth.authentic?(request, @current_account.secret_key)
     end
 ```
 
@@ -172,7 +235,13 @@ take care of all that for you.
 
 To run the tests:
 
-    rake spec
+Install the dependencies for a particular Rails version by specifying a gemfile in `gemfiles` directory:
+
+    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle install
+
+Run the tests with those dependencies:
+
+    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle exec rake
 
 If you'd like to add support for additional HTTP clients, check out the already
 implemented drivers in `lib/api_auth/request_drivers` for reference. All of

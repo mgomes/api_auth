@@ -1,0 +1,16 @@
+inherit_from: .rubocop_todo.yml
+
+Metrics/AbcSize:
+  Max: 25
+
+# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
+# URISchemes: http, https
+Metrics/LineLength:
+  Max: 140
+
+Metrics/MethodLength:
+  Max: 40
+
+Naming/FileName:
+  Exclude:
+    - 'lib/api-auth.rb'
