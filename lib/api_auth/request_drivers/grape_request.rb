@@ -1,9 +1,6 @@
 module ApiAuth
-
   module RequestDrivers # :nodoc:
-
     class GrapeRequest # :nodoc:
-
       include ApiAuth::Helpers
 
       def initialize(request)
@@ -13,8 +10,8 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request.env["Authorization"] = header
-        @headers = fetch_headers
+        @request.env["HTTP_AUTHORIZATION"] = header
+        save_headers # enforce update of processed_headers based on last updated headers
         @request
       end
 
@@ -25,9 +22,9 @@ module ApiAuth
       end
 
       def populate_content_md5
-        if @request.put? || @request.post?
-          @request.env["Content-MD5"] = calculated_md5
-        end
+        return if !@request.put? && !@request.post?
+        @request.env["HTTP_CONTENT_MD5"] = calculated_md5
+        save_headers
       end
 
       def md5_mismatch?
@@ -42,14 +39,20 @@ module ApiAuth
         capitalize_keys @request.env
       end
 
+      def http_method
+        @request.request_method.upcase
+      end
+
       def content_type
-        value = find_header(%w(HTTP_X_HMAC_CONTENT_TYPE CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
-        value.nil? ? "" : value
+        find_header(%w(HTTP_X_HMAC_CONTENT_TYPE HTTP_X_CONTENT_TYPE CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
       end
 
       def content_md5
-        value = find_header(%w(HTTP_X_HMAC_CONTENT_MD5 CONTENT-MD5 CONTENT_MD5 HTTP_CONTENT_MD5))
-        value.nil? ? "" : value
+        find_header(%w(HTTP_X_HMAC_CONTENT_MD5 HTTP_X_CONTENT_MD5 CONTENT-MD5 CONTENT_MD5 HTTP_CONTENT_MD5))
+      end
+
+      def original_uri
+        find_header(%w[HTTP_X_HMAC_ORIGINAL_URI HTTP_X_ORIGINAL_URI X-ORIGINAL-URI X_ORIGINAL_URI])
       end
 
       def request_uri
@@ -58,15 +61,15 @@ module ApiAuth
 
       def set_date
         @request.env['HTTP_DATE'] = Time.now.utc.httpdate
+        save_headers
       end
 
       def timestamp
-        value = find_header(%w(HTTP_X_HMAC_DATE DATE HTTP_DATE))
-        value.nil? ? "" : value
+        find_header(%w(HTTP_X_HMAC_DATE HTTP_X_DATE DATE HTTP_DATE))
       end
 
       def authorization_header
-        find_header %w(HTTP_X_HMAC_AUTHORIZATION Authorization AUTHORIZATION HTTP_AUTHORIZATION)
+        find_header %w(HTTP_X_HMAC_AUTHORIZATION HTTP_X_AUTHORIZATION Authorization AUTHORIZATION HTTP_AUTHORIZATION)
       end
 
     private
@@ -75,8 +78,10 @@ module ApiAuth
         keys.map {|key| @headers[key] }.compact.first
       end
 
+      def save_headers
+        # @request.processed_headers = @request.make_headers(@request.headers)
+        @headers = fetch_headers
+      end
     end
-
   end
-
 end
