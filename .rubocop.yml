@@ -1,5 +1,8 @@
 inherit_from: .rubocop_todo.yml
 
+AllCops:
+  TargetRubyVersion: 2.3
+
 Metrics/AbcSize:
   Max: 25
 
@@ -14,3 +17,6 @@ Metrics/MethodLength:
 Naming/FileName:
   Exclude:
     - 'lib/api-auth.rb'
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

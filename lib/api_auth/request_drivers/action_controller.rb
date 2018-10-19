@@ -22,6 +22,7 @@ module ApiAuth
 
       def populate_content_md5
         return unless @request.put? || @request.post?
+
         @request.env['Content-MD5'] = calculated_md5
         fetch_headers
       end
