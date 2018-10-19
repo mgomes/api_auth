@@ -51,9 +51,9 @@ minutes in order to avoid replay attacks.
 
 ## Requirement
 
-v3.X require Ruby >= 2.1 and Rails >= 4.0 if you use rails.
+This gem require Ruby >= 2.3 and Rails >= 4.0 if you use rails.
 
-For older version of Ruby or Rails, please use ApiAuth v2.X.
+For older version of Ruby or Rails, please use ApiAuth v2.1 and older.
 
 **IMPORTANT: v2.0.0 is backwards incompatible with the default settings of v1.x to address a security vulnerability. See [CHANGELOG.md](/CHANGELOG.md) for security update information.**
 
