@@ -2,8 +2,8 @@
 
 source 'https://rubygems.org'
 
-gem 'actionpack', '~> 5.1.1'
+gem 'actionpack', '~> 5.2.1'
 gem 'activeresource', '~> 5.0.0', git: 'https://github.com/rails/activeresource.git'
-gem 'activesupport', '~> 5.1.1'
+gem 'activesupport', '~> 5.2.1'
 
 gemspec path: '../'
