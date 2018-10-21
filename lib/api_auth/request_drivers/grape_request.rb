@@ -6,6 +6,7 @@ module ApiAuth
       def initialize(request)
         @request = request
         save_headers
+        true
       end
 
       def set_auth_header(header)
