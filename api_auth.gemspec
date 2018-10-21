@@ -1,4 +1,4 @@
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+$LOAD_PATH.push File.expand_path('lib', __dir__)
 
 Gem::Specification.new do |s|
   s.name = 'api-auth'
@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors = ['Mauricio Gomes']
   s.email = 'mauricio@edge14.com'
 
-  s.required_ruby_version = '>= 2.1.0'
+  s.required_ruby_version = '>= 2.3.0'
 
   s.add_development_dependency 'actionpack', '< 6.0', '> 4.0'
   s.add_development_dependency 'activeresource', '>= 4.0'

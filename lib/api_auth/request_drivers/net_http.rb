@@ -28,6 +28,7 @@ module ApiAuth
 
       def populate_content_md5
         return unless @request.class::REQUEST_HAS_BODY
+
         @request['Content-MD5'] = calculated_md5
       end
 

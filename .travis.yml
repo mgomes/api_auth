@@ -2,17 +2,16 @@ language: ruby
 sudo: false
 cache: bundler
 rvm:
-  - 2.1.10
-  - 2.2.9
   - 2.3.6
   - 2.4.3
-  - 2.5.0
+  - 2.5.3
 gemfile:
   - gemfiles/rails_4.gemfile
   - gemfiles/rails_41.gemfile
   - gemfiles/rails_42.gemfile
   - gemfiles/rails_5.gemfile
   - gemfiles/rails_51.gemfile
+  - gemfiles/rails_52.gemfile
   - gemfiles/http2.gemfile
   - gemfiles/http3.gemfile
   - gemfiles/http4.gemfile
@@ -26,19 +25,8 @@ script:
   - bundle exec $TEST_SUITE
 
 matrix:
-  exclude:
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails_5.gemfile
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails_51.gemfile
-    - rvm: 2.1.9
-      gemfile: gemfiles/http2.gemfile
-    - rvm: 2.1.9
-      gemfile: gemfiles/http3.gemfile
-    - rvm: 2.1.9
-      gemfile: gemfiles/http4.gemfile
   include:
-    - rvm: 2.5.0
+    - rvm: 2.5.3
       gemfile: gemfiles/rails_5.gemfile
       env: TEST_SUITE="rubocop lib/ spec/"
 

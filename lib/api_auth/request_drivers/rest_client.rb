@@ -30,6 +30,7 @@ module ApiAuth
 
       def populate_content_md5
         return unless %w[post put].include?(@request.method.to_s)
+
         @request.headers['Content-MD5'] = calculated_md5
         save_headers
       end

@@ -18,6 +18,7 @@ module ApiAuth
 
       def populate_content_md5
         return unless %w[POST PUT].include?(http_method)
+
         @request['Content-MD5'] = calculated_md5
       end
 
