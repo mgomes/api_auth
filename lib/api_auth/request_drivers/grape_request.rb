@@ -10,7 +10,7 @@ module ApiAuth
       end
 
       def set_auth_header(header)
-        @request.env["HTTP_AUTHORIZATION"] = header
+        @request.env['HTTP_AUTHORIZATION'] = header
         save_headers # enforce update of processed_headers based on last updated headers
         @request
       end
@@ -24,7 +24,7 @@ module ApiAuth
       def populate_content_md5
         return if !@request.put? && !@request.post?
 
-        @request.env["HTTP_CONTENT_MD5"] = calculated_md5
+        @request.env['HTTP_CONTENT_MD5'] = calculated_md5
         save_headers
       end
 
