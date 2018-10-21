@@ -5,7 +5,7 @@ module ApiAuth
 
       def initialize(request)
         @request = request
-        @headers = fetch_headers
+        save_headers
         true
       end
 
@@ -23,6 +23,7 @@ module ApiAuth
 
       def populate_content_md5
         return if !@request.put? && !@request.post?
+
         @request.env["HTTP_CONTENT_MD5"] = calculated_md5
         save_headers
       end
@@ -44,15 +45,15 @@ module ApiAuth
       end
 
       def content_type
-        find_header(%w(HTTP_X_HMAC_CONTENT_TYPE HTTP_X_CONTENT_TYPE CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE))
+        find_header %w[HTTP_X_HMAC_CONTENT_TYPE HTTP_X_CONTENT_TYPE CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE]
       end
 
       def content_md5
-        find_header(%w(HTTP_X_HMAC_CONTENT_MD5 HTTP_X_CONTENT_MD5 CONTENT-MD5 CONTENT_MD5 HTTP_CONTENT_MD5))
+        find_header %w[HTTP_X_HMAC_CONTENT_MD5 HTTP_X_CONTENT_MD5 CONTENT-MD5 CONTENT_MD5 HTTP_CONTENT_MD5]
       end
 
       def original_uri
-        find_header(%w[HTTP_X_HMAC_ORIGINAL_URI HTTP_X_ORIGINAL_URI X-ORIGINAL-URI X_ORIGINAL_URI])
+        find_header %w[HTTP_X_HMAC_ORIGINAL_URI HTTP_X_ORIGINAL_URI X-ORIGINAL-URI X_ORIGINAL_URI]
       end
 
       def request_uri
@@ -65,21 +66,20 @@ module ApiAuth
       end
 
       def timestamp
-        find_header(%w(HTTP_X_HMAC_DATE HTTP_X_DATE DATE HTTP_DATE))
+        find_header %w[HTTP_X_HMAC_DATE HTTP_X_DATE DATE HTTP_DATE]
       end
 
       def authorization_header
-        find_header %w(HTTP_X_HMAC_AUTHORIZATION HTTP_X_AUTHORIZATION Authorization AUTHORIZATION HTTP_AUTHORIZATION)
+        find_header %w[HTTP_X_HMAC_AUTHORIZATION HTTP_X_AUTHORIZATION Authorization AUTHORIZATION HTTP_AUTHORIZATION]
       end
 
-    private
+      private
 
       def find_header(keys)
-        keys.map {|key| @headers[key] }.compact.first
+        keys.map { |key| @headers[key] }.compact.first
       end
 
       def save_headers
-        # @request.processed_headers = @request.make_headers(@request.headers)
         @headers = fetch_headers
       end
     end

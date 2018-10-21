@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe ApiAuth::RequestDrivers::GrapeRequest do
   let(:default_method) { 'PUT' }
-  let(:default_params) { {
-    "message" => "hello\nworld"
-  } }
+  let(:default_params) do
+    { 'message' => "hello\nworld" }
+  end
   let(:default_options) do
     {
       method: method,
@@ -22,7 +22,6 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
   let(:request) do
     Grape::Request.new(env)
   end
-
 
   let(:timestamp) { Time.now.utc.httpdate }
   let(:request_headers) do
@@ -62,7 +61,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
         expect(driven_request.calculated_md5).to eq('WEqCyXEuRBYZbohpZmUyAw==')
       end
 
-      context "no body" do
+      context 'no body' do
         let(:params) { {} }
 
         it 'treats no body as empty string' do
@@ -73,7 +72,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
 
     describe 'http_method' do
       context 'when put request' do
-        let(:method) { "put" }
+        let(:method) { 'put' }
 
         it 'returns upcased put' do
           expect(driven_request.http_method).to eq('PUT')
@@ -81,7 +80,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       end
 
       context 'when get request' do
-        let(:method) { "get" }
+        let(:method) { 'get' }
 
         it 'returns upcased get' do
           expect(driven_request.http_method).to eq('GET')
@@ -99,7 +98,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
 
     describe '#populate_content_md5' do
       context 'when getting' do
-        let(:method) { "get" }
+        let(:method) { 'get' }
 
         it "doesn't populate content-md5" do
           driven_request.populate_content_md5
@@ -108,7 +107,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       end
 
       context 'when posting' do
-        let(:method) { "post" }
+        let(:method) { 'post' }
 
         it 'populates content-md5' do
           driven_request.populate_content_md5
@@ -122,7 +121,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       end
 
       context 'when putting' do
-        let(:method) { "put" }
+        let(:method) { 'put' }
 
         it 'populates content-md5' do
           driven_request.populate_content_md5
@@ -136,7 +135,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       end
 
       context 'when deleting' do
-        let(:method) { "delete" }
+        let(:method) { 'delete' }
 
         it "doesn't populate content-md5" do
           driven_request.populate_content_md5
@@ -172,7 +171,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
 
   describe 'md5_mismatch?' do
     context 'when getting' do
-      let(:method) { "get" }
+      let(:method) { 'get' }
 
       it 'is false' do
         expect(driven_request.md5_mismatch?).to be false
@@ -180,7 +179,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
     end
 
     context 'when posting' do
-      let(:method) { "post" }
+      let(:method) { 'post' }
 
       context 'when calculated matches sent' do
         it 'is false' do
@@ -189,7 +188,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       end
 
       context "when calculated doesn't match sent" do
-        let(:params) { { "message" => "hello only" } }
+        let(:params) { { 'message' => 'hello only' } }
 
         it 'is true' do
           expect(driven_request.md5_mismatch?).to be true
@@ -198,7 +197,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
     end
 
     context 'when putting' do
-      let(:method) { "put" }
+      let(:method) { 'put' }
 
       context 'when calculated matches sent' do
         it 'is false' do
@@ -207,7 +206,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       end
 
       context "when calculated doesn't match sent" do
-        let(:params) { { "message" => "hello only" } }
+        let(:params) { { 'message' => 'hello only' } }
         it 'is true' do
           expect(driven_request.md5_mismatch?).to be true
         end
@@ -215,7 +214,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
     end
 
     context 'when deleting' do
-      let(:method) { "delete" }
+      let(:method) { 'delete' }
 
       it 'is false' do
         expect(driven_request.md5_mismatch?).to be false
@@ -224,13 +223,13 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
   end
 
   describe 'authentics?' do
-    let(:request_headers) {{}}
+    let(:request_headers) { {} }
     let(:signed_request) do
       ApiAuth.sign!(request, '1044', '123')
     end
 
     context 'when getting' do
-      let(:method) { "get" }
+      let(:method) { 'get' }
 
       it 'validates that the signature in the request header matches the way we sign it' do
         expect(ApiAuth.authentic?(signed_request, '123')).to eq true
@@ -238,7 +237,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
     end
 
     context 'when posting' do
-      let(:method) { "post" }
+      let(:method) { 'post' }
 
       it 'validates that the signature in the request header matches the way we sign it' do
         expect(ApiAuth.authentic?(signed_request, '123')).to eq true
@@ -246,7 +245,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
     end
 
     context 'when putting' do
-      let(:method) { "put" }
+      let(:method) { 'put' }
 
       let(:signed_request) do
         ApiAuth.sign!(request, '1044', '123')
@@ -258,7 +257,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
     end
 
     context 'when deleting' do
-      let(:method) { "delete" }
+      let(:method) { 'delete' }
 
       let(:signed_request) do
         ApiAuth.sign!(request, '1044', '123')
