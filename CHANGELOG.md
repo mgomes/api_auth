@@ -1,3 +1,9 @@
+# 2.3.0 (2018-10-23)
+- Added support for Grape API (#169 phuongnd08 & dunghuynh)
+- Added option for specifying customer headers to sign via new `headers_to_sign`
+  argument (#170 fakenine)
+- Fix tests and drop support for Ruby < 2.3 (#171 fwininger)
+
 # 2.2.0 (2018-03-12)
 - Drop support ruby 1.x, rails 2.x, rails 3.x (#141 fwininger)
 - Add http.rb request driver (#164 tycooon)
