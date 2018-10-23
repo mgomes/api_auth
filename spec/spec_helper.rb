@@ -16,6 +16,7 @@ require 'curb'
 require 'http'
 require 'httpi'
 require 'faraday'
+require 'grape'
 require 'net/http/post/multipart'
 
 # Requires supporting files with custom matchers and macros, etc,
