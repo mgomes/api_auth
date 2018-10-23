@@ -169,6 +169,13 @@ describe 'ApiAuth' do
         expect(ApiAuth.authentic?(signed_request, '123', clock_skew: 60.seconds)).to eq false
       end
     end
+
+    context 'when passed the headers_to_sign option' do
+      it 'validates the request' do
+        request['X-Forwarded-For'] = '192.168.1.1'
+        expect(ApiAuth.authentic?(signed_request, '123', headers_to_sign: %w[HTTP_X_FORWARDED_FOR])).to eq true
+      end
+    end
   end
 
   describe '.access_id' do
