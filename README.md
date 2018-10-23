@@ -1,6 +1,7 @@
 # ApiAuth
 
-[![Build Status](https://travis-ci.org/mgomes/api_auth.png?branch=master)](https://travis-ci.org/mgomes/api_auth)
+[![Build Status](https://travis-ci.org/mgomes/api_auth.svg?branch=master)](https://travis-ci.org/mgomes/api_auth)
+[![Gem Version](https://badge.fury.io/rb/api-auth.svg)](https://badge.fury.io/rb/api-auth)
 
 Logins and passwords are for humans. Communication between applications need to
 be protected through different means.
