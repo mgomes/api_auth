@@ -151,4 +151,10 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
       end
     end
   end
+
+  describe 'fetch_headers' do
+    it 'returns request headers' do
+      expect(driven_request.fetch_headers).to include('CONTENT-TYPE' => 'text/plain')
+    end
+  end
 end

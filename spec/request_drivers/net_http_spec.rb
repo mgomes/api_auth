@@ -193,4 +193,10 @@ describe ApiAuth::RequestDrivers::NetHttpRequest do
       end
     end
   end
+
+  describe 'fetch_headers' do
+    it 'returns request headers' do
+      expect(driven_request.fetch_headers).to include('content-type' => ['text/plain'])
+    end
+  end
 end

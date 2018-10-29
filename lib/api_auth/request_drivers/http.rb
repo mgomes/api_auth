@@ -72,6 +72,10 @@ module ApiAuth
         end
       end
 
+      def fetch_headers
+        capitalize_keys @request.headers.to_h
+      end
+
       private
 
       def find_header(keys)
