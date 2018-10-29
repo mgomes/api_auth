@@ -6,9 +6,9 @@ describe ApiAuth::RequestDrivers::CurbRequest do
   let(:request) do
     headers = {
       'Authorization' => 'APIAuth 1044:12345',
-      'Content-MD5'   => '1B2M2Y8AsgTpgAmY7PhCfg==',
-      'Content-Type'  => 'text/plain',
-      'Date'          => timestamp
+      'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+      'Content-Type' => 'text/plain',
+      'Date' => timestamp
     }
     Curl::Easy.new('/resource.xml?foo=bar&bar=foo') do |curl|
       curl.headers = headers
