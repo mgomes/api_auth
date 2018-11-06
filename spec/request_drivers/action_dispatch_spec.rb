@@ -7,15 +7,15 @@ if defined?(ActionDispatch::Request)
 
     let(:request) do
       ActionDispatch::Request.new(
-        'AUTHORIZATION'  => 'APIAuth 1044:12345',
-        'PATH_INFO'      => '/resource.xml',
-        'QUERY_STRING'   => 'foo=bar&bar=foo',
+        'AUTHORIZATION' => 'APIAuth 1044:12345',
+        'PATH_INFO' => '/resource.xml',
+        'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
-        'CONTENT_MD5'    => '1B2M2Y8AsgTpgAmY7PhCfg==',
-        'CONTENT_TYPE'   => 'text/plain',
+        'CONTENT_MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+        'CONTENT_TYPE' => 'text/plain',
         'CONTENT_LENGTH' => '11',
-        'HTTP_DATE'      => timestamp,
-        'rack.input'     => StringIO.new("hello\nworld")
+        'HTTP_DATE' => timestamp,
+        'rack.input' => StringIO.new("hello\nworld")
       )
     end
 
@@ -80,12 +80,12 @@ if defined?(ActionDispatch::Request)
     describe 'setting headers correctly' do
       let(:request) do
         ActionDispatch::Request.new(
-          'PATH_INFO'      => '/resource.xml',
-          'QUERY_STRING'   => 'foo=bar&bar=foo',
+          'PATH_INFO' => '/resource.xml',
+          'QUERY_STRING' => 'foo=bar&bar=foo',
           'REQUEST_METHOD' => 'PUT',
-          'CONTENT_TYPE'   => 'text/plain',
+          'CONTENT_TYPE' => 'text/plain',
           'CONTENT_LENGTH' => '11',
-          'rack.input'     => StringIO.new("hello\nworld")
+          'rack.input' => StringIO.new("hello\nworld")
         )
       end
 
@@ -228,6 +228,12 @@ if defined?(ActionDispatch::Request)
         it 'is false' do
           expect(driven_request.md5_mismatch?).to be false
         end
+      end
+    end
+
+    describe 'fetch_headers' do
+      it 'returns request headers' do
+        expect(driven_request.fetch_headers).to include('CONTENT_TYPE' => 'text/plain')
       end
     end
   end

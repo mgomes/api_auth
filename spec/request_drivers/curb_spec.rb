@@ -6,9 +6,9 @@ describe ApiAuth::RequestDrivers::CurbRequest do
   let(:request) do
     headers = {
       'Authorization' => 'APIAuth 1044:12345',
-      'Content-MD5'   => '1B2M2Y8AsgTpgAmY7PhCfg==',
-      'Content-Type'  => 'text/plain',
-      'Date'          => timestamp
+      'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+      'Content-Type' => 'text/plain',
+      'Date' => timestamp
     }
     Curl::Easy.new('/resource.xml?foo=bar&bar=foo') do |curl|
       curl.headers = headers
@@ -89,6 +89,12 @@ describe ApiAuth::RequestDrivers::CurbRequest do
   describe 'md5_mismatch?' do
     it 'is always false' do
       expect(driven_request.md5_mismatch?).to be false
+    end
+  end
+
+  describe 'fetch_headers' do
+    it 'returns request headers' do
+      expect(driven_request.fetch_headers).to include('CONTENT-TYPE' => 'text/plain')
     end
   end
 end
