@@ -26,14 +26,14 @@ content-MD5 are not present, then a blank string is used in their place. If the
 timestamp isn't present, a valid HTTP date is automatically added to the
 request. The canonical string is computed as follows:
 
-    canonical_string = 'http method,content-type,content-MD5,request URI,timestamp'
+  `canonical_string = "#{http method},#{content-type},#{content-MD5},#{request URI},#{timestamp}"`
 
 2. This string is then used to create the signature which is a Base64 encoded
 SHA1 HMAC, using the client's private secret key.
 
 3. This signature is then added as the `Authorization` HTTP header in the form:
 
-    Authorization = APIAuth 'client access id':'signature from step 2'
+    `Authorization = APIAuth "#{client access id}:#{signature from step 2}"`
 
 5. On the server side, the SHA1 HMAC is computed in the same way using the
 request headers and the client's secret key, which is known to only
@@ -63,7 +63,9 @@ For older version of Ruby or Rails, please use ApiAuth v2.1 and older.
 The gem doesn't have any dependencies outside of having a working OpenSSL
 configuration for your Ruby VM. To install:
 
-    [sudo] gem install api-auth
+```bash
+[sudo] gem install api-auth
+```
 
 Please note the dash in the name versus the underscore.
 
@@ -89,25 +91,29 @@ Here's a sample implementation of signing a request created with RestClient.
 Assuming you have a client access id and secret as follows:
 
 ``` ruby
-    @access_id = "1044"
-    @secret_key = ApiAuth.generate_secret_key
+@access_id = "1044"
+@secret_key = ApiAuth.generate_secret_key
 ```
 
 A typical RestClient PUT request may look like:
 
 ``` ruby
-    headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
-        'Content-Type' => "text/plain",
-        'Date' => "Mon, 23 Jan 1984 03:29:56 GMT" }
-    @request = RestClient::Request.new(:url => "/resource.xml?foo=bar&bar=foo",
-        :headers => headers,
-        :method => :put)
+headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+  'Content-Type' => "text/plain",
+  'Date' => "Mon, 23 Jan 1984 03:29:56 GMT"
+}
+
+@request = RestClient::Request.new(
+    url: "/resource.xml?foo=bar&bar=foo",
+    headers: headers,
+    method: :put
+)
 ```
 
 To sign that request, simply call the `sign!` method as follows:
 
 ``` ruby
-    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
+@signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
 ```
 
 The proper `Authorization` request header has now been added to that request
@@ -121,23 +127,27 @@ method detection (like Curb or httpi), you can pass the http method as an option
 into the sign! method like so:
 
 ``` ruby
-    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :override_http_method => "PUT")
+@signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :override_http_method => "PUT")
 ```
 
 If you want to use another digest existing in `OpenSSL::Digest`,
 you can pass the http method as an option into the sign! method like so:
 
 ``` ruby
-    @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :digest => 'sha256')
+@signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :digest => 'sha256')
 ```
 
 With the `digest` option, the `Authorization` header will be change from:
 
-    Authorization = APIAuth 'client access id':'signature'
+```
+Authorization = APIAuth 'client access id':'signature'
+```
 
 to:
 
-    Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
+```
+Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
+```
 
 ### ActiveResource Clients
 
@@ -145,9 +155,9 @@ ApiAuth can transparently protect your ActiveResource communications with a
 single configuration line:
 
 ``` ruby
-    class MyResource < ActiveResource::Base
-      with_api_auth(access_id, secret_key)
-    end
+class MyResource < ActiveResource::Base
+  with_api_auth(access_id, secret_key)
+end
 ```
 
 This will automatically sign all outgoing ActiveResource requests from your app.
@@ -169,26 +179,28 @@ clients as well as verifying incoming API requests.
 To generate a Base64 encoded API key for a client:
 
 ``` ruby
-    ApiAuth.generate_secret_key
+ApiAuth.generate_secret_key
 ```
 
 To validate whether or not a request is authentic:
 
 ``` ruby
-    ApiAuth.authentic?(signed_request, secret_key)
+ApiAuth.authentic?(signed_request, secret_key)
 ```
 
 The `authentic?` method uses the digest specified in the `Authorization` header.
 For example SHA256 for:
 
-    Authorization = APIAuth-HMAC-SHA256 'client access id':'signature'
+```
+Authorization = APIAuth-HMAC-SHA256 'client access id':'signature'
+```
 
 And by default SHA1 if the HMAC-DIGEST is not specified.
 
 If you want to force the usage of another digest method, you should pass it as an option parameter:
 
 ``` ruby
-    ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')
+ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')
 ```
 
 For security, requests dated older or newer than a certain timespan are considered inauthentic.
@@ -199,13 +211,13 @@ can't be dated into the far future.
 The default span is 15 minutes, but you can override this:
 
 ```ruby
-    ApiAuth.authentic?(signed_request, secret_key, :clock_skew => 60) # or 1.minute in ActiveSupport
+ApiAuth.authentic?(signed_request, secret_key, :clock_skew => 60) # or 1.minute in ActiveSupport
 ```
 
 If you want to sign custom headers, you can pass them as an array of strings in the options like so:
 
 ``` ruby
-    ApiAuth.authentic?(signed_request, secret_key, headers_to_sign: %w[HTTP_HEADER_NAME])
+ApiAuth.authentic?(signed_request, secret_key, headers_to_sign: %w[HTTP_HEADER_NAME])
 ```
 
 With the specified headers values being at the end of the canonical string in the same order.
@@ -216,7 +228,7 @@ In order to obtain the secret key for the client, you first need to look up the
 client's access_id. ApiAuth can pull that from the request headers for you:
 
 ``` ruby
-    ApiAuth.access_id(signed_request)
+ApiAuth.access_id(signed_request)
 ```
 
 Once you've looked up the client's record via the access id, you can then verify
@@ -228,12 +240,12 @@ Here's a sample method that can be used in a `before_action` if your server is a
 Rails app:
 
 ``` ruby
-    before_action :api_authenticate
+before_action :api_authenticate
 
-    def api_authenticate
-      @current_account = Account.find_by_access_id(ApiAuth.access_id(request))
-      head(:unauthorized) unless @current_account && ApiAuth.authentic?(request, @current_account.secret_key)
-    end
+def api_authenticate
+  @current_account = Account.find_by_access_id(ApiAuth.access_id(request))
+  head(:unauthorized) unless @current_account && ApiAuth.authentic?(request, @current_account.secret_key)
+end
 ```
 
 ## Development
@@ -246,11 +258,15 @@ To run the tests:
 
 Install the dependencies for a particular Rails version by specifying a gemfile in `gemfiles` directory:
 
-    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle install
+```
+BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle install
+```
 
 Run the tests with those dependencies:
 
-    BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle exec rake
+```
+BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle exec rake
+```
 
 If you'd like to add support for additional HTTP clients, check out the already
 implemented drivers in `lib/api_auth/request_drivers` for reference. All of
