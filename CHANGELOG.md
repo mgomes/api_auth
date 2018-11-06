@@ -1,3 +1,6 @@
+# 2.3.1 (2018-11-06)
+- Fixed a regression in the http.rb driver (#173 tycooon)
+
 # 2.3.0 (2018-10-23)
 - Added support for Grape API (#169 phuongnd08 & dunghuynh)
 - Added option for specifying customer headers to sign via new `headers_to_sign`
