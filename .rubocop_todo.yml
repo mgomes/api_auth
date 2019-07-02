@@ -61,6 +61,7 @@ Naming/AccessorMethodName:
     - 'lib/api_auth/request_drivers/net_http.rb'
     - 'lib/api_auth/request_drivers/rack.rb'
     - 'lib/api_auth/request_drivers/rest_client.rb'
+    - 'lib/api_auth/request_drivers/typhoeus_request.rb'
 
 # Offense count: 3
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
