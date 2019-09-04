@@ -11,9 +11,9 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.3.0'
 
-  s.add_development_dependency 'actionpack', '< 6.0', '> 4.0'
+  s.add_development_dependency 'actionpack', '< 6.1', '> 4.0'
   s.add_development_dependency 'activeresource', '>= 4.0'
-  s.add_development_dependency 'activesupport', '< 6.0', '> 4.0'
+  s.add_development_dependency 'activesupport', '< 6.1', '> 4.0'
   s.add_development_dependency 'amatch'
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'curb', '~> 0.8'
