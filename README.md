@@ -248,6 +248,30 @@ def api_authenticate
 end
 ```
 
+### Server signing response
+
+The server can perform a validation of the response.
+
+You can add the validation in the controller :
+
+```ruby
+   class ApplicationController < ActiveController::Base
+     validation_with_api_auth(access_id: 'test', secret_key: 'test', options: { digest: 'sha256' } )
+   end
+```
+
+or specified at every render
+
+```ruby
+   class ApplicationController < ActiveController::Base
+     validation_with_api_auth()
+
+     def index
+       render json: @users, api_auth: { access_id: 'test', secret_key: 'test', options: { digest: 'sha256' }}
+     end
+   end
+```
+
 ## Development
 
 ApiAuth uses bundler for gem dependencies and RSpec for testing. Developing the
