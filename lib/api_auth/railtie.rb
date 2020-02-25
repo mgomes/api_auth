@@ -13,7 +13,7 @@ module ApiAuth
         end
       end
 
-      ActionController::Base.send(:include, ControllerMethods::InstanceMethods) if defined?(ActionController::Base)
+      ActionController::Base.include(ControllerMethods::InstanceMethods) if defined?(ActionController::Base)
     end # ControllerMethods
 
     module ActiveResourceExtension # :nodoc:
@@ -79,8 +79,8 @@ module ApiAuth
       end # Connection
 
       if defined?(ActiveResource)
-        ActiveResource::Base.send(:include, ActiveResourceApiAuth)
-        ActiveResource::Connection.send(:include, Connection)
+        ActiveResource::Base.include(ActiveResourceApiAuth)
+        ActiveResource::Connection.include(Connection)
       end
     end # ActiveResourceExtension
   end # Rails
