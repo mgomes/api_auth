@@ -13,7 +13,9 @@ module ApiAuth
         end
       end
 
-      ActionController::Base.include(ControllerMethods::InstanceMethods) if defined?(ActionController::Base)
+      ActiveSupport.on_load(:action_controller) do
+        ActionController::Base.include(ControllerMethods::InstanceMethods)
+      end
     end # ControllerMethods
 
     module ActiveResourceExtension # :nodoc:
@@ -78,7 +80,7 @@ module ApiAuth
         end
       end # Connection
 
-      if defined?(ActiveResource)
+      ActiveSupport.on_load(:active_resource) do
         ActiveResource::Base.include(ActiveResourceApiAuth)
         ActiveResource::Connection.include(Connection)
       end
