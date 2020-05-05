@@ -1,3 +1,8 @@
+# 2.4.0 (2020-05-05)
+- Improved support for Rails 6.0 (#179 taylorthurlow, #177 fwininger)
+- Added Ruby 2.6.0 support (#174 fwininger)
+- README updates (#186 iranthau)
+
 # 2.3.1 (2018-11-06)
 - Fixed a regression in the http.rb driver (#173 tycooon)
 
