@@ -61,7 +61,7 @@ module ApiAuth
 
       canonical_array = [request_method.upcase,
                          @request.content_type,
-                         @request.content_md5,
+                         @request.content_hash,
                          parse_uri(@request.original_uri || @request.request_uri),
                          @request.timestamp]
 
@@ -81,15 +81,15 @@ module ApiAuth
       @request.set_date if @request.timestamp.nil?
     end
 
-    def calculate_md5
-      @request.populate_content_md5 if @request.content_md5.nil?
+    def calculate_hash
+      @request.populate_content_hash if @request.content_hash.nil?
     end
 
-    def md5_mismatch?
-      if @request.content_md5.nil?
+    def content_hash_mismatch?
+      if @request.content_hash.nil?
         false
       else
-        @request.md5_mismatch?
+        @request.content_hash_mismatch?
       end
     end
 

@@ -15,7 +15,7 @@ module ApiAuth
         @request
       end
 
-      def calculated_md5
+      def calculated_hash
         if @request.respond_to?(:body_stream) && @request.body_stream
           body = @request.body_stream.read
           @request.body_stream.rewind
@@ -23,18 +23,18 @@ module ApiAuth
           body = @request.body
         end
 
-        md5_base64digest(body || '')
+        sha256_base64digest(body || '')
       end
 
-      def populate_content_md5
+      def populate_content_hash
         return unless @request.class::REQUEST_HAS_BODY
 
-        @request['Content-MD5'] = calculated_md5
+        @request['X-Authorization-Content-SHA256'] = calculated_hash
       end
 
-      def md5_mismatch?
+      def content_hash_mismatch?
         if @request.class::REQUEST_HAS_BODY
-          calculated_md5 != content_md5
+          calculated_hash != content_hash
         else
           false
         end
@@ -52,8 +52,8 @@ module ApiAuth
         find_header(%w[CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE])
       end
 
-      def content_md5
-        find_header(%w[CONTENT-MD5 CONTENT_MD5])
+      def content_hash
+        find_header(%w[X-Authorization-Content-SHA256])
       end
 
       def original_uri

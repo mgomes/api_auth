@@ -4,8 +4,8 @@ module ApiAuth
       Base64.strict_encode64(string)
     end
 
-    def md5_base64digest(string)
-      Digest::MD5.base64digest(string)
+    def sha256_base64digest(string)
+      Digest::SHA256.base64digest(string)
     end
 
     # Capitalizes the keys of a hash

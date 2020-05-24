@@ -21,16 +21,18 @@ have to be written in the same language as the clients.
 ## How it works
 
 1. A canonical string is first created using your HTTP headers containing the
-content-type, content-MD5, request path and the date/time stamp. If content-type or
-content-MD5 are not present, then a blank string is used in their place. If the
-timestamp isn't present, a valid HTTP date is automatically added to the
-request. The canonical string is computed as follows:
+`content-type`, `X-Authorization-Content-SHA256`, request path and the date/time stamp.
+If `content-type` or `X-Authorization-Content-SHA256` are not present, then a blank
+string is used in their place. If the timestamp isn't present, a valid HTTP date is
+automatically added to the request. The canonical string is computed as follows:
 
+```ruby
+canonical_string = "#{http method},#{content-type},#{X-Authorization-Content-SHA256},#{request URI},#{timestamp}"
 ```
-canonical_string = "#{http method},#{content-type},#{content-MD5},#{request URI},#{timestamp}"
 
 e.g.,
 
+```ruby
 canonical_string = 'POST,application/json,,request_path,Tue, 30 May 2017 03:51:43 GMT'
 ```
 
@@ -39,13 +41,13 @@ SHA1 HMAC, using the client's private secret key.
 
 3. This signature is then added as the `Authorization` HTTP header in the form:
 
-```
+```ruby
 Authorization = APIAuth "#{client access id}:#{signature from step 2}"
 ```
 
 A cURL request would look like:
 
-```
+```sh
 curl -X POST --header 'Content-Type: application/json' --header "Date: Tue, 30 May 2017 03:51:43 GMT" --header "Authorization: ${AUTHORIZATION}"  http://my-app.com/request_path`
 ```
 
@@ -55,7 +57,6 @@ the client and the server but can be looked up on the server using the client's
 access id that was attached in the header. The access id can be any integer or
 string that uniquely identifies the client. The signed request expires after 15
 minutes in order to avoid replay attacks.
-
 
 ## References
 
@@ -77,7 +78,7 @@ For older version of Ruby or Rails, please use ApiAuth v2.1 and older.
 The gem doesn't have any dependencies outside of having a working OpenSSL
 configuration for your Ruby VM. To install:
 
-```bash
+```sh
 [sudo] gem install api-auth
 ```
 
@@ -104,15 +105,15 @@ Here's a sample implementation of signing a request created with RestClient.
 
 Assuming you have a client access id and secret as follows:
 
-``` ruby
+```ruby
 @access_id = "1044"
 @secret_key = ApiAuth.generate_secret_key
 ```
 
 A typical RestClient PUT request may look like:
 
-``` ruby
-headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
+```ruby
+headers = { 'X-Authorization-Content-SHA256' => "dWiCWEMZWMxeKM8W8Yuh/TbI29Hw5xUSXZWXEJv63+Y=",
   'Content-Type' => "text/plain",
   'Date' => "Mon, 23 Jan 1984 03:29:56 GMT"
 }
@@ -126,7 +127,7 @@ headers = { 'Content-MD5' => "e59ff97941044f85df5297e1c302d260",
 
 To sign that request, simply call the `sign!` method as follows:
 
-``` ruby
+```ruby
 @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key)
 ```
 
@@ -140,26 +141,26 @@ If you are signing a request for a driver that doesn't support automatic http
 method detection (like Curb or httpi), you can pass the http method as an option
 into the sign! method like so:
 
-``` ruby
+```ruby
 @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :override_http_method => "PUT")
 ```
 
 If you want to use another digest existing in `OpenSSL::Digest`,
 you can pass the http method as an option into the sign! method like so:
 
-``` ruby
+```ruby
 @signed_request = ApiAuth.sign!(@request, @access_id, @secret_key, :digest => 'sha256')
 ```
 
 With the `digest` option, the `Authorization` header will be change from:
 
-```
+```sh
 Authorization = APIAuth 'client access id':'signature'
 ```
 
 to:
 
-```
+```sh
 Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
 ```
 
@@ -168,7 +169,7 @@ Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
 ApiAuth can transparently protect your ActiveResource communications with a
 single configuration line:
 
-``` ruby
+```ruby
 class MyResource < ActiveResource::Base
   with_api_auth(access_id, secret_key)
 end
@@ -181,7 +182,7 @@ This will automatically sign all outgoing ActiveResource requests from your app.
 ApiAuth also works with [Flexirest](https://github.com/andyjeffries/flexirest) (used to be ActiveRestClient, but that is now unsupported) in a very similar way.
 Simply add this configuration to your Flexirest initializer in your app and it will automatically sign all outgoing requests.
 
-``` ruby
+```ruby
 Flexirest::Base.api_auth_credentials(@access_id, @secret_key)
 ```
 
@@ -192,20 +193,20 @@ clients as well as verifying incoming API requests.
 
 To generate a Base64 encoded API key for a client:
 
-``` ruby
+```ruby
 ApiAuth.generate_secret_key
 ```
 
 To validate whether or not a request is authentic:
 
-``` ruby
+```ruby
 ApiAuth.authentic?(signed_request, secret_key)
 ```
 
 The `authentic?` method uses the digest specified in the `Authorization` header.
 For example SHA256 for:
 
-```
+```sh
 Authorization = APIAuth-HMAC-SHA256 'client access id':'signature'
 ```
 
@@ -213,7 +214,7 @@ And by default SHA1 if the HMAC-DIGEST is not specified.
 
 If you want to force the usage of another digest method, you should pass it as an option parameter:
 
-``` ruby
+```ruby
 ApiAuth.authentic?(signed_request, secret_key, :digest => 'sha256')
 ```
 
@@ -272,13 +273,13 @@ To run the tests:
 
 Install the dependencies for a particular Rails version by specifying a gemfile in `gemfiles` directory:
 
-```
+```sh
 BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle install
 ```
 
 Run the tests with those dependencies:
 
-```
+```sh
 BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle exec rake
 ```
 

@@ -6,7 +6,7 @@ describe ApiAuth::RequestDrivers::CurbRequest do
   let(:request) do
     headers = {
       'Authorization' => 'APIAuth 1044:12345',
-      'Content-MD5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+      'X-Authorization-Content-SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
       'Content-Type' => 'text/plain',
       'Date' => timestamp
     }
@@ -22,8 +22,8 @@ describe ApiAuth::RequestDrivers::CurbRequest do
       expect(driven_request.content_type).to eq('text/plain')
     end
 
-    it 'gets the content_md5' do
-      expect(driven_request.content_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+    it 'gets the content_hash' do
+      expect(driven_request.content_hash).to eq('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
     end
 
     it 'gets the request_uri' do
@@ -55,10 +55,10 @@ describe ApiAuth::RequestDrivers::CurbRequest do
       end
     end
 
-    describe '#populate_content_md5' do
+    describe '#populate_content_hash' do
       it 'is a no-op' do
-        expect(driven_request.populate_content_md5).to be_nil
-        expect(request.headers['Content-MD5']).to be_nil
+        expect(driven_request.populate_content_hash).to be_nil
+        expect(request.headers['X-Authorization-Content-SHA256']).to be_nil
       end
     end
 
@@ -86,9 +86,9 @@ describe ApiAuth::RequestDrivers::CurbRequest do
     end
   end
 
-  describe 'md5_mismatch?' do
+  describe 'content_hash_mismatch?' do
     it 'is always false' do
-      expect(driven_request.md5_mismatch?).to be false
+      expect(driven_request.content_hash_mismatch?).to be false
     end
   end
 

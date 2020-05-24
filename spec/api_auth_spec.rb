@@ -36,9 +36,9 @@ describe 'ApiAuth' do
       ApiAuth.sign!(request, 'abc', '123')
     end
 
-    it 'generates content-md5 header before signing' do
+    it 'generates X-Authorization-Content-SHA256 header before signing' do
       expect(ApiAuth::Headers).to receive(:new).and_return(headers)
-      expect(headers).to receive(:calculate_md5).ordered
+      expect(headers).to receive(:calculate_hash).ordered
       expect(headers).to receive(:sign_header).ordered
 
       ApiAuth.sign!(request, 'abc', '123')
@@ -58,7 +58,7 @@ describe 'ApiAuth' do
       let(:request) do
         Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                            'content-type' => 'text/plain',
-                           'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                           'content-hash' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
                            'date' => Time.now.utc.httpdate)
       end
 
@@ -76,7 +76,7 @@ describe 'ApiAuth' do
     let(:request) do
       Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                          'content-type' => 'text/plain',
-                         'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                         'X-Authorization-Content-SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
                          'date' => Time.now.utc.httpdate)
     end
 
@@ -94,8 +94,8 @@ describe 'ApiAuth' do
       expect(ApiAuth.authentic?(signed_request, '456')).to eq false
     end
 
-    it 'fails to validate non matching md5' do
-      request['content-md5'] = '12345'
+    it 'fails to validate non matching hash' do
+      request['X-Authorization-Content-SHA256'] = '12345'
       expect(ApiAuth.authentic?(signed_request, '123')).to eq false
     end
 
@@ -125,7 +125,7 @@ describe 'ApiAuth' do
       let(:request) do
         new_request = Net::HTTP::Put.new('/resource.xml?foo=bar&bar=foo',
                                          'content-type' => 'text/plain',
-                                         'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+                                         'X-Authorization-Content-SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
                                          'date' => Time.now.utc.httpdate)
         canonical_string = ApiAuth::Headers.new(new_request).canonical_string
         signature = hmac('123', new_request, canonical_string, 'sha256')
