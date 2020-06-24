@@ -1,3 +1,6 @@
+# 2.4.1 (2020-06-23)
+- Fix inadvertant ActiveSupport dependecy (#189 taylorthurlow)
+
 # 2.4.0 (2020-05-05)
 - Improved support for Rails 6.0 (#179 taylorthurlow, #177 fwininger)
 - Added Ruby 2.6.0 support (#174 fwininger)
