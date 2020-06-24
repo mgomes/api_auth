@@ -13,8 +13,10 @@ module ApiAuth
         end
       end
 
-      ActiveSupport.on_load(:action_controller) do
-        ActionController::Base.include(ControllerMethods::InstanceMethods)
+      if defined?(ActiveSupport)
+        ActiveSupport.on_load(:action_controller) do
+          ActionController::Base.include(ControllerMethods::InstanceMethods)
+        end
       end
     end # ControllerMethods
 
@@ -80,9 +82,11 @@ module ApiAuth
         end
       end # Connection
 
-      ActiveSupport.on_load(:active_resource) do
-        ActiveResource::Base.include(ActiveResourceApiAuth)
-        ActiveResource::Connection.include(Connection)
+      if defined?(ActiveSupport)
+        ActiveSupport.on_load(:active_resource) do
+          ActiveResource::Base.include(ActiveResourceApiAuth)
+          ActiveResource::Connection.include(Connection)
+        end
       end
     end # ActiveResourceExtension
   end # Rails
