@@ -22,7 +22,7 @@ module ApiAuth
     def sign!(request, access_id, secret_key, options = {})
       options = { override_http_method: nil, digest: 'sha1' }.merge(options)
       headers = Headers.new(request)
-      headers.calculate_md5
+      headers.calculate_hash
       headers.set_date
       headers.sign_header auth_header(headers, access_id, secret_key, options)
     end
@@ -39,7 +39,7 @@ module ApiAuth
       # 900 seconds is 15 minutes
       clock_skew = options.fetch(:clock_skew, 900)
 
-      if headers.md5_mismatch?
+      if headers.content_hash_mismatch?
         false
       elsif !signatures_match?(headers, secret_key, options)
         false

@@ -15,11 +15,11 @@ module ApiAuth
         @request
       end
 
-      def populate_content_md5
+      def populate_content_hash
         nil # doesn't appear to be possible
       end
 
-      def md5_mismatch?
+      def content_hash_mismatch?
         false
       end
 
@@ -35,8 +35,8 @@ module ApiAuth
         find_header(%w[CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE])
       end
 
-      def content_md5
-        find_header(%w[CONTENT-MD5 CONTENT_MD5])
+      def content_hash
+        find_header(%w[X-AUTHORIZATION-CONTENT-SHA256])
       end
 
       def original_uri

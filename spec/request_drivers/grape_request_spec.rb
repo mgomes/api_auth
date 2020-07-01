@@ -26,8 +26,8 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
   let(:timestamp) { Time.now.utc.httpdate }
   let(:request_headers) do
     {
-      'HTTP_X_HMAC_AUTHORIZATION' => 'APIAuth 1044:12345',
-      'HTTP_X_HMAC_CONTENT_MD5' => 'WEqCyXEuRBYZbohpZmUyAw==',
+      'HTTP_X_AUTHORIZATION' => 'APIAuth 1044:12345',
+      'HTTP_X_AUTHORIZATION_CONTENT_SHA256' => 'bxVSdFeR6aHBtw7+EBi5Bt8KllUZpUutOg9ChQmaSPA=',
       'HTTP_X_HMAC_CONTENT_TYPE' => 'text/plain',
       'HTTP_X_HMAC_DATE' => timestamp
     }
@@ -40,8 +40,8 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       expect(driven_request.content_type).to eq('text/plain')
     end
 
-    it 'gets the content_md5' do
-      expect(driven_request.content_md5).to eq('WEqCyXEuRBYZbohpZmUyAw==')
+    it 'gets the content_hash' do
+      expect(driven_request.content_hash).to eq('bxVSdFeR6aHBtw7+EBi5Bt8KllUZpUutOg9ChQmaSPA=')
     end
 
     it 'gets the request_uri' do
@@ -56,16 +56,16 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
     end
 
-    describe '#calculated_md5' do
-      it 'calculates md5 from the body' do
-        expect(driven_request.calculated_md5).to eq('WEqCyXEuRBYZbohpZmUyAw==')
+    describe '#calculated_hash' do
+      it 'calculates hash from the body' do
+        expect(driven_request.calculated_hash).to eq('bxVSdFeR6aHBtw7+EBi5Bt8KllUZpUutOg9ChQmaSPA=')
       end
 
       context 'no body' do
         let(:params) { {} }
 
         it 'treats no body as empty string' do
-          expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+          expect(driven_request.calculated_hash).to eq('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
         end
       end
     end
@@ -96,50 +96,50 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       }
     end
 
-    describe '#populate_content_md5' do
+    describe '#populate_content_hash' do
       context 'when getting' do
         let(:method) { 'get' }
 
-        it "doesn't populate content-md5" do
-          driven_request.populate_content_md5
-          expect(request.headers['Content-Md5']).to be_nil
+        it "doesn't populate content hash" do
+          driven_request.populate_content_hash
+          expect(request.headers['X-Authorization-Content-Sha256']).to be_nil
         end
       end
 
       context 'when posting' do
         let(:method) { 'post' }
 
-        it 'populates content-md5' do
-          driven_request.populate_content_md5
-          expect(request.headers['Content-Md5']).to eq('WEqCyXEuRBYZbohpZmUyAw==')
+        it 'populates content bash' do
+          driven_request.populate_content_hash
+          expect(request.headers['X-Authorization-Content-Sha256']).to eq('bxVSdFeR6aHBtw7+EBi5Bt8KllUZpUutOg9ChQmaSPA=')
         end
 
         it 'refreshes the cached headers' do
-          driven_request.populate_content_md5
-          expect(driven_request.content_md5).to eq('WEqCyXEuRBYZbohpZmUyAw==')
+          driven_request.populate_content_hash
+          expect(driven_request.content_hash).to eq('bxVSdFeR6aHBtw7+EBi5Bt8KllUZpUutOg9ChQmaSPA=')
         end
       end
 
       context 'when putting' do
         let(:method) { 'put' }
 
-        it 'populates content-md5' do
-          driven_request.populate_content_md5
-          expect(request.headers['Content-Md5']).to eq('WEqCyXEuRBYZbohpZmUyAw==')
+        it 'populates content hash' do
+          driven_request.populate_content_hash
+          expect(request.headers['X-Authorization-Content-Sha256']).to eq('bxVSdFeR6aHBtw7+EBi5Bt8KllUZpUutOg9ChQmaSPA=')
         end
 
         it 'refreshes the cached headers' do
-          driven_request.populate_content_md5
-          expect(driven_request.content_md5).to eq('WEqCyXEuRBYZbohpZmUyAw==')
+          driven_request.populate_content_hash
+          expect(driven_request.content_hash).to eq('bxVSdFeR6aHBtw7+EBi5Bt8KllUZpUutOg9ChQmaSPA=')
         end
       end
 
       context 'when deleting' do
         let(:method) { 'delete' }
 
-        it "doesn't populate content-md5" do
-          driven_request.populate_content_md5
-          expect(request.headers['Content-Md5']).to be_nil
+        it "doesn't populate content hash" do
+          driven_request.populate_content_hash
+          expect(request.headers['X-Authorization-Content-Sha256']).to be_nil
         end
       end
     end
@@ -169,12 +169,12 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
     end
   end
 
-  describe 'md5_mismatch?' do
+  describe 'content_hash_mismatch?' do
     context 'when getting' do
       let(:method) { 'get' }
 
       it 'is false' do
-        expect(driven_request.md5_mismatch?).to be false
+        expect(driven_request.content_hash_mismatch?).to be false
       end
     end
 
@@ -183,7 +183,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
 
       context 'when calculated matches sent' do
         it 'is false' do
-          expect(driven_request.md5_mismatch?).to be false
+          expect(driven_request.content_hash_mismatch?).to be false
         end
       end
 
@@ -191,7 +191,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
         let(:params) { { 'message' => 'hello only' } }
 
         it 'is true' do
-          expect(driven_request.md5_mismatch?).to be true
+          expect(driven_request.content_hash_mismatch?).to be true
         end
       end
     end
@@ -201,14 +201,15 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
 
       context 'when calculated matches sent' do
         it 'is false' do
-          expect(driven_request.md5_mismatch?).to be false
+          puts driven_request.calculated_hash
+          expect(driven_request.content_hash_mismatch?).to be false
         end
       end
 
       context "when calculated doesn't match sent" do
         let(:params) { { 'message' => 'hello only' } }
         it 'is true' do
-          expect(driven_request.md5_mismatch?).to be true
+          expect(driven_request.content_hash_mismatch?).to be true
         end
       end
     end
@@ -217,7 +218,7 @@ describe ApiAuth::RequestDrivers::GrapeRequest do
       let(:method) { 'delete' }
 
       it 'is false' do
-        expect(driven_request.md5_mismatch?).to be false
+        expect(driven_request.content_hash_mismatch?).to be false
       end
     end
   end

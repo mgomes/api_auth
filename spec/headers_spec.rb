@@ -53,7 +53,7 @@ describe ApiAuth::Headers do
         before do
           allow(driver).to receive(:http_method).and_return 'GET'
           allow(driver).to receive(:content_type).and_return 'text/html'
-          allow(driver).to receive(:content_md5).and_return '12345'
+          allow(driver).to receive(:content_hash).and_return '12345'
           allow(driver).to receive(:request_uri).and_return '/foo'
           allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
         end
@@ -83,7 +83,7 @@ describe ApiAuth::Headers do
         before do
           allow(driver).to receive(:http_method).and_return nil
           allow(driver).to receive(:content_type).and_return 'text/html'
-          allow(driver).to receive(:content_md5).and_return '12345'
+          allow(driver).to receive(:content_hash).and_return '12345'
           allow(driver).to receive(:request_uri).and_return '/foo'
           allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
         end
@@ -115,7 +115,7 @@ describe ApiAuth::Headers do
 
         before do
           allow(driver).to receive(:content_type).and_return 'text/html'
-          allow(driver).to receive(:content_md5).and_return '12345'
+          allow(driver).to receive(:content_hash).and_return '12345'
           allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
         end
 
@@ -140,7 +140,7 @@ describe ApiAuth::Headers do
 
         before do
           allow(driver).to receive(:content_type).and_return 'text/html'
-          allow(driver).to receive(:content_md5).and_return '12345'
+          allow(driver).to receive(:content_hash).and_return '12345'
           allow(driver).to receive(:timestamp).and_return 'Mon, 23 Jan 1984 03:29:56 GMT'
         end
 
@@ -154,11 +154,11 @@ describe ApiAuth::Headers do
     end
   end
 
-  describe '#calculate_md5' do
+  describe '#calculate_hash' do
     subject(:headers) { described_class.new(request) }
     let(:driver) { headers.instance_variable_get('@request') }
 
-    context 'no md5 already calculated' do
+    context 'no content hash already calculated' do
       let(:request) do
         RestClient::Request.new(
           url: 'http://google.com',
@@ -167,55 +167,55 @@ describe ApiAuth::Headers do
         )
       end
 
-      it 'populates the md5 header' do
-        expect(driver).to receive(:populate_content_md5)
-        headers.calculate_md5
+      it 'populates the content hash header' do
+        expect(driver).to receive(:populate_content_hash)
+        headers.calculate_hash
       end
     end
 
-    context 'md5 already calculated' do
+    context 'hash already calculated' do
       let(:request) do
         RestClient::Request.new(
           url: 'http://google.com',
           method: :post,
           payload: "hello\nworld",
-          headers: { content_md5: 'abcd' }
+          headers: { 'X-Authorization-Content-SHA256' => 'abcd' }
         )
       end
 
-      it "doesn't populate the md5 header" do
-        expect(driver).not_to receive(:populate_content_md5)
-        headers.calculate_md5
+      it "doesn't populate the X-Authorization-Content-SHA256 header" do
+        expect(driver).not_to receive(:populate_content_hash)
+        headers.calculate_hash
       end
     end
   end
 
-  describe '#md5_mismatch?' do
+  describe '#content_hash_mismatch?' do
     let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
     subject(:headers) { described_class.new(request) }
     let(:driver) { headers.instance_variable_get('@request') }
 
-    context 'when request has md5 header' do
+    context 'when request has X-Authorization-Content-SHA256 header' do
       it 'asks the driver' do
-        allow(driver).to receive(:content_md5).and_return '1234'
+        allow(driver).to receive(:content_hash).and_return '1234'
 
-        expect(driver).to receive(:md5_mismatch?).and_call_original
-        headers.md5_mismatch?
+        expect(driver).to receive(:content_hash_mismatch?).and_call_original
+        headers.content_hash_mismatch?
       end
     end
 
-    context 'when request has no md5' do
+    context 'when request has no content hash' do
       it "doesn't ask the driver" do
-        allow(driver).to receive(:content_md5).and_return nil
+        allow(driver).to receive(:content_hash).and_return nil
 
-        expect(driver).not_to receive(:md5_mismatch?).and_call_original
-        headers.md5_mismatch?
+        expect(driver).not_to receive(:content_hash_mismatch?).and_call_original
+        headers.content_hash_mismatch?
       end
 
       it 'returns false' do
-        allow(driver).to receive(:content_md5).and_return nil
+        allow(driver).to receive(:content_hash).and_return nil
 
-        expect(headers.md5_mismatch?).to be false
+        expect(headers.content_hash_mismatch?).to be false
       end
     end
   end
