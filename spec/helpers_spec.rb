@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
 describe 'ApiAuth::Helpers' do
   it 'should strip the new line character on a Base64 encoding' do
