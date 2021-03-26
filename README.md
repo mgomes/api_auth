@@ -67,7 +67,7 @@ minutes in order to avoid replay attacks.
 
 ## Requirement
 
-This gem require Ruby >= 2.3 and Rails >= 4.0 if you use rails.
+This gem require Ruby >= 2.5 and Rails >= 5.1 if you use rails.
 
 For older version of Ruby or Rails, please use ApiAuth v2.1 and older.
 
@@ -291,6 +291,7 @@ the public methods for each driver are required to be implemented by your driver
 
 * [Mauricio Gomes](http://github.com/mgomes)
 * [Kevin Glowacz](http://github.com/kjg)
+* [Florian Wininger](http://github.com/fwininger)
 
 ## Copyright
 
