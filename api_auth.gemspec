@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors = ['Mauricio Gomes']
   s.email = 'mauricio@edge14.com'
 
-  s.required_ruby_version = '>= 2.4.0'
+  s.required_ruby_version = '>= 2.5.0'
 
   s.add_development_dependency 'actionpack', '< 6.1', '> 4.0'
   s.add_development_dependency 'activeresource', '>= 4.0'
