@@ -21,14 +21,14 @@ module ApiAuth
       end
 
       def populate_content_hash
-        return unless %w[POST PUT].include?(@request.method.to_s.upcase)
+        return unless %w[POST PUT].include?(@request.http_method.to_s.upcase)
 
         @request.headers['X-Authorization-Content-SHA256'] = calculated_hash
         fetch_headers
       end
 
       def content_hash_mismatch?
-        if %w[POST PUT].include?(@request.method.to_s.upcase)
+        if %w[POST PUT].include?(@request.http_method.to_s.upcase)
           calculated_hash != content_hash
         else
           false
@@ -40,7 +40,7 @@ module ApiAuth
       end
 
       def http_method
-        @request.method.to_s.upcase
+        @request.http_method.to_s.upcase
       end
 
       def content_type
