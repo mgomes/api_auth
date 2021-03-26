@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'amatch'
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'curb', '~> 0.8'
-  s.add_development_dependency 'faraday', '>= 0.10'
+  s.add_development_dependency 'faraday', '>= 1.1.0'
   s.add_development_dependency 'http'
   s.add_development_dependency 'httpi'
   s.add_development_dependency 'multipart-post', '~> 2.0'
