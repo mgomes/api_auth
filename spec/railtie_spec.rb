@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
 describe 'Rails integration' do
   API_KEY_STORE = { '1044' => 'l16imAXie1sRMcJODpOG7UwC1VyoqvO13jejkfpKWX4Z09W8DC9IrU23DvCwMry7pgSFW6c5S1GIfV0OY6F/vUA==' }.freeze
@@ -8,8 +8,8 @@ describe 'Rails integration' do
       private
 
       def require_api_auth
-        if (access_id = get_api_access_id_from_request)
-          return true if api_authenticated?(API_KEY_STORE[access_id])
+        if (access_id = get_api_access_id_from_request) && api_authenticated?(API_KEY_STORE[access_id])
+          return true
         end
 
         respond_to do |format|
