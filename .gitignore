@@ -9,3 +9,4 @@
 /.yardoc
 gemfiles/*.lock
 /.idea
+*.gem
