@@ -17,6 +17,7 @@ require 'http'
 require 'httpi'
 require 'faraday'
 require 'grape'
+require 'typhoeus'
 require 'net/http/post/multipart'
 
 # Requires supporting files with custom matchers and macros, etc,
