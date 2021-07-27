@@ -48,7 +48,7 @@ module ApiAuth
       end
 
       def content_hash
-        find_header(%w[X-AUTHORIZATION-CONTENT-SHA256])
+        find_header(%w[X-AUTHORIZATION-CONTENT-SHA256 X_AUTHORIZATION_CONTENT_SHA256 HTTP_X_AUTHORIZATION_CONTENT_SHA256])
       end
 
       def original_uri
