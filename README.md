@@ -1,6 +1,6 @@
 # ApiAuth
 
-[![Build Status](https://travis-ci.org/mgomes/api_auth.svg?branch=master)](https://travis-ci.org/mgomes/api_auth)
+[![Build Status](https://github.com/mgomes/api_auth/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/mgomes/api_auth/actions)
 [![Gem Version](https://badge.fury.io/rb/api-auth.svg)](https://badge.fury.io/rb/api-auth)
 
 Logins and passwords are for humans. Communication between applications need to

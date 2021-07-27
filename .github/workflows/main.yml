@@ -1,0 +1,67 @@
+name: main
+on:
+  - push
+  - pull_request
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        ruby-version:
+          - 2.5
+          - 2.6
+          - 2.7
+          - 3.0
+        gemfile:
+          - rails_52.gemfile
+          - rails_60.gemfile
+          - rails_61.gemfile
+        exclude:
+          - ruby-version: [ 2.6, 2.7, 3.0 ]
+            gemfile: rails_52.gemfile
+          - ruby-version: 3.0
+            gemfile: rails_60.gemfile
+    steps:
+      - name: Install packages required for `curb` gem
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4 libcurl3-gnutls libcurl4-openssl-dev
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Install required gems
+        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle install
+
+      - name: Run rspec tests
+        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }} bundle exec rspec
+
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install packages required for `curb` gem
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4 libcurl3-gnutls libcurl4-openssl-dev
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+          bundler-cache: true
+
+      - name: Install required gems
+        run: bundle install
+
+      - name: Run rubocop
+        run: bundle exec rubocop

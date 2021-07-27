@@ -8,5 +8,6 @@
 /doc
 /.yardoc
 gemfiles/*.lock
+gemfiles/.bundle/
 /.idea
 *.gem
