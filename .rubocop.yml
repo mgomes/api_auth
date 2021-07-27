@@ -1,6 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
+  NewCops: enable
   TargetRubyVersion: 2.5
 
 Metrics/AbcSize:
@@ -17,10 +18,18 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
+    - 'api_auth.gemspec'
 
 Naming/FileName:
   Exclude:
     - 'lib/api-auth.rb'
 
 Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/StringLiterals:
+  Exclude:
+    - 'gemfiles/*.gemfile'
+
+Lint/DuplicateBranch:
   Enabled: false
