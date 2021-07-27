@@ -11,7 +11,7 @@ if defined?(ActionDispatch::Request)
         'PATH_INFO' => '/resource.xml',
         'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
-        'X-Authorization-Content-SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
+        'HTTP_X_AUTHORIZATION_CONTENT_SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
         'CONTENT_TYPE' => 'text/plain',
         'CONTENT_LENGTH' => '11',
         'HTTP_DATE' => timestamp,
