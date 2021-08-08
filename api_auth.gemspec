@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.version = File.read(File.join(File.dirname(__FILE__), 'VERSION'))
   s.authors = ['Mauricio Gomes']
   s.email = 'mauricio@edge14.com'
+  s.license = 'MIT'
 
   s.required_ruby_version = '>= 2.5.0'
 
