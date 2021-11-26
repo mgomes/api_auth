@@ -10,6 +10,10 @@ Gem::Specification.new do |s|
   s.email = 'mauricio@edge14.com'
   s.license = 'MIT'
 
+  s.metadata = {
+    'rubygems_mfa_required' => 'true'
+  }
+
   s.required_ruby_version = '>= 2.5.0'
 
   s.add_development_dependency 'actionpack', '< 6.2', '> 5.0'
