@@ -4,6 +4,7 @@ if defined?(ActionDispatch::Request)
 
   describe ApiAuth::RequestDrivers::ActionDispatchRequest do
     let(:timestamp) { Time.now.utc.httpdate }
+    let(:content_sha256) { '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' }
 
     let(:request) do
       ActionDispatch::Request.new(
@@ -11,7 +12,35 @@ if defined?(ActionDispatch::Request)
         'PATH_INFO' => '/resource.xml',
         'QUERY_STRING' => 'foo=bar&bar=foo',
         'REQUEST_METHOD' => 'PUT',
-        'HTTP_X_AUTHORIZATION_CONTENT_SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
+        'HTTP_X_AUTHORIZATION_CONTENT_SHA256' => content_sha256,
+        'CONTENT_TYPE' => 'text/plain',
+        'CONTENT_LENGTH' => '11',
+        'HTTP_DATE' => timestamp,
+        'rack.input' => StringIO.new("hello\nworld")
+      )
+    end
+
+    let(:request2) do
+      ActionDispatch::Request.new(
+        'AUTHORIZATION' => 'APIAuth 1044:12345',
+        'PATH_INFO' => '/resource.xml',
+        'QUERY_STRING' => 'foo=bar&bar=foo',
+        'REQUEST_METHOD' => 'PUT',
+        'X_AUTHORIZATION_CONTENT_SHA256' => content_sha256,
+        'CONTENT_TYPE' => 'text/plain',
+        'CONTENT_LENGTH' => '11',
+        'HTTP_DATE' => timestamp,
+        'rack.input' => StringIO.new("hello\nworld")
+      )
+    end
+
+    let(:request3) do
+      ActionDispatch::Request.new(
+        'AUTHORIZATION' => 'APIAuth 1044:12345',
+        'PATH_INFO' => '/resource.xml',
+        'QUERY_STRING' => 'foo=bar&bar=foo',
+        'REQUEST_METHOD' => 'PUT',
+        'X-AUTHORIZATION-CONTENT-SHA256' => content_sha256,
         'CONTENT_TYPE' => 'text/plain',
         'CONTENT_LENGTH' => '11',
         'HTTP_DATE' => timestamp,
@@ -27,7 +56,17 @@ if defined?(ActionDispatch::Request)
       end
 
       it 'gets the content_hash' do
-        expect(driven_request.content_hash).to eq('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
+        expect(driven_request.content_hash).to eq(content_sha256)
+      end
+
+      it 'gets the content_hash for request 2' do
+        example_request = ApiAuth::RequestDrivers::ActionDispatchRequest.new(request2)
+        expect(example_request.content_hash).to eq(content_sha256)
+      end
+
+      it 'gets the content_hash for request 3' do
+        example_request = ApiAuth::RequestDrivers::ActionDispatchRequest.new(request3)
+        expect(example_request.content_hash).to eq(content_sha256)
       end
 
       it 'gets the request_uri' do
