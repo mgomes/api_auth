@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
 
   s.metadata = {
-    "rubygems_mfa_required" => "true"
+    'rubygems_mfa_required' => 'true'
   }
 
   s.required_ruby_version = '>= 2.5.0'
