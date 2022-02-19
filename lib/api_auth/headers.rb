@@ -36,6 +36,8 @@ module ApiAuth
           HttpiRequest.new(request)
         when /Faraday::Request/
           FaradayRequest.new(request)
+        when /Typhoeus::Request/
+          TyphoeusRequest.new(request)
         when /HTTP::Request/
           HttpRequest.new(request)
         end
