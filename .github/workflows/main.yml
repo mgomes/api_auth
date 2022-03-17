@@ -9,19 +9,23 @@ jobs:
       fail-fast: true
       matrix:
         ruby-version:
-          - 2.5
           - 2.6
           - 2.7
           - 3.0
+          - 3.1
         gemfile:
-          - rails_52.gemfile
           - rails_60.gemfile
           - rails_61.gemfile
+          - rails_70.gemfile
         exclude:
-          - ruby-version: [ 2.6, 2.7, 3.0 ]
-            gemfile: rails_52.gemfile
           - ruby-version: 3.0
             gemfile: rails_60.gemfile
+          - ruby-version: 3.1
+            gemfile: rails_60.gemfile 
+          - ruby-version: 2.6
+            gemfile: rails_70.gemfile
+          - ruby-version: 2.7
+            gemfile: rails_70.gemfile
     steps:
       - name: Install packages required for `curb` gem
         run: |
@@ -57,7 +61,7 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0
+          ruby-version: 3.1
           bundler-cache: true
 
       - name: Install required gems

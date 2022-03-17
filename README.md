@@ -7,7 +7,7 @@ Logins and passwords are for humans. Communication between applications need to
 be protected through different means.
 
 ApiAuth is a Ruby gem designed to be used both in your client and server
-HTTP-based applications. It implements the same authentication methods (HMAC-SHA1)
+HTTP-based applications. It implements the same authentication methods (HMAC-SHA2)
 used by Amazon Web Services.
 
 The gem will sign your requests on the client side and authenticate that
@@ -51,7 +51,7 @@ A cURL request would look like:
 curl -X POST --header 'Content-Type: application/json' --header "Date: Tue, 30 May 2017 03:51:43 GMT" --header "Authorization: ${AUTHORIZATION}"  http://my-app.com/request_path`
 ```
 
-5. On the server side, the SHA1 HMAC is computed in the same way using the
+5. On the server side, the SHA2 HMAC is computed in the same way using the
 request headers and the client's secret key, which is known to only
 the client and the server but can be looked up on the server using the client's
 access id that was attached in the header. The access id can be any integer or
@@ -61,17 +61,13 @@ minutes in order to avoid replay attacks.
 ## References
 
 * [Hash functions](http://en.wikipedia.org/wiki/Cryptographic_hash_function)
-* [SHA-1 Hash function](http://en.wikipedia.org/wiki/SHA-1)
+* [SHA-2 Hash function](http://en.wikipedia.org/wiki/SHA-2)
 * [HMAC algorithm](http://en.wikipedia.org/wiki/HMAC)
 * [RFC 2104 (HMAC)](http://tools.ietf.org/html/rfc2104)
 
 ## Requirement
 
-This gem require Ruby >= 2.5 and Rails >= 5.1 if you use rails.
-
-For older version of Ruby or Rails, please use ApiAuth v2.1 and older.
-
-**IMPORTANT: v2.0.0 is backwards incompatible with the default settings of v1.x to address a security vulnerability. See [CHANGELOG.md](/CHANGELOG.md) for security update information.**
+This gem require Ruby >= 2.6 and Rails >= 6.0 if you use rails.
 
 ## Install
 

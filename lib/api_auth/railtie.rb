@@ -18,7 +18,7 @@ module ApiAuth
           ActionController::Base.include(ControllerMethods::InstanceMethods)
         end
       end
-    end # ControllerMethods
+    end
 
     module ActiveResourceExtension # :nodoc:
       module ActiveResourceApiAuth # :nodoc:
@@ -51,11 +51,11 @@ module ApiAuth
             c.api_auth_options = api_auth_options
             c
           end
-        end # class methods
+        end
 
         module InstanceMethods
         end
-      end # BaseApiAuth
+      end
 
       module Connection
         def self.included(base)
@@ -82,7 +82,7 @@ module ApiAuth
 
           request_without_auth(method, path, *arguments)
         end
-      end # Connection
+      end
 
       if defined?(ActiveSupport)
         ActiveSupport.on_load(:active_resource) do
@@ -90,6 +90,6 @@ module ApiAuth
           ActiveResource::Connection.include(Connection)
         end
       end
-    end # ActiveResourceExtension
-  end # Rails
-end # ApiAuth
+    end
+  end
+end

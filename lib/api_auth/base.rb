@@ -118,5 +118,5 @@ module ApiAuth
     def parse_auth_header(auth_header)
       AUTH_HEADER_PATTERN.match(auth_header)
     end
-  end # class methods
-end # ApiAuth
+  end
+end
