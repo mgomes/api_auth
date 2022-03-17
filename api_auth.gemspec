@@ -14,24 +14,24 @@ Gem::Specification.new do |s|
     'rubygems_mfa_required' => 'true'
   }
 
-  s.required_ruby_version = '>= 2.5.0'
+  s.required_ruby_version = '>= 2.6.0'
 
-  s.add_development_dependency 'actionpack', '< 6.2', '> 5.0'
+  s.add_development_dependency 'actionpack', '>= 6.0'
   s.add_development_dependency 'activeresource', '>= 4.0'
-  s.add_development_dependency 'activesupport', '< 6.2', '> 5.0'
+  s.add_development_dependency 'activesupport', '>= 6.0'
   s.add_development_dependency 'amatch'
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'curb', '~> 0.8'
   s.add_development_dependency 'faraday', '>= 1.1.0'
+  s.add_development_dependency 'grape', '~> 1.1.0'
   s.add_development_dependency 'http'
   s.add_development_dependency 'httpi'
   s.add_development_dependency 'multipart-post', '~> 2.0'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rest-client', '~> 2.0'
-  s.add_development_dependency 'grape', '~> 1.1.0'
-  s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'rexml'
+  s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'rubocop'
 
   s.files         = `git ls-files`.split("\n")
