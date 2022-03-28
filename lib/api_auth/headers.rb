@@ -3,13 +3,13 @@ module ApiAuth
   class Headers
     include RequestDrivers
 
-    def initialize(request)
+    def initialize(request, authorize_md5: false)
       @original_request = request
-      @request = initialize_request_driver(request)
+      @request = initialize_request_driver(request, authorize_md5: authorize_md5)
       true
     end
 
-    def initialize_request_driver(request)
+    def initialize_request_driver(request, authorize_md5: false)
       new_request =
         case request.class.to_s
         when /Net::HTTP/
@@ -29,7 +29,7 @@ module ApiAuth
         when /Grape::Request/
           GrapeRequest.new(request)
         when /ActionDispatch::Request/
-          ActionDispatchRequest.new(request)
+          ActionDispatchRequest.new(request, authorize_md5: authorize_md5)
         when /ActionController::CgiRequest/
           ActionControllerRequest.new(request)
         when /HTTPI::Request/

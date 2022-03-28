@@ -3,8 +3,9 @@ module ApiAuth
     class ActionControllerRequest # :nodoc:
       include ApiAuth::Helpers
 
-      def initialize(request)
+      def initialize(request, authorize_md5: false)
         @request = request
+        @authorize_md5 = authorize_md5
         fetch_headers
         true
       end
@@ -17,7 +18,9 @@ module ApiAuth
 
       def calculated_hash
         body = @request.raw_post
-        sha256_base64digest(body)
+        hashes = [sha256_base64digest(body)]
+        hashes << md5_base64digest(body) if @authorize_md5
+        hashes
       end
 
       def populate_content_hash
@@ -29,7 +32,7 @@ module ApiAuth
 
       def content_hash_mismatch?
         if @request.put? || @request.post?
-          calculated_hash != content_hash
+          !calculated_hash.include?(content_hash)
         else
           false
         end
@@ -48,7 +51,9 @@ module ApiAuth
       end
 
       def content_hash
-        find_header(%w[X-AUTHORIZATION-CONTENT-SHA256 X_AUTHORIZATION_CONTENT_SHA256 HTTP_X_AUTHORIZATION_CONTENT_SHA256])
+        headers = %w[X-AUTHORIZATION-CONTENT-SHA256 X_AUTHORIZATION_CONTENT_SHA256 HTTP_X_AUTHORIZATION_CONTENT_SHA256]
+        headers += %w[CONTENT-MD5 CONTENT_MD5 HTTP_CONTENT_MD5] if @authorize_md5
+        find_header(headers)
       end
 
       def original_uri
