@@ -32,9 +32,9 @@ module ApiAuth
     def authentic?(request, secret_key, options = {})
       return false if secret_key.nil?
 
-      options = { override_http_method: nil }.merge(options)
+      options = { override_http_method: nil, authorize_md5: false }.merge(options)
 
-      headers = Headers.new(request)
+      headers = Headers.new(request, authorize_md5: options[:authorize_md5])
 
       # 900 seconds is 15 minutes
       clock_skew = options.fetch(:clock_skew, 900)

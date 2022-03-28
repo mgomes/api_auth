@@ -8,6 +8,10 @@ module ApiAuth
       Digest::SHA256.base64digest(string)
     end
 
+    def md5_base64digest(string)
+      Digest::MD5.base64digest(string)
+    end
+
     # Capitalizes the keys of a hash
     def capitalize_keys(hsh)
       capitalized_hash = {}
