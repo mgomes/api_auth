@@ -8,7 +8,7 @@ describe ApiAuth::Headers do
       let(:uri) { '' }
 
       context 'uri with just host without /' do
-        let(:uri) { 'http://google.com'.freeze }
+        let(:uri) { 'https://google.com'.freeze }
 
         it 'return / as canonical string path' do
           expect(subject.canonical_string).to eq('GET,,,/,')
@@ -20,7 +20,7 @@ describe ApiAuth::Headers do
       end
 
       context 'uri with host and /' do
-        let(:uri) { 'http://google.com/'.freeze }
+        let(:uri) { 'https://google.com/'.freeze }
 
         it 'return / as canonical string path' do
           expect(subject.canonical_string).to eq('GET,,,/,')
@@ -31,8 +31,8 @@ describe ApiAuth::Headers do
         end
       end
 
-      context 'uri has a string matching http:// in it' do
-        let(:uri) { 'http://google.com/?redirect_to=https://www.example.com'.freeze }
+      context 'uri has a string matching https:// in it' do
+        let(:uri) { 'https://google.com/?redirect_to=https://www.example.com'.freeze }
 
         it 'return /?redirect_to=https://www.example.com as canonical string path' do
           expect(subject.canonical_string).to eq('GET,,,/?redirect_to=https://www.example.com,')
@@ -46,7 +46,7 @@ describe ApiAuth::Headers do
 
     context 'string construction' do
       context 'with a driver that supplies http_method' do
-        let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
+        let(:request) { RestClient::Request.new(url: 'https://google.com', method: :get) }
         subject(:headers) { described_class.new(request) }
         let(:driver) { headers.instance_variable_get('@request') }
 
@@ -161,7 +161,7 @@ describe ApiAuth::Headers do
     context 'no content hash already calculated' do
       let(:request) do
         RestClient::Request.new(
-          url: 'http://google.com',
+          url: 'https://google.com',
           method: :post,
           payload: "hello\nworld"
         )
@@ -176,7 +176,7 @@ describe ApiAuth::Headers do
     context 'hash already calculated' do
       let(:request) do
         RestClient::Request.new(
-          url: 'http://google.com',
+          url: 'https://google.com',
           method: :post,
           payload: "hello\nworld",
           headers: { 'X-Authorization-Content-SHA256' => 'abcd' }
@@ -191,7 +191,7 @@ describe ApiAuth::Headers do
   end
 
   describe '#content_hash_mismatch?' do
-    let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
+    let(:request) { RestClient::Request.new(url: 'https://google.com', method: :get) }
     subject(:headers) { described_class.new(request) }
     let(:driver) { headers.instance_variable_get('@request') }
 

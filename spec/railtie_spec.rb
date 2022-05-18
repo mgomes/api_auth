@@ -116,7 +116,7 @@ describe 'Rails integration' do
   describe 'Rails ActiveResource integration' do
     class TestResource < ActiveResource::Base
       with_api_auth '1044', API_KEY_STORE['1044']
-      self.site = 'http://localhost/'
+      self.site = 'https://localhost/'
       self.format = :xml
     end
 

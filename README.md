@@ -48,7 +48,7 @@ Authorization = APIAuth "#{client access id}:#{signature from step 2}"
 A cURL request would look like:
 
 ```sh
-curl -X POST --header 'Content-Type: application/json' --header "Date: Tue, 30 May 2017 03:51:43 GMT" --header "Authorization: ${AUTHORIZATION}"  http://my-app.com/request_path`
+curl -X POST --header 'Content-Type: application/json' --header "Date: Tue, 30 May 2017 03:51:43 GMT" --header "Authorization: ${AUTHORIZATION}"  https://my-app.com/request_path`
 ```
 
 5. On the server side, the SHA2 HMAC is computed in the same way using the
@@ -60,10 +60,10 @@ minutes in order to avoid replay attacks.
 
 ## References
 
-* [Hash functions](http://en.wikipedia.org/wiki/Cryptographic_hash_function)
-* [SHA-2 Hash function](http://en.wikipedia.org/wiki/SHA-2)
-* [HMAC algorithm](http://en.wikipedia.org/wiki/HMAC)
-* [RFC 2104 (HMAC)](http://tools.ietf.org/html/rfc2104)
+* [Hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function)
+* [SHA-2 Hash function](https://en.wikipedia.org/wiki/SHA-2)
+* [HMAC algorithm](https://en.wikipedia.org/wiki/HMAC)
+* [RFC 2104 (HMAC)](https://tools.ietf.org/html/rfc2104)
 
 ## Requirement
 
@@ -285,9 +285,9 @@ the public methods for each driver are required to be implemented by your driver
 
 ## Authors
 
-* [Mauricio Gomes](http://github.com/mgomes)
-* [Kevin Glowacz](http://github.com/kjg)
-* [Florian Wininger](http://github.com/fwininger)
+* [Mauricio Gomes](https://github.com/mgomes)
+* [Kevin Glowacz](https://github.com/kjg)
+* [Florian Wininger](https://github.com/fwininger)
 
 ## Copyright
 

@@ -4,7 +4,7 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
   let(:timestamp) { Time.now.utc.httpdate }
 
   let(:request) do
-    httpi_request = HTTPI::Request.new('http://localhost/resource.xml?foo=bar&bar=foo')
+    httpi_request = HTTPI::Request.new('https://localhost/resource.xml?foo=bar&bar=foo')
     httpi_request.headers.merge!('Authorization' => 'APIAuth 1044:12345',
                                  'X-Authorization-Content-SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
                                  'content-type' => 'text/plain',
@@ -56,7 +56,7 @@ describe ApiAuth::RequestDrivers::HttpiRequest do
 
   describe 'setting headers correctly' do
     let(:request) do
-      httpi_request = HTTPI::Request.new('http://localhost/resource.xml?foo=bar&bar=foo')
+      httpi_request = HTTPI::Request.new('https://localhost/resource.xml?foo=bar&bar=foo')
       httpi_request.headers['content-type'] = 'text/plain'
       httpi_request
     end

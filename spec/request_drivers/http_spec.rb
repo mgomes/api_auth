@@ -13,7 +13,7 @@ describe ApiAuth::RequestDrivers::HttpRequest do
   end
 
   let(:verb) { :put }
-  let(:uri) { 'http://localhost/resource.xml?foo=bar&bar=foo' }
+  let(:uri) { 'https://localhost/resource.xml?foo=bar&bar=foo' }
   let(:body) { "hello\nworld" }
 
   let(:headers) do

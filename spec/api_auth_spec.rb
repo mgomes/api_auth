@@ -24,7 +24,7 @@ describe 'ApiAuth' do
   end
 
   describe '.sign!' do
-    let(:request) { RestClient::Request.new(url: 'http://google.com', method: :get) }
+    let(:request) { RestClient::Request.new(url: 'https://google.com', method: :get) }
     let(:headers) { ApiAuth::Headers.new(request) }
 
     it 'generates date header before signing' do
@@ -182,7 +182,7 @@ describe 'ApiAuth' do
     context 'normal APIAuth Auth header' do
       let(:request) do
         RestClient::Request.new(
-          url: 'http://google.com',
+          url: 'https://google.com',
           method: :get,
           headers: { authorization: 'APIAuth 1044:aGVsbG8gd29ybGQ=' }
         )
@@ -196,7 +196,7 @@ describe 'ApiAuth' do
     context 'Corporate prefixed APIAuth header' do
       let(:request) do
         RestClient::Request.new(
-          url: 'http://google.com',
+          url: 'https://google.com',
           method: :get,
           headers: { authorization: 'Corporate APIAuth 1044:aGVsbG8gd29ybGQ=' }
         )
