@@ -182,6 +182,19 @@ Simply add this configuration to your Flexirest initializer in your app and it w
 Flexirest::Base.api_auth_credentials(@access_id, @secret_key)
 ```
 
+### Faraday
+
+ApiAuth provides a middleware for adding authentication to a Faraday connection:
+
+```ruby
+require 'faraday/api_auth'
+Faraday.new do |f|
+  f.request :api_auth, @access_id, @secret_key
+end
+```
+
+The order of middlewares is important. You should make sure api_auth is last.
+
 ## Server
 
 ApiAuth provides some built in methods to help you generate API keys for your
