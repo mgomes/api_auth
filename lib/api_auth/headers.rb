@@ -109,9 +109,31 @@ module ApiAuth
     def parse_uri(uri)
       parsed_uri = URI.parse(uri)
 
-      return parsed_uri.request_uri if parsed_uri.respond_to?(:request_uri)
+      uri_without_host = parsed_uri.respond_to?(:request_uri) ? parsed_uri.request_uri : uri
+      return '/' if uri_without_host.empty?
+      escape_params(uri_without_host)
+    end
 
-      uri.empty? ? '/' : uri
+    # Different versions of request parsers escape/unescape the param values
+    # Examples:
+    # Rails 5.1.3 ApiAuth canonical_string:
+    #    'GET,application/json,,/api/v1/employees?select=epulse_id%2Cfirst_name%2Clast_name,Thu, 14 Dec 2017 16:19:48 GMT'
+    # Rails 5.1.4 ApiAuth canonical_string:
+    #    'GET,application/json,,/api/v1/employees?select=epulse_id,first_name,last_name,Thu, 14 Dec 2017 16:20:57 GMT'
+    # This will force param values to escaped and fixes issue #123
+    def escape_params(uri)
+      unescaped_uri = CGI.unescape(uri)
+      uri_array = unescaped_uri.split('?')
+      return uri unless uri_array.length > 1
+      params = uri_array[1].split('&')
+      encoded_params = ''
+      params.each do |param|
+        next unless param.include?('=')
+        encoded_params += '&' unless encoded_params.empty?
+        split_param = param.split('=')
+        encoded_params += split_param[0] + '=' + CGI.escape(split_param[1])
+      end
+      uri_array[0] + '?' + encoded_params
     end
   end
 end
