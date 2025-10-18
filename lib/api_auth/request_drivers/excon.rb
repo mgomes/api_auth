@@ -12,34 +12,34 @@ module ApiAuth
         @request
       end
 
-      def calculated_md5
-        md5_base64digest(@request.body || '')
+      def calculated_hash
+        sha256_base64digest(@request.body || '')
       end
 
-      def populate_content_md5
-        return unless @request.body
+      def populate_content_hash
+        return unless %w[POST PUT].include?(http_method)
 
-        @request.headers['Content-MD5'] = calculated_md5
+        @request.headers['X-Authorization-Content-SHA256'] = calculated_hash
       end
 
-      def md5_mismatch?
-        if @request.body
-          calculated_md5 != content_md5
+      def content_hash_mismatch?
+        if %w[POST PUT].include?(http_method)
+          calculated_hash != content_hash
         else
           false
         end
       end
 
       def http_method
-        @request.method
+        @request.method.to_s.upcase
       end
 
       def content_type
         find_header(%w[CONTENT-TYPE CONTENT_TYPE HTTP_CONTENT_TYPE])
       end
 
-      def content_md5
-        find_header(%w[CONTENT-MD5 CONTENT_MD5])
+      def content_hash
+        find_header(%w[X-AUTHORIZATION-CONTENT-SHA256])
       end
 
       def original_uri
@@ -60,6 +60,10 @@ module ApiAuth
 
       def authorization_header
         find_header %w[Authorization AUTHORIZATION HTTP_AUTHORIZATION]
+      end
+
+      def fetch_headers
+        capitalize_keys(@request.headers)
       end
 
       private

@@ -4,11 +4,11 @@ require 'api_auth/middleware/excon'
 describe ApiAuth::RequestDrivers::ExconRequest do
   let(:timestamp) { Time.now.utc.httpdate }
   let(:body) { "hello\nworld" }
-  let(:method) { 'GET' }
+  let(:method) { :get }
   let(:headers) do
     {
       'Authorization' => 'APIAuth 1044:12345',
-      'content-md5' => '1B2M2Y8AsgTpgAmY7PhCfg==',
+      'X-Authorization-Content-SHA256' => '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
       'content-type' => 'text/plain',
       'date' => timestamp
     }
@@ -31,8 +31,8 @@ describe ApiAuth::RequestDrivers::ExconRequest do
       expect(driven_request.content_type).to eq('text/plain')
     end
 
-    it 'gets the content_md5' do
-      expect(driven_request.content_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+    it 'gets the content_hash' do
+      expect(driven_request.content_hash).to eq('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
     end
 
     it 'gets the request_uri' do
@@ -47,25 +47,35 @@ describe ApiAuth::RequestDrivers::ExconRequest do
       expect(driven_request.authorization_header).to eq('APIAuth 1044:12345')
     end
 
-    describe '#calculated_md5' do
-      it 'calculates md5 from the body' do
-        expect(driven_request.calculated_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+    describe '#calculated_hash' do
+      it 'calculates hash from the body' do
+        expect(driven_request.calculated_hash).to eq('JsYKYdAdtYNspw/v1EpqAWYgQTyO9fJZpsVhLU9507g=')
       end
 
       context 'no body' do
         let(:body) { nil }
 
         it 'is treated as empty string' do
-          expect(driven_request.calculated_md5).to eq('1B2M2Y8AsgTpgAmY7PhCfg==')
+          expect(driven_request.calculated_hash).to eq('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
         end
       end
     end
 
     describe 'http_method' do
-      let(:method) { 'PUT' }
+      context 'when put request' do
+        let(:method) { :put }
 
-      it 'is as passed' do
-        expect(driven_request.http_method).to eq(method)
+        it 'returns upcased put' do
+          expect(driven_request.http_method).to eq('PUT')
+        end
+      end
+
+      context 'when get request' do
+        let(:method) { :get }
+
+        it 'returns upcased get' do
+          expect(driven_request.http_method).to eq('GET')
+        end
       end
     end
   end
@@ -73,27 +83,28 @@ describe ApiAuth::RequestDrivers::ExconRequest do
   describe 'setting headers correctly' do
     let(:headers) { { 'content-type' => 'text/plain' } }
 
-    describe '#populate_content_md5' do
-      context 'when there is no content body' do
-        let(:body) { nil }
+    describe '#populate_content_hash' do
+      context 'when request type has no body' do
+        let(:method) { :get }
 
-        it "doesn't populate content-md5" do
-          driven_request.populate_content_md5
-          expect(request.headers['Content-MD5']).to be_nil
+        it "doesn't populate content hash" do
+          driven_request.populate_content_hash
+          expect(request.headers['X-Authorization-Content-SHA256']).to be_nil
         end
       end
 
-      context 'when there is a content body' do
+      context 'when request type has a body' do
+        let(:method) { :put }
         let(:body) { "hello\nworld" }
 
-        it 'populates content-md5' do
-          driven_request.populate_content_md5
-          expect(request.headers['Content-MD5']).to eq('kZXQvrKoieG+Be1rsZVINw==')
+        it 'populates content hash' do
+          driven_request.populate_content_hash
+          expect(request.headers['X-Authorization-Content-SHA256']).to eq('JsYKYdAdtYNspw/v1EpqAWYgQTyO9fJZpsVhLU9507g=')
         end
 
         it 'refreshes the cached headers' do
-          driven_request.populate_content_md5
-          expect(driven_request.content_md5).to eq('kZXQvrKoieG+Be1rsZVINw==')
+          driven_request.populate_content_hash
+          expect(driven_request.content_hash).to eq('JsYKYdAdtYNspw/v1EpqAWYgQTyO9fJZpsVhLU9507g=')
         end
       end
     end
@@ -122,37 +133,44 @@ describe ApiAuth::RequestDrivers::ExconRequest do
     end
   end
 
-  describe 'md5_mismatch?' do
-    context 'when there is no content body' do
-      let(:body) { nil }
+  describe 'content_hash_mismatch?' do
+    context 'when request type has no body' do
+      let(:method) { :get }
 
       it 'is false' do
-        expect(driven_request.md5_mismatch?).to be false
+        expect(driven_request.content_hash_mismatch?).to be false
       end
     end
 
-    context 'when there is a content body' do
+    context 'when request type has a body' do
+      let(:method) { :put }
       let(:body) { "hello\nworld" }
 
       context 'when calculated matches sent' do
         before do
-          request.headers['Content-MD5'] = 'kZXQvrKoieG+Be1rsZVINw=='
+          request.headers['X-Authorization-Content-SHA256'] = 'JsYKYdAdtYNspw/v1EpqAWYgQTyO9fJZpsVhLU9507g='
         end
 
         it 'is false' do
-          expect(driven_request.md5_mismatch?).to be false
+          expect(driven_request.content_hash_mismatch?).to be false
         end
       end
 
       context "when calculated doesn't match sent" do
         before do
-          request.headers['Content-MD5'] = '3'
+          request.headers['X-Authorization-Content-SHA256'] = '3'
         end
 
         it 'is true' do
-          expect(driven_request.md5_mismatch?).to be true
+          expect(driven_request.content_hash_mismatch?).to be true
         end
       end
+    end
+  end
+
+  describe 'fetch_headers' do
+    it 'returns request headers' do
+      expect(driven_request.fetch_headers).to include('CONTENT-TYPE' => 'text/plain')
     end
   end
 end
