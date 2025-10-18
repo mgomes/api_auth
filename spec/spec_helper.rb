@@ -10,8 +10,6 @@ require 'active_support'
 require 'active_support/core_ext/numeric/time'
 require 'action_controller'
 require 'action_dispatch'
-# Load test classes without ActiveSupport::TestCase to avoid drb dependency
-require 'action_controller/test_case' if defined?(ActionController)
 require 'active_resource'
 require 'active_resource/http_mock'
 

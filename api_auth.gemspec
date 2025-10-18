@@ -22,7 +22,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'amatch'
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'curb', '~> 1.0'
-  s.add_development_dependency 'drb'
+  # DRb is required for Ruby 3.4+ but must avoid 2.0.6 which breaks Ruby 2.6
+  s.add_development_dependency 'drb', '>= 2.0.4', '< 2.0.6'
   s.add_development_dependency 'faraday', '>= 1.1.0'
   s.add_development_dependency 'grape', '~> 2.0'
   s.add_development_dependency 'http'

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'action_controller/test_case'
 
 describe 'Rails integration' do
   API_KEY_STORE = { '1044' => 'l16imAXie1sRMcJODpOG7UwC1VyoqvO13jejkfpKWX4Z09W8DC9IrU23DvCwMry7pgSFW6c5S1GIfV0OY6F/vUA==' }.freeze
