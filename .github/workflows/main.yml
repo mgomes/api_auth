@@ -1,6 +1,11 @@
 name: main
 on:
-  - push
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   rspec:
     runs-on: ubuntu-latest
