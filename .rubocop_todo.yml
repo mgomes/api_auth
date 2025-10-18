@@ -61,13 +61,14 @@ Naming/MethodParameterName:
     - 'lib/api_auth/base.rb'
     - 'spec/railtie_spec.rb'
 
-# Offense count: 3
+# Offense count: 4
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'test/**/*'
     - 'lib/api_auth/railtie.rb'
+    - 'lib/api_auth/request_drivers/rest_client.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowedMethods.
@@ -75,3 +76,8 @@ Style/Documentation:
 Style/OptionalBooleanParameter:
   Exclude:
     - 'lib/api_auth/railtie.rb'
+
+# Offense count: 1
+Lint/UselessConstantScoping:
+  Exclude:
+    - 'lib/api_auth/base.rb'

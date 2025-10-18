@@ -33,3 +33,7 @@ Style/StringLiterals:
 
 Lint/DuplicateBranch:
   Enabled: false
+
+# Development dependencies in gemspec is valid for gems
+Gemspec/DevelopmentDependencies:
+  Enabled: false
