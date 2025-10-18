@@ -65,9 +65,12 @@ minutes in order to avoid replay attacks.
 * [HMAC algorithm](https://en.wikipedia.org/wiki/HMAC)
 * [RFC 2104 (HMAC)](https://tools.ietf.org/html/rfc2104)
 
-## Requirement
+## Requirements
 
-This gem require Ruby >= 2.6 and Rails >= 6.0 if you use rails.
+* Ruby >= 3.2 (for version 3.0+)
+* Ruby >= 2.6 (for version 2.x)
+* Rails >= 7.2 if using Rails (for version 3.0+)
+* Rails >= 6.0 if using Rails (for version 2.x)
 
 ## Install
 
@@ -85,17 +88,21 @@ Please note the dash in the name versus the underscore.
 ApiAuth supports many popular HTTP clients. Support for other clients can be
 added as a request driver.
 
-Here is the current list of supported request objects:
+### Supported HTTP Clients
 
-* Net::HTTP
-* ActionDispatch::Request
-* Curb (Curl::Easy)
-* RestClient
-* Faraday
-* HTTPI
-* HTTP
+* **Net::HTTP** - Ruby's standard library HTTP client
+* **ActionController::Request** / **ActionDispatch::Request** - Rails request objects
+* **Curb** (Curl::Easy) - Ruby libcurl bindings
+* **RestClient** - Popular REST client for Ruby
+* **Faraday** - Modular HTTP client library (with middleware support)
+* **HTTPI** - Common interface for Ruby HTTP clients
+* **HTTP** (http.rb) - Fast Ruby HTTP client with a chainable API
+* **Grape** - REST-like API framework for Ruby (via Rack)
+* **Rack::Request** - Generic Rack request objects
 
-### HTTP Client Objects
+### Client Examples
+
+#### RestClient
 
 Here's a sample implementation of signing a request created with RestClient.
 
@@ -160,6 +167,116 @@ to:
 Authorization = APIAuth-HMAC-DIGEST_NAME 'client access id':'signature'
 ```
 
+#### Net::HTTP
+
+For Ruby's standard Net::HTTP library:
+
+```ruby
+require 'net/http'
+require 'api_auth'
+
+uri = URI('https://api.example.com/resource')
+request = Net::HTTP::Post.new(uri.path)
+request.content_type = 'application/json'
+request.body = '{"key": "value"}'
+
+# Sign the request
+signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+
+# Send the request
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+  http.request(signed_request)
+end
+```
+
+#### Curb (Curl::Easy)
+
+For requests using the Curb library:
+
+```ruby
+require 'curb'
+require 'api_auth'
+
+request = Curl::Easy.new('https://api.example.com/resource')
+request.headers['Content-Type'] = 'application/json'
+request.post_body = '{"key": "value"}'
+
+# Sign the request (note: specify the HTTP method for Curb)
+ApiAuth.sign!(request, @access_id, @secret_key, override_http_method: 'POST')
+
+# Perform the request
+request.perform
+```
+
+#### HTTP (http.rb)
+
+For the HTTP.rb library:
+
+```ruby
+require 'http'
+require 'api_auth'
+
+request = HTTP.headers('Content-Type' => 'application/json')
+              .post('https://api.example.com/resource',
+                    body: '{"key": "value"}')
+
+# Sign the request
+signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+
+# The request is automatically executed when you call response methods
+response = signed_request.to_s
+```
+
+#### HTTPI
+
+For HTTPI requests:
+
+```ruby
+require 'httpi'
+require 'api_auth'
+
+request = HTTPI::Request.new('https://api.example.com/resource')
+request.headers['Content-Type'] = 'application/json'
+request.body = '{"key": "value"}'
+
+# Sign the request
+ApiAuth.sign!(request, @access_id, @secret_key, override_http_method: 'POST')
+
+# Perform the request
+response = HTTPI.post(request)
+```
+
+#### Faraday
+
+ApiAuth provides a middleware for adding authentication to a Faraday connection:
+
+```ruby
+require 'faraday'
+require 'faraday/api_auth'
+
+# Using middleware (recommended)
+connection = Faraday.new(url: 'https://api.example.com') do |faraday|
+  faraday.request :json
+  faraday.request :api_auth, @access_id, @secret_key  # Add ApiAuth middleware
+  faraday.response :json
+  faraday.adapter Faraday.default_adapter
+end
+
+# The middleware will automatically sign all requests
+response = connection.post('/resource', { key: 'value' })
+
+# Or manually sign a request
+request = Faraday::Request.create(:post) do |req|
+  req.url 'https://api.example.com/resource'
+  req.headers['Content-Type'] = 'application/json'
+  req.body = '{"key": "value"}'
+end
+
+signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
+```
+
+The order of middlewares is important. You should make sure api_auth is added after any middleware that modifies the request body or content-type header.
+
 ### ActiveResource Clients
 
 ApiAuth can transparently protect your ActiveResource communications with a
@@ -182,18 +299,67 @@ Simply add this configuration to your Flexirest initializer in your app and it w
 Flexirest::Base.api_auth_credentials(@access_id, @secret_key)
 ```
 
-### Faraday
+### Grape API
 
-ApiAuth provides a middleware for adding authentication to a Faraday connection:
+For Grape API applications, the request is automatically accessible:
 
 ```ruby
-require 'faraday/api_auth'
-Faraday.new do |f|
-  f.request :api_auth, @access_id, @secret_key
+class API < Grape::API
+  helpers do
+    def authenticate!
+      error!('Unauthorized', 401) unless ApiAuth.authentic?(request, current_account.secret_key)
+    end
+
+    def current_account
+      @current_account ||= Account.find_by(access_id: ApiAuth.access_id(request))
+    end
+  end
+
+  before do
+    authenticate!
+  end
+
+  resource :protected do
+    get do
+      { message: 'Authenticated!' }
+    end
+  end
 end
 ```
 
-The order of middlewares is important. You should make sure api_auth is last.
+### Rack Middleware
+
+You can also implement ApiAuth as Rack middleware for any Rack-based application:
+
+```ruby
+class ApiAuthMiddleware
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    request = Rack::Request.new(env)
+
+    # Skip authentication for certain paths if needed
+    return @app.call(env) if request.path == '/health'
+
+    # Find account by access ID
+    access_id = ApiAuth.access_id(request)
+    account = Account.find_by(access_id: access_id)
+
+    # Verify authenticity
+    if account && ApiAuth.authentic?(request, account.secret_key)
+      env['api_auth.account'] = account
+      @app.call(env)
+    else
+      [401, { 'Content-Type' => 'text/plain' }, ['Unauthorized']]
+    end
+  end
+end
+
+# In config.ru or Rails application.rb
+use ApiAuthMiddleware
+```
 
 ## Server
 
@@ -272,6 +438,70 @@ def api_authenticate
 end
 ```
 
+## Digest Algorithms
+
+ApiAuth supports multiple digest algorithms for generating signatures:
+
+* SHA1 (default for backward compatibility)
+* SHA256 (recommended for new implementations)
+* SHA384
+* SHA512
+
+To use a specific digest algorithm:
+
+```ruby
+# Client side - signing
+ApiAuth.sign!(request, @access_id, @secret_key, digest: 'sha256')
+
+# Server side - authenticating
+ApiAuth.authentic?(request, @secret_key, digest: 'sha256')
+```
+
+When using a non-default digest, the Authorization header format changes to include the algorithm:
+
+```
+Authorization: APIAuth-HMAC-SHA256 access_id:signature
+```
+
+## Common Issues and Troubleshooting
+
+### Clock Skew
+
+If you're getting authentication failures, check the time synchronization between client and server. By default, requests are valid for 15 minutes. You can adjust this:
+
+```ruby
+# Allow 60 seconds of clock skew
+ApiAuth.authentic?(request, secret_key, clock_skew: 60)
+```
+
+### Content-Type Header
+
+Ensure the Content-Type header is set before signing the request. The header is part of the canonical string used for signature generation.
+
+### Request Path Encoding
+
+The request path must be properly encoded. Special characters should be URL-encoded:
+
+```ruby
+# Good
+'/api/users/john%40example.com'
+
+# Bad
+'/api/users/john@example.com'
+```
+
+### Debugging Failed Authentication
+
+To debug authentication failures, you can compare the canonical strings:
+
+```ruby
+# Get the canonical string from a request
+headers = ApiAuth::Headers.new(request)
+canonical_string = headers.canonical_string
+
+# Compare client and server canonical strings to identify mismatches
+```
+
 ## Development
 
 ApiAuth uses bundler for gem dependencies and RSpec for testing. Developing the
@@ -283,13 +513,13 @@ To run the tests:
 Install the dependencies for a particular Rails version by specifying a gemfile in `gemfiles` directory:
 
 ```sh
-BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle install
+BUNDLE_GEMFILE=gemfiles/rails_7.gemfile bundle install
 ```
 
 Run the tests with those dependencies:
 
 ```sh
-BUNDLE_GEMFILE=gemfiles/rails_5.gemfile bundle exec rake
+BUNDLE_GEMFILE=gemfiles/rails_7.gemfile bundle exec rake
 ```
 
 If you'd like to add support for additional HTTP clients, check out the already
