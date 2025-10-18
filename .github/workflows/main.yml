@@ -1,7 +1,6 @@
 name: main
 on:
   - push
-  - pull_request
 jobs:
   rspec:
     runs-on: ubuntu-latest
