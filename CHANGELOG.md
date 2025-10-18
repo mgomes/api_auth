@@ -1,3 +1,17 @@
+# 2.6.0 (2025-01-18)
+- Add Faraday middleware support (#1322051 Frédéric Mangano)
+- Add MD5 compatibility option in authentic? method (#a618e15 Samir ALI CHERIF)
+- Add support for Ruby 3.1 and Rails 7.0 (#552cab0 fwininger)
+- Drop support for Rails 5 and Ruby 2.5 (#552cab0 fwininger)
+- Fix HTTPS URL handling (#c734a88 fwininger)
+
+# 2.5.1 (2021-11-26)
+- Add spec coverage for all content hashes (#202 fwininger)
+- Require MFA for Rubygems (#203 fwininger)
+- Integration with GitHub Actions
+- Fix look up of `X-AUTHORIZATION-CONTENT-SHA256` header
+- Adding license information to the gemspec
+
 # 2.5.0 (2021-05-11)
 - Add support for Ruby 3.0 (#194 fwininger)
 - Add support for Rails 6.1 (#194 fwininger)
