@@ -98,6 +98,7 @@ added as a request driver.
 * **HTTPI** - Common interface for Ruby HTTP clients
 * **HTTP** (http.rb) - Fast Ruby HTTP client with a chainable API
 * **Excon** - Pure Ruby HTTP client for API interactions (with middleware support)
+* **Typhoeus** - Libcurl-powered client supporting hydra batching and streaming
 * **Grape** - REST-like API framework for Ruby (via Rack)
 * **Rack::Request** - Generic Rack request objects
 
@@ -323,6 +324,29 @@ ApiAuth.sign!(request, @access_id, @secret_key)
 # Execute the request with signed headers
 response = connection.request(request_params)
 ```
+
+#### Typhoeus
+
+Typhoeus requests can be signed directly before being queued or run with Hydra:
+
+```ruby
+require 'typhoeus'
+require 'api_auth'
+
+request = Typhoeus::Request.new(
+  'https://api.example.com/resource',
+  method: :put,
+  headers: { 'Content-Type' => 'application/json' },
+  body: '{"key": "value"}'
+)
+
+ApiAuth.sign!(request, @access_id, @secret_key)
+
+# Run immediately or add to a Hydra queue
+response = request.run
+```
+
+When uploading large files you can pass an IO or `File` object as the body. ApiAuth will buffer and rewind the stream while computing the SHA-256 content hash so the upload can continue uninterrupted.
 
 ### ActiveResource Clients
 
