@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'amatch'
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'curb', '~> 1.0'
+  s.add_development_dependency 'excon', '~> 0.100'
   s.add_development_dependency 'faraday', '~> 2.0'
   s.add_development_dependency 'grape', '~> 2.0'
   s.add_development_dependency 'http', '~> 5.0'

@@ -97,6 +97,7 @@ added as a request driver.
 * **Faraday** - Modular HTTP client library (with middleware support)
 * **HTTPI** - Common interface for Ruby HTTP clients
 * **HTTP** (http.rb) - Fast Ruby HTTP client with a chainable API
+* **Excon** - Pure Ruby HTTP client for API interactions (with middleware support)
 * **Grape** - REST-like API framework for Ruby (via Rack)
 * **Rack::Request** - Generic Rack request objects
 
@@ -276,6 +277,52 @@ signed_request = ApiAuth.sign!(request, @access_id, @secret_key)
 ```
 
 The order of middlewares is important. You should make sure api_auth is added after any middleware that modifies the request body or content-type header.
+
+#### Excon
+
+Excon can be used with ApiAuth in two ways - with middleware or by manually signing requests.
+
+Using Excon middleware (recommended):
+
+```ruby
+require 'excon'
+require 'excon/api_auth'  # or require 'api_auth/middleware/excon'
+
+# Configure Excon with ApiAuth credentials
+Excon.defaults[:api_auth_access_id] = @access_id
+Excon.defaults[:api_auth_secret_key] = @secret_key
+Excon.defaults[:middlewares] << ApiAuth::Middleware::Excon
+
+# All requests will be automatically signed
+connection = Excon.new('https://api.example.com')
+response = connection.post(
+  path: '/resource',
+  headers: { 'Content-Type' => 'application/json' },
+  body: '{"key": "value"}'
+)
+```
+
+Manual signing (when you need more control):
+
+```ruby
+require 'excon'
+require 'api_auth'
+
+connection = Excon.new('https://api.example.com')
+request_params = {
+  method: :post,
+  path: '/resource',
+  headers: { 'Content-Type' => 'application/json' },
+  body: '{"key": "value"}'
+}
+
+# Create a wrapper for signing
+request = ApiAuth::Middleware::ExconRequestWrapper.new(request_params, '')
+ApiAuth.sign!(request, @access_id, @secret_key)
+
+# Execute the request with signed headers
+response = connection.request(request_params)
+```
 
 ### ActiveResource Clients
 

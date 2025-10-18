@@ -40,6 +40,10 @@ module ApiAuth
           FaradayEnv.new(request)
         when /HTTP::Request/
           HttpRequest.new(request)
+        when /ApiAuth::Middleware::ExconRequestWrapper/
+          ExconRequest.new(request)
+        when /Excon::Request/
+          ExconRequest.new(request)
         end
 
       return new_request if new_request
