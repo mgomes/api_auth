@@ -11,6 +11,11 @@
 - Add Excon HTTP client support with middleware (based on contribution by @stiak in PR #154)
 - Add Typhoeus HTTP client support (adapted from work by @liaden)
 
+## Bug Fixes
+
+- Fix SHA256 content hash header lookup for Rack driver (PR #211 by @taylorthurlow)
+- Fix SHA256 content hash header lookup for Grape driver to check all header variations
+
 ## Improvements
 
 - Update minimum Ruby version to 3.2
@@ -25,6 +30,7 @@
   - RSpec ~> 3.13
   - Rake ~> 13.0
   - Rest-Client ~> 2.1
+  - Typhoeus ~> 1.4
 
 # 2.6.0 (2025-01-18)
 
