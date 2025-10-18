@@ -117,12 +117,8 @@ module ApiAuth
       end
 
       def merge_query(existing, additional)
-        return nil if (existing.nil? || existing.empty?) && (additional.nil? || additional.empty?)
-
-        segments = []
-        segments << existing unless existing.nil? || existing.empty?
-        segments << additional unless additional.nil? || additional.empty?
-        segments.join('&')
+        segments = [existing, additional].compact.reject(&:empty?)
+        segments.empty? ? nil : segments.join('&')
       end
 
       def headers_hash

@@ -38,6 +38,12 @@ Lint/Void:
 Metrics/CyclomaticComplexity:
   Max: 16
 
+# Offense count: 1
+# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/api_auth/request_drivers/typhoeus_request.rb'
+
 # Offense count: 12
 Naming/AccessorMethodName:
   Exclude:
