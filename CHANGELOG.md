@@ -7,6 +7,7 @@
 - Update Grape to v2.0+ for Rails 7/Rack 3 compatibility
 - Update Rubocop to v1.50+ and Curb to v1.0+ for Ruby 3.x compatibility
 - Fix Ruby 2.6 compatibility with Rails 6.x (Logger loading issue)
+- Add drb gem dependency for Ruby 3.4+ compatibility (required by ActionController::TestCase)
 
 # 2.5.1 (2021-11-26)
 - Add spec coverage for all content hashes (#202 fwininger)
