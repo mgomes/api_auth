@@ -1,3 +1,23 @@
+# 3.0.0 (Unreleased)
+
+## Breaking Changes
+- **Drop support for Ruby < 3.2** - Now requires Ruby 3.2, 3.3, or 3.4+
+- **Drop support for Rails 6.x** - Now requires Rails 7.2+ or 8.0+
+- **Remove deprecated Ruby 2.x compatibility code**
+
+## Improvements
+- Update minimum Ruby version to 3.2
+- Update minimum Rails version to 7.2
+- Support Rails 8.0
+- Remove explicit drb dependency (now provided by Rails 7.2+)
+- Update development dependencies to latest versions:
+  - Faraday ~> 2.0
+  - HTTP ~> 5.0
+  - HTTPi ~> 4.0
+  - RSpec ~> 3.13
+  - Rake ~> 13.0
+  - Rest-Client ~> 2.1
+
 # 2.6.0 (2025-01-18)
 - Add Faraday middleware support (#1322051 Frédéric Mangano)
 - Add MD5 compatibility option in authentic? method (#a618e15 Samir ALI CHERIF)

@@ -2,10 +2,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 
-# Fix for Rails 6.1 compatibility issue
-# ActiveSupport 6.1 expects Logger to be available in the global namespace
-require 'logger'
-
 require 'active_support'
 require 'active_support/core_ext/numeric/time'
 require 'action_controller'
@@ -25,4 +21,4 @@ require 'net/http/post/multipart'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
