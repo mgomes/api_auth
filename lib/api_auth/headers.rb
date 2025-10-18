@@ -2,6 +2,7 @@ module ApiAuth
   # Builds the canonical string given a request object.
   class Headers
     include RequestDrivers
+    include Helpers
 
     # Mapping of request class patterns to their driver classes
     REQUEST_DRIVER_MAPPING = [
@@ -83,7 +84,10 @@ module ApiAuth
                          @request.timestamp]
 
       if headers_to_sign.is_a?(Array) && headers_to_sign.any?
-        headers_to_sign.each { |h| canonical_array << headers[h] if headers[h].present? }
+        headers_to_sign.each do |header_name|
+          header_value = headers[header_name]
+          canonical_array << header_value if value_present?(header_value)
+        end
       end
 
       canonical_array.join(',')
@@ -122,11 +126,7 @@ module ApiAuth
     private
 
     def parse_uri(uri)
-      parsed_uri = URI.parse(uri)
-
-      return parsed_uri.request_uri if parsed_uri.respond_to?(:request_uri)
-
-      uri.empty? ? '/' : uri
+      canonical_request_uri(uri)
     end
   end
 end

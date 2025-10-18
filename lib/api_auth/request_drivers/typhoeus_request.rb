@@ -55,17 +55,7 @@ module ApiAuth
       end
 
       def request_uri
-        url = (@request.base_url || '').to_s
-        return '/' if url.empty?
-
-        uri = URI.parse(url)
-        merged_query = merge_query(uri.query, params_query)
-        uri.query = merged_query unless merged_query.nil?
-
-        path = uri.request_uri
-        path.nil? || path.empty? ? '/' : path
-      rescue URI::InvalidURIError
-        '/'
+        canonical_request_uri(@request.base_url, params_query)
       end
 
       def set_date
@@ -114,11 +104,6 @@ module ApiAuth
           query.escape = true
           query.to_s
         end
-      end
-
-      def merge_query(existing, additional)
-        segments = [existing, additional].compact.reject(&:empty?)
-        segments.empty? ? nil : segments.join('&')
       end
 
       def headers_hash

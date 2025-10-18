@@ -30,6 +30,7 @@
   - RSpec ~> 3.13
   - Rake ~> 13.0
   - Rest-Client ~> 2.1
+- Remove implicit ActiveSupport requirement from runtime
   - Typhoeus ~> 1.4
 
 # 2.6.0 (2025-01-18)
