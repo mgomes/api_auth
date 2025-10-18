@@ -3,6 +3,24 @@ module ApiAuth
   class Headers
     include RequestDrivers
 
+    # Mapping of request class patterns to their driver classes
+    REQUEST_DRIVER_MAPPING = [
+      [/Net::HTTP/, NetHttpRequest],
+      [/RestClient/, RestClientRequest],
+      [/Curl::Easy/, CurbRequest],
+      [/ActionController::TestRequest/, :action_controller_test],
+      [/ActionController::Request/, ActionControllerRequest],
+      [/ActionController::CgiRequest/, ActionControllerRequest],
+      [/Grape::Request/, GrapeRequest],
+      [/ActionDispatch::Request/, ActionDispatchRequest],
+      [/HTTPI::Request/, HttpiRequest],
+      [/Faraday::Request/, FaradayRequest],
+      [/Faraday::Env/, FaradayEnv],
+      [/HTTP::Request/, HttpRequest],
+      [/ApiAuth::Middleware::ExconRequestWrapper/, ExconRequest],
+      [/Excon::Request/, ExconRequest]
+    ].freeze
+
     def initialize(request, authorize_md5: false)
       @original_request = request
       @request = initialize_request_driver(request, authorize_md5: authorize_md5)
@@ -10,48 +28,40 @@ module ApiAuth
     end
 
     def initialize_request_driver(request, authorize_md5: false)
-      new_request =
-        case request.class.to_s
-        when /Net::HTTP/
-          NetHttpRequest.new(request)
-        when /RestClient/
-          RestClientRequest.new(request)
-        when /Curl::Easy/
-          CurbRequest.new(request)
-        when /ActionController::Request/
-          ActionControllerRequest.new(request)
-        when /ActionController::TestRequest/
-          if defined?(ActionDispatch)
-            ActionDispatchRequest.new(request)
-          else
-            ActionControllerRequest.new(request)
-          end
-        when /Grape::Request/
-          GrapeRequest.new(request)
-        when /ActionDispatch::Request/
-          ActionDispatchRequest.new(request, authorize_md5: authorize_md5)
-        when /ActionController::CgiRequest/
-          ActionControllerRequest.new(request)
-        when /HTTPI::Request/
-          HttpiRequest.new(request)
-        when /Faraday::Request/
-          FaradayRequest.new(request)
-        when /Faraday::Env/
-          FaradayEnv.new(request)
-        when /HTTP::Request/
-          HttpRequest.new(request)
-        when /ApiAuth::Middleware::ExconRequestWrapper/
-          ExconRequest.new(request)
-        when /Excon::Request/
-          ExconRequest.new(request)
-        end
+      driver_class = find_driver_class(request)
 
-      return new_request if new_request
+      return create_driver(driver_class, request, authorize_md5: authorize_md5) if driver_class
       return RackRequest.new(request) if request.is_a?(Rack::Request)
 
       raise UnknownHTTPRequest, "#{request.class} is not yet supported."
     end
     private :initialize_request_driver
+
+    def find_driver_class(request)
+      request_class_name = request.class.to_s
+
+      REQUEST_DRIVER_MAPPING.each do |pattern, driver|
+        return driver if request_class_name =~ pattern
+      end
+
+      nil
+    end
+    private :find_driver_class
+
+    def create_driver(driver_class, request, authorize_md5: false)
+      # Special handling for ActionController::TestRequest
+      if driver_class == :action_controller_test
+        return defined?(ActionDispatch) ? ActionDispatchRequest.new(request) : ActionControllerRequest.new(request)
+      end
+
+      # Special handling for ActionDispatch::Request which needs authorize_md5
+      if driver_class == ActionDispatchRequest && request.class.to_s =~ /ActionDispatch::Request/
+        return ActionDispatchRequest.new(request, authorize_md5: authorize_md5)
+      end
+
+      driver_class.new(request)
+    end
+    private :create_driver
 
     # Returns the request timestamp
     def timestamp

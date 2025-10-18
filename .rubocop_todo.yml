@@ -38,12 +38,13 @@ Lint/Void:
 Metrics/CyclomaticComplexity:
   Max: 16
 
-# Offense count: 11
+# Offense count: 12
 Naming/AccessorMethodName:
   Exclude:
     - 'lib/api_auth/railtie.rb'
     - 'lib/api_auth/request_drivers/action_controller.rb'
     - 'lib/api_auth/request_drivers/curb.rb'
+    - 'lib/api_auth/request_drivers/excon.rb'
     - 'lib/api_auth/request_drivers/faraday.rb'
     - 'lib/api_auth/request_drivers/faraday_env.rb'
     - 'lib/api_auth/request_drivers/grape_request.rb'
