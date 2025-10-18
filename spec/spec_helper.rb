@@ -2,10 +2,16 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 
+# Fix for Rails 6.1 compatibility issue
+# ActiveSupport 6.1 expects Logger to be available in the global namespace
+require 'logger'
+
 require 'active_support'
-require 'active_support/test_case'
+require 'active_support/core_ext/numeric/time'
 require 'action_controller'
-require 'action_controller/test_case'
+require 'action_dispatch'
+# Load test classes without ActiveSupport::TestCase to avoid drb dependency
+require 'action_controller/test_case' if defined?(ActionController)
 require 'active_resource'
 require 'active_resource/http_mock'
 
