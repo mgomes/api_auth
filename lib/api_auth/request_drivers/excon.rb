@@ -13,7 +13,7 @@ module ApiAuth
       end
 
       def calculated_hash
-        sha256_base64digest(@request.body || '')
+        sha256_base64digest(body)
       end
 
       def populate_content_hash
@@ -67,6 +67,20 @@ module ApiAuth
       end
 
       private
+
+      def body
+        source = @request.body
+
+        return '' if source.nil?
+
+        if source.respond_to?(:read)
+          contents = source.read
+          source.rewind if source.respond_to?(:rewind)
+          contents
+        else
+          source.to_s
+        end
+      end
 
       def find_header(keys)
         headers = capitalize_keys(@request.headers)

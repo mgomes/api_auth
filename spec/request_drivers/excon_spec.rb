@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'api_auth/middleware/excon'
+require 'stringio'
 
 describe ApiAuth::RequestDrivers::ExconRequest do
   let(:timestamp) { Time.now.utc.httpdate }
@@ -57,6 +58,17 @@ describe ApiAuth::RequestDrivers::ExconRequest do
 
         it 'is treated as empty string' do
           expect(driven_request.calculated_hash).to eq('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
+        end
+      end
+
+      context 'IO body' do
+        let(:body) { StringIO.new("hello\nworld") }
+
+        it 'reads the body and rewinds the stream' do
+          result = driven_request.calculated_hash
+
+          expect(result).to eq('JsYKYdAdtYNspw/v1EpqAWYgQTyO9fJZpsVhLU9507g=')
+          expect(body.pos).to eq(0)
         end
       end
     end
