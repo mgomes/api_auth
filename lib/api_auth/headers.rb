@@ -17,6 +17,7 @@ module ApiAuth
       [/Faraday::Request/, FaradayRequest],
       [/Faraday::Env/, FaradayEnv],
       [/HTTP::Request/, HttpRequest],
+      [/Typhoeus::Request/, TyphoeusRequest],
       [/ApiAuth::Middleware::ExconRequestWrapper/, ExconRequest],
       [/Excon::Request/, ExconRequest]
     ].freeze

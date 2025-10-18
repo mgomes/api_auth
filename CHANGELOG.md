@@ -9,6 +9,7 @@
 ## New Features
 
 - Add Excon HTTP client support with middleware (based on contribution by @stiak in PR #154)
+- Add Typhoeus HTTP client support (adapted from work by @liaden)
 
 ## Improvements
 
