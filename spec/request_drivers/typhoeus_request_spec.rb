@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'stringio'
+require 'digest'
 
 describe ApiAuth::RequestDrivers::TyphoeusRequest do
   let(:timestamp) { Time.now.utc.httpdate }
@@ -118,7 +119,9 @@ describe ApiAuth::RequestDrivers::TyphoeusRequest do
         end
 
         it 'uses the encoded multipart body' do
-          expect(driven_request.calculated_hash).to eq('ZGpeb+O6GVc1yKMVZvbDgDbGwPqPigb4yKwWyREdyg0=')
+          expected = Digest::SHA256.base64digest(typhoeus_request.encoded_body)
+
+          expect(driven_request.calculated_hash).to eq(expected)
         end
       end
     end
