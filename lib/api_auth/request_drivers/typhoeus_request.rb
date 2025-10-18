@@ -56,7 +56,15 @@ module ApiAuth
       end
 
       def request_uri
-        URI.parse(@request.url).request_uri
+        url = @request.url.to_s
+        return '/' if url.empty?
+
+        uri = URI.parse(url)
+        return uri.request_uri if uri.respond_to?(:request_uri)
+
+        url
+      rescue URI::InvalidURIError
+        '/'
       end
 
       def set_date

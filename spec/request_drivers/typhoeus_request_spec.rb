@@ -40,6 +40,21 @@ describe ApiAuth::RequestDrivers::TyphoeusRequest do
       expect(driven_request.request_uri).to eq('/resource.xml?foo=bar&bar=foo')
     end
 
+    context 'when the URL cannot be parsed' do
+      let(:typhoeus_request) do
+        Typhoeus::Request.new(
+          'https://example.com/resource with spaces',
+          method: method,
+          headers: request_headers,
+          body: body
+        )
+      end
+
+      it 'falls back to a safe default path' do
+        expect(driven_request.request_uri).to eq('/')
+      end
+    end
+
     it 'gets the timestamp' do
       expect(driven_request.timestamp).to eq(timestamp)
     end
