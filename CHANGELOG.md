@@ -4,6 +4,8 @@
 - Add support for Ruby 3.1 and Rails 7.0 (#552cab0 fwininger)
 - Drop support for Rails 5 and Ruby 2.5 (#552cab0 fwininger)
 - Fix HTTPS URL handling (#c734a88 fwininger)
+- Update Grape to v2.0+ for Rails 7/Rack 3 compatibility
+- Update Rubocop to v1.50+ and Curb to v1.0+ for Ruby 3.x compatibility
 
 # 2.5.1 (2021-11-26)
 - Add spec coverage for all content hashes (#202 fwininger)
