@@ -56,6 +56,56 @@ describe ApiAuth::RequestDrivers::TyphoeusRequest do
       end
     end
 
+    context 'when query params are provided separately' do
+      let(:request_url) { 'https://example.com/resource.xml' }
+      let(:typhoeus_request) do
+        Typhoeus::Request.new(
+          request_url,
+          method: method,
+          headers: request_headers,
+          params: { foo: 'bar', baz: 'qux' }
+        )
+      end
+
+      it 'matches the Typhoeus URL request path' do
+        expected = URI.parse(typhoeus_request.url).request_uri
+
+        expect(driven_request.request_uri).to eq(expected)
+      end
+    end
+
+    context 'when params are given as a string' do
+      let(:request_url) { 'https://example.com/resource.xml' }
+      let(:typhoeus_request) do
+        Typhoeus::Request.new(
+          request_url,
+          method: method,
+          headers: request_headers,
+          params: 'foo=bar&baz=qux'
+        )
+      end
+
+      it 'appends the provided query string' do
+        expect(driven_request.request_uri).to eq('/resource.xml?foo=bar&baz=qux')
+      end
+    end
+
+    context 'when base URL already contains a query' do
+      let(:request_url) { 'https://example.com/resource.xml?existing=1' }
+      let(:typhoeus_request) do
+        Typhoeus::Request.new(
+          request_url,
+          method: method,
+          headers: request_headers,
+          params: { foo: 'bar' }
+        )
+      end
+
+      it 'merges params with existing query string' do
+        expect(driven_request.request_uri).to eq('/resource.xml?existing=1&foo=bar')
+      end
+    end
+
     it 'gets the timestamp' do
       expect(driven_request.timestamp).to eq(timestamp)
     end

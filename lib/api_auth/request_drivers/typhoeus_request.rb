@@ -55,13 +55,15 @@ module ApiAuth
       end
 
       def request_uri
-        url = @request.url.to_s
+        url = (@request.base_url || '').to_s
         return '/' if url.empty?
 
         uri = URI.parse(url)
-        return uri.request_uri if uri.respond_to?(:request_uri)
+        merged_query = merge_query(uri.query, params_query)
+        uri.query = merged_query unless merged_query.nil?
 
-        url
+        path = uri.request_uri
+        path.nil? || path.empty? ? '/' : path
       rescue URI::InvalidURIError
         '/'
       end
@@ -96,6 +98,31 @@ module ApiAuth
         else
           source.to_s
         end
+      end
+
+      def params_query
+        params = @request.options[:params]
+        return nil if params.nil?
+        return params if params.is_a?(String)
+        return nil if params.respond_to?(:empty?) && params.empty?
+
+        Typhoeus::Pool.with_easy do |easy|
+          query = Ethon::Easy::Params.new(easy, params)
+          if @request.options.key?(:params_encoding) && query.respond_to?(:params_encoding=)
+            query.params_encoding = @request.options[:params_encoding]
+          end
+          query.escape = true
+          query.to_s
+        end
+      end
+
+      def merge_query(existing, additional)
+        return nil if (existing.nil? || existing.empty?) && (additional.nil? || additional.empty?)
+
+        segments = []
+        segments << existing unless existing.nil? || existing.empty?
+        segments << additional unless additional.nil? || additional.empty?
+        segments.join('&')
       end
 
       def headers_hash
