@@ -6,7 +6,6 @@ module ApiAuth
       def initialize(request)
         @request = request
         @headers = fetch_headers
-        true
       end
 
       def set_auth_header(header)
@@ -40,7 +39,7 @@ module ApiAuth
 
       def http_method
         method = @request.options[:method]
-        method ? method.to_s.upcase : nil
+        method&.to_s&.upcase
       end
 
       def content_type

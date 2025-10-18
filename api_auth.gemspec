@@ -31,10 +31,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rake', '~> 13.0'
   s.add_development_dependency 'rest-client', '~> 2.1'
-  s.add_development_dependency 'typhoeus', '~> 1.4'
   s.add_development_dependency 'rexml'
   s.add_development_dependency 'rspec', '~> 3.13'
   s.add_development_dependency 'rubocop', '~> 1.50'
+  s.add_development_dependency 'typhoeus', '~> 1.4'
 
   s.files         = `git ls-files`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
