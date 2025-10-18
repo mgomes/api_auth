@@ -1,7 +1,6 @@
 module ApiAuth
   module Middleware # :nodoc:
     # Excon middleware for automatically signing requests
-    # Based on contribution by Pat Leamon (@stiak) in PR #154
     class Excon # :nodoc:
       def initialize(stack)
         @stack = stack
