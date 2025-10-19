@@ -30,6 +30,8 @@ automatically added to the request. The canonical string is computed as follows:
 canonical_string = "#{http method},#{content-type},#{X-Authorization-Content-SHA256},#{request URI},#{timestamp}"
 ```
 
+> **Note:** As of v3.0 the "request URI" component above is just the path (query parameters are excluded) so signatures remain stable even when intermediaries rewrite a query string.
+
 e.g.,
 
 ```ruby
@@ -57,6 +59,16 @@ the client and the server but can be looked up on the server using the client's
 access id that was attached in the header. The access id can be any integer or
 string that uniquely identifies the client. The signed request expires after 15
 minutes in order to avoid replay attacks.
+
+### Legacy query parameter compatibility
+
+Versions prior to 3.0 included the query string inside the canonical request URI. If you have to roll out the 3.0 change gradually across multiple services, you can temporarily enable support for legacy signatures on the server side:
+
+```ruby
+ApiAuth.legacy_query_params_compatibility = true
+```
+
+With the flag disabled (the default) only the path segment is considered part of the canonical string.
 
 ## References
 

@@ -36,13 +36,17 @@ module ApiAuth
       !value_blank?(value)
     end
 
-    def canonical_request_uri(base_url, additional_query = nil)
+    def canonical_request_uri(base_url, additional_query = nil, strip_query: false)
       base = base_url.to_s
       return '/' if base.empty?
 
       uri = URI.parse(base)
-      merged_query = merge_query_strings(uri.query, normalize_query_component(additional_query))
-      uri.query = merged_query if value_present?(merged_query)
+      unless strip_query
+        merged_query = merge_query_strings(uri.query, normalize_query_component(additional_query))
+        uri.query = merged_query if value_present?(merged_query)
+      else
+        uri.query = nil
+      end
 
       result = uri.respond_to?(:request_uri) ? uri.request_uri : uri.to_s
       value_present?(result) ? result : '/'

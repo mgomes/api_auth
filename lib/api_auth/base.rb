@@ -9,6 +9,11 @@
 module ApiAuth
   class << self
     include Helpers
+    attr_writer :legacy_query_params_compatibility
+
+    def legacy_query_params_compatibility?
+      !!@legacy_query_params_compatibility
+    end
 
     # Signs an HTTP request using the client's access id and secret key.
     # Returns the HTTP request object with the modified headers.
@@ -90,9 +95,16 @@ module ApiAuth
       options = { digest: digest }.merge(options)
 
       header_sig = match_data[3]
-      calculated_sig = hmac_signature(headers, secret_key, options)
+      calculated_sig = hmac_signature(headers, secret_key, options, strip_query: true)
 
-      secure_equals?(header_sig, calculated_sig, secret_key)
+      return true if secure_equals?(header_sig, calculated_sig, secret_key)
+
+      if legacy_query_params_compatibility?
+        legacy_sig = hmac_signature(headers, secret_key, options, strip_query: false)
+        return true if secure_equals?(header_sig, legacy_sig, secret_key)
+      end
+
+      false
     end
 
     def secure_equals?(m1, m2, key)
@@ -104,15 +116,15 @@ module ApiAuth
       OpenSSL::HMAC.digest(digest, key, message)
     end
 
-    def hmac_signature(headers, secret_key, options)
-      canonical_string = headers.canonical_string(options[:override_http_method], options[:headers_to_sign])
+    def hmac_signature(headers, secret_key, options, strip_query: true)
+      canonical_string = headers.canonical_string(options[:override_http_method], options[:headers_to_sign], strip_query: strip_query)
       digest = OpenSSL::Digest.new(options[:digest])
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
 
     def auth_header(headers, access_id, secret_key, options)
       hmac_string = "-HMAC-#{options[:digest].upcase}" unless options[:digest] == 'sha1'
-      "APIAuth#{hmac_string} #{access_id}:#{hmac_signature(headers, secret_key, options)}"
+      "APIAuth#{hmac_string} #{access_id}:#{hmac_signature(headers, secret_key, options, strip_query: true)}"
     end
 
     def parse_auth_header(auth_header)

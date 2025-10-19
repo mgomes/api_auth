@@ -5,6 +5,7 @@
 - **Drop support for Ruby < 3.2** - Now requires Ruby 3.2, 3.3, or 3.4+
 - **Drop support for Rails 6.x** - Now requires Rails 7.2+ or 8.0+
 - **Remove deprecated Ruby 2.x compatibility code**
+- **Canonical string no longer includes query parameters** – signatures now use only the request path. During a staged rollout you can temporarily accept legacy query-aware signatures by setting `ApiAuth.legacy_query_params_compatibility = true`.
 
 ## New Features
 
@@ -30,8 +31,8 @@
   - RSpec ~> 3.13
   - Rake ~> 13.0
   - Rest-Client ~> 2.1
-- Remove implicit ActiveSupport requirement from runtime
   - Typhoeus ~> 1.4
+- Remove implicit ActiveSupport requirement from runtime
 
 # 2.6.0 (2025-01-18)
 
