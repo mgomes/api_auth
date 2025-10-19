@@ -41,11 +41,11 @@ module ApiAuth
       return '/' if base.empty?
 
       uri = URI.parse(base)
-      unless strip_query
+      if strip_query
+        uri.query = nil
+      else
         merged_query = merge_query_strings(uri.query, normalize_query_component(additional_query))
         uri.query = merged_query if value_present?(merged_query)
-      else
-        uri.query = nil
       end
 
       result = uri.respond_to?(:request_uri) ? uri.request_uri : uri.to_s

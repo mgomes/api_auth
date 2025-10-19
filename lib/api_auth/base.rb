@@ -9,6 +9,7 @@
 module ApiAuth
   class << self
     include Helpers
+
     attr_writer :legacy_query_params_compatibility
 
     def legacy_query_params_compatibility?
