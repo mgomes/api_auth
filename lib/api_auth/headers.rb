@@ -70,7 +70,7 @@ module ApiAuth
       @request.timestamp
     end
 
-    def canonical_string(override_method = nil, headers_to_sign = [], strip_query: true)
+    def canonical_string(override_method = nil, headers_to_sign = [], include_query: false)
       request_method = override_method || @request.http_method
 
       raise ArgumentError, 'unable to determine the http method from the request, please supply an override' if request_method.nil?
@@ -80,7 +80,7 @@ module ApiAuth
       canonical_array = [request_method.upcase,
                          @request.content_type,
                          @request.content_hash,
-                         parse_uri(@request.original_uri || @request.request_uri, strip_query: strip_query),
+                         parse_uri(@request.original_uri || @request.request_uri, include_query: include_query),
                          @request.timestamp]
 
       if headers_to_sign.is_a?(Array) && headers_to_sign.any?
@@ -125,8 +125,8 @@ module ApiAuth
 
     private
 
-    def parse_uri(uri, strip_query: true)
-      canonical_request_uri(uri, nil, strip_query: strip_query)
+    def parse_uri(uri, include_query: false)
+      canonical_request_uri(uri, nil, include_query: include_query)
     end
   end
 end

@@ -188,7 +188,7 @@ describe 'ApiAuth' do
       let(:headers) { ApiAuth::Headers.new(legacy_request) }
 
       def legacy_signature(headers, secret)
-        canonical = headers.canonical_string(nil, [], strip_query: false)
+        canonical = headers.canonical_string(nil, [], include_query: true)
         digest = OpenSSL::Digest.new('sha1')
         ApiAuth.b64_encode(OpenSSL::HMAC.digest(digest, secret, canonical))
       end
@@ -198,8 +198,10 @@ describe 'ApiAuth' do
         legacy_request['Authorization'] = "APIAuth #{access_id}:#{sig}"
       end
 
-      after do
-        ApiAuth.legacy_query_params_compatibility = false
+      around do |example|
+        original = ApiAuth.legacy_query_params_compatibility?
+        example.run
+        ApiAuth.legacy_query_params_compatibility = original
       end
 
       it 'rejects legacy signatures by default' do
