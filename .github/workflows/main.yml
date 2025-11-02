@@ -19,6 +19,7 @@ jobs:
         gemfile:
           - rails_7.gemfile
           - rails_8.gemfile
+          - rails_8.1.gemfile
     steps:
       - name: Install packages required for `curb` gem
         run: |
