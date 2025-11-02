@@ -9,3 +9,9 @@ appraise 'rails-8' do
   gem 'activeresource', '~> 6.0'
   gem 'activesupport', '~> 8.0'
 end
+
+appraise 'rails-8.1' do
+  gem 'actionpack', '~> 8.1'
+  gem 'activeresource', '~> 6.0'
+  gem 'activesupport', '~> 8.1'
+end
