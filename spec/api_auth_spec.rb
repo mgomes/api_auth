@@ -176,44 +176,6 @@ describe 'ApiAuth' do
         expect(ApiAuth.authentic?(signed_request, '123', headers_to_sign: %w[HTTP_X_FORWARDED_FOR])).to eq true
       end
     end
-
-    context 'legacy query parameter compatibility' do
-      let(:legacy_request) do
-        Net::HTTP::Get.new('/resource.xml?foo=bar&bar=foo',
-                           'content-type' => 'text/plain',
-                           'date' => Time.now.utc.httpdate)
-      end
-      let(:access_id) { 'legacy' }
-      let(:secret_key) { 'secret' }
-      let(:headers) { ApiAuth::Headers.new(legacy_request) }
-
-      def legacy_signature(headers, secret)
-        canonical = headers.canonical_string(nil, [], include_query: true)
-        digest = OpenSSL::Digest.new('sha1')
-        ApiAuth.b64_encode(OpenSSL::HMAC.digest(digest, secret, canonical))
-      end
-
-      before do
-        sig = legacy_signature(headers, secret_key)
-        legacy_request['Authorization'] = "APIAuth #{access_id}:#{sig}"
-      end
-
-      around do |example|
-        original = ApiAuth.legacy_query_params_compatibility?
-        example.run
-        ApiAuth.legacy_query_params_compatibility = original
-      end
-
-      it 'rejects legacy signatures by default' do
-        ApiAuth.legacy_query_params_compatibility = false
-        expect(ApiAuth.authentic?(legacy_request, secret_key)).to eq false
-      end
-
-      it 'accepts legacy signatures when compatibility is enabled' do
-        ApiAuth.legacy_query_params_compatibility = true
-        expect(ApiAuth.authentic?(legacy_request, secret_key)).to eq true
-      end
-    end
   end
 
   describe '.access_id' do

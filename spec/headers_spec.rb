@@ -34,8 +34,8 @@ describe ApiAuth::Headers do
       context 'uri has a string matching https:// in it' do
         let(:uri) { 'https://google.com/?redirect_to=https://www.example.com'.freeze }
 
-        it 'return / as canonical string path' do
-          expect(subject.canonical_string).to eq('GET,,,/,')
+        it 'return /?redirect_to=https://www.example.com as canonical string path' do
+          expect(subject.canonical_string).to eq('GET,,,/?redirect_to=https://www.example.com,')
         end
 
         it 'does not change request url (by removing host)' do
@@ -121,7 +121,7 @@ describe ApiAuth::Headers do
 
         context 'the driver uses the original_uri' do
           it 'constructs the canonical_string with the original_uri' do
-            expect(headers.canonical_string).to eq 'GET,text/html,12345,/api/resource.xml,Mon, 23 Jan 1984 03:29:56 GMT'
+            expect(headers.canonical_string).to eq 'GET,text/html,12345,/api/resource.xml?foo=bar&bar=foo,Mon, 23 Jan 1984 03:29:56 GMT'
           end
         end
       end
@@ -147,7 +147,7 @@ describe ApiAuth::Headers do
         context 'the driver uses the original_uri' do
           it 'constructs the canonical_string with the original_uri' do
             expect(headers.canonical_string(nil, %w[X-FORWARDED-FOR]))
-              .to eq 'GET,text/html,12345,/resource.xml,Mon, 23 Jan 1984 03:29:56 GMT,192.168.1.1'
+              .to eq 'GET,text/html,12345,/resource.xml?bar=foo&foo=bar,Mon, 23 Jan 1984 03:29:56 GMT,192.168.1.1'
           end
         end
       end

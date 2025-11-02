@@ -55,7 +55,7 @@ module ApiAuth
       end
 
       def request_uri
-        canonical_request_uri(@request.base_url, params_query, include_query: true)
+        canonical_request_uri(@request.base_url, params_query)
       end
 
       def set_date
