@@ -36,7 +36,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rubocop', '~> 1.50'
   s.add_development_dependency 'typhoeus', '~> 1.4'
 
-  s.files         = `git ls-files`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
+  s.files         = `git ls-files lib`.split($/) + ["LICENSE.txt", "CHANGELOG.md", "README.md"]
   s.require_paths = ['lib']
 end
