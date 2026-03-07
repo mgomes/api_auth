@@ -1,5 +1,6 @@
 # give access to RestClient @processed_headers
-module RestClient; class Request; attr_accessor :processed_headers; end; end
+
+require_relative '../../rest_client/request_patch'
 
 module ApiAuth
   module RequestDrivers # :nodoc:
